@@ -4,6 +4,7 @@
 import click
 from kcl.dirops import dir_exists
 from kcl.dirops import create_dir
+from kcl.printops import eprint
 
 @click.command()
 @click.argument('apppath')
@@ -11,10 +12,17 @@ from kcl.dirops import create_dir
 def newapp(apppath, verbose):
     appname = os.path.filename(apppath)
     app_collection_folder = os.path.dirname(apppath)
+    newapp_template_folder = app_collection_folder + '/newapp'
+    assert dir_exists(newapp_template_folder)
     eprint("creating app:", appname)
     eprint("in:", app_collection_folder)
     assert not dir_exists(apppath)
     create_dir(apppath)
+    #create_dir(apppath + '/' + appname)
+    cp_command = "cp -avr " + newapp_template_folder + ' ' + apppath + '/' + appname
+    eprint("cp_command:", cp_command)
+    #os.system(cp_command)
+    
 
 if __name__ == '__main__':
     newapp()
