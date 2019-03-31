@@ -12,8 +12,8 @@ from kcl.printops import eprint
 @click.argument('apppath')
 @click.option('--verbose', is_flag=True)
 def newapp(apppath, verbose):
-    appname = os.path.filename(apppath)
-    app_collection_folder = os.path.dirname(apppath)
+    appname, app_collection_folder = os.path.split(apppath)
+    #app_collection_folder = os.path.dirname(apppath)
     newapp_template_folder = app_collection_folder + '/newapp'
     assert dir_exists(newapp_template_folder)
     eprint("creating app:", appname)
