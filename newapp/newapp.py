@@ -24,7 +24,7 @@ def newapp(apppath, verbose):
     cp_command = "cp -avr " + newapp_template_folder + ' ' + apppath + '/' + appname
     eprint("cp_command:", cp_command)
     #os.system(cp_command)
-    
+   
 
 if __name__ == '__main__':
     newapp()
