@@ -27,7 +27,7 @@ def newapp(apppath, verbose):
     eprint("cp_command:", cp_command)
 
     cp_edit_cfg_command = "cp -av " + newapp_template_folder + '/.edit_config' + ' ' + apppath + '/'
-    eprint("cp_edit_cfg_command:", cp_command)
+    eprint("cp_edit_cfg_command:", cp_edit_cfg_command)
 
     mv_command = "mv " + apppath + '/newapp' + ' ' + apppath + '/' + appname
     eprint("mv_command:", mv_command)
