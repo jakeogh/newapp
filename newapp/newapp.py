@@ -27,6 +27,8 @@ def newapp(apppath, verbose):
     eprint("cp_command:", cp_command)
     mv_command = "mv " + apppath + '/newapp' + ' ' + apppath + '/' + appname
     eprint("mv_command:", mv_command)
+    replace_text_command = "replace-text " + "newapp" + ' ' + appname + ' ' + apppath
+    eprint("replace_text_command:", replace_text_command)
     #os.system(cp_command)
    
 
