@@ -7,6 +7,7 @@ from kcl.dirops import dir_exists
 from kcl.dirops import create_dir
 from kcl.printops import eprint
 
+
 @click.command()
 @click.argument('apppath')
 @click.option('--verbose', is_flag=True)
