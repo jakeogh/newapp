@@ -12,6 +12,7 @@ from kcl.printops import eprint
 @click.argument('apppath')
 @click.option('--verbose', is_flag=True)
 def newapp(apppath, verbose):
+    apppath = os.path.expanduser(apppath)
     appname, app_collection_folder = os.path.split(apppath)
     #app_collection_folder = os.path.dirname(apppath)
     newapp_template_folder = app_collection_folder + '/newapp'
