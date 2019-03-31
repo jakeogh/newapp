@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf8 -*-
 
+import os
 import click
 from kcl.dirops import dir_exists
 from kcl.dirops import create_dir
