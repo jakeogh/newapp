@@ -23,18 +23,22 @@ def newapp(apppath, verbose):
     assert not dir_exists(apppath)
     create_dir(apppath)
     create_dir(apppath + '/' + appname)
+
     cp_command = "cp -avr " + newapp_template_folder + '/*' + ' ' + apppath + '/'
     eprint("cp_command:", cp_command)
+    os.system(cp_command)
 
     cp_edit_cfg_command = "cp -av " + newapp_template_folder + '/.edit_config' + ' ' + apppath + '/'
     eprint("cp_edit_cfg_command:", cp_edit_cfg_command)
+    os.system(cp_edit_cfg_command)
 
     mv_command = "mv " + apppath + '/newapp' + ' ' + apppath + '/' + appname
     eprint("mv_command:", mv_command)
+    os.system(mv_command)
 
     replace_text_command = "replace-text " + "newapp" + ' ' + appname + ' ' + apppath
     eprint("replace_text_command:", replace_text_command)
-    #os.system(cp_command)
+    os.system(replace_text_command)
    
 
 if __name__ == '__main__':
