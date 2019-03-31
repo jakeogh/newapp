@@ -43,7 +43,9 @@ def newapp(apppath, verbose):
     replace_text_command = "replace-text --recursive " + "newapp" + ' ' + appname + ' ' + apppath
     eprint("replace_text_command:", replace_text_command)
     os.system(replace_text_command)
-   
+
+    os.chdir(apppath)
+    os.system("git init")
 
 if __name__ == '__main__':
     newapp()
