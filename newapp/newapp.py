@@ -36,6 +36,10 @@ def newapp(apppath, verbose):
     eprint("mv_command:", mv_command)
     os.system(mv_command)
 
+    mv_app_command = "mv " + apppath + '/' + appname + '/newapp.py' + ' ' + apppath + '/' + appname + '/' + appname + '.py'
+    eprint("mv_app_command:", mv_app_command)
+    os.system(mv_app_command)
+
     replace_text_command = "replace-text --recursive " + "newapp" + ' ' + appname + ' ' + apppath
     eprint("replace_text_command:", replace_text_command)
     os.system(replace_text_command)
