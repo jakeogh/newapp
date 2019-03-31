@@ -15,6 +15,7 @@ def newapp(apppath, verbose):
     appname, app_collection_folder = os.path.split(apppath)
     #app_collection_folder = os.path.dirname(apppath)
     newapp_template_folder = app_collection_folder + '/newapp'
+    eprint("newapp_template_folder:", newapp_template_folder)
     assert dir_exists(newapp_template_folder)
     eprint("creating app:", appname)
     eprint("in:", app_collection_folder)
