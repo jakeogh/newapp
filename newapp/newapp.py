@@ -25,6 +25,8 @@ def newapp(apppath, verbose):
     create_dir(apppath + '/' + appname)
     cp_command = "cp -avr " + newapp_template_folder + '/*' + ' ' + apppath + '/'
     eprint("cp_command:", cp_command)
+    mv_command = "mv " + apppath + '/newapp' + ' ' + apppath + '/' + appname
+    eprint("mv_command:", mv_command)
     #os.system(cp_command)
    
 
