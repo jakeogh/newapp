@@ -22,7 +22,7 @@ def newapp(apppath, verbose):
     eprint("in:", app_collection_folder)
     assert not dir_exists(apppath)
     create_dir(apppath)
-    create_dir(apppath + '/' + appname)
+    #create_dir(apppath + '/' + appname)
 
     cp_command = "cp -avr " + newapp_template_folder + '/*' + ' ' + apppath + '/'
     eprint("cp_command:", cp_command)
