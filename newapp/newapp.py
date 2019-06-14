@@ -73,8 +73,10 @@ def new(ctx, new_apppath, git_repo, verbose):
             else:
                 assert False
 
-        app_path = APPS / Path(app_path)
+        git_repo_path = Path(git_repo_path)
+        app_path = APPS / git_repo_path.parts[-1]
         print(app_path)
+
 
 if __name__ == '__main__':
     cli()
