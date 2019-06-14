@@ -2,8 +2,8 @@
 # -*- coding: utf8 -*-
 
 import os
-import urllib
 import click
+from urllib.parse import urlparse
 from kcl.dirops import dir_exists
 from kcl.dirops import create_dir
 from kcl.printops import eprint
@@ -22,7 +22,6 @@ def cli():
 def new(ctx, new_apppath, git_repo, verbose):
 
     if not (new_apppath or git_repo):
-        #click.echo(ctx.parent.get_help(), color=ctx.color)
         click.echo(ctx.get_help(), color=ctx.color)
 
     if new_apppath:
@@ -62,7 +61,7 @@ def new(ctx, new_apppath, git_repo, verbose):
         os.system("git init")
 
     elif git_repo:
-        git_repo = urllib.parse(git_repo)
+        git_repo = urlparse(git_repo)
         print(git_repo)
         print(dir(git_repo))
 
