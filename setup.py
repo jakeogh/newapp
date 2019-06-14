@@ -27,7 +27,7 @@ setup(
     install_requires=dependencies,
     entry_points={
         'console_scripts': [
-            'newapp = newapp.newapp:newapp',
+            'newapp = newapp.newapp:cli',
         ],
     },
     classifiers=[
