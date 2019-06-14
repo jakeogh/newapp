@@ -2,6 +2,7 @@
 # -*- coding: utf8 -*-
 
 import os
+import urllib
 import click
 from kcl.dirops import dir_exists
 from kcl.dirops import create_dir
@@ -9,43 +10,48 @@ from kcl.printops import eprint
 
 
 @click.command()
-@click.argument('apppath')
+@click.option('--new-apppath', type=click.Path(exists=False, file_okay=False, dir_okay=False, writable=False, readable=True, resolve_path=true, allow_dash=False, path_type=None))
+@click.option('--git-repo', type=str)
 @click.option('--verbose', is_flag=True)
-def newapp(apppath, verbose):
-    apppath = os.path.realpath(os.path.expanduser(apppath))
-    app_collection_folder, appname = os.path.split(apppath)
-    #app_collection_folder = os.path.dirname(apppath)
-    newapp_template_folder = app_collection_folder + '/newapp'
-    eprint("newapp_template_folder:", newapp_template_folder)
-    assert dir_exists(newapp_template_folder)
-    eprint("creating app:", appname)
-    eprint("in:", app_collection_folder)
-    assert not dir_exists(apppath)
-    create_dir(apppath)
-    #create_dir(apppath + '/' + appname)
+def newapp(new_apppath, git_repo, verbose):
+    if new_apppath:
+        apppath = os.path.realpath(os.path.expanduser(new_apppath))
+        app_collection_folder, appname = os.path.split(apppath)
+        #app_collection_folder = os.path.dirname(apppath)
+        newapp_template_folder = app_collection_folder + '/newapp'
+        eprint("newapp_template_folder:", newapp_template_folder)
+        assert dir_exists(newapp_template_folder)
+        eprint("creating app:", appname)
+        eprint("in:", app_collection_folder)
+        assert not dir_exists(apppath)
+        create_dir(apppath)
+        #create_dir(apppath + '/' + appname)
 
-    cp_command = "cp -avr " + newapp_template_folder + '/*' + ' ' + apppath + '/'
-    eprint("cp_command:", cp_command)
-    os.system(cp_command)
+        cp_command = "cp -avr " + newapp_template_folder + '/*' + ' ' + apppath + '/'
+        eprint("cp_command:", cp_command)
+        os.system(cp_command)
 
-    cp_edit_cfg_command = "cp -av " + newapp_template_folder + '/.edit_config' + ' ' + apppath + '/'
-    eprint("cp_edit_cfg_command:", cp_edit_cfg_command)
-    os.system(cp_edit_cfg_command)
+        cp_edit_cfg_command = "cp -av " + newapp_template_folder + '/.edit_config' + ' ' + apppath + '/'
+        eprint("cp_edit_cfg_command:", cp_edit_cfg_command)
+        os.system(cp_edit_cfg_command)
 
-    mv_command = "mv " + apppath + '/newapp' + ' ' + apppath + '/' + appname
-    eprint("mv_command:", mv_command)
-    os.system(mv_command)
+        mv_command = "mv " + apppath + '/newapp' + ' ' + apppath + '/' + appname
+        eprint("mv_command:", mv_command)
+        os.system(mv_command)
 
-    mv_app_command = "mv " + apppath + '/' + appname + '/newapp.py' + ' ' + apppath + '/' + appname + '/' + appname + '.py'
-    eprint("mv_app_command:", mv_app_command)
-    os.system(mv_app_command)
+        mv_app_command = "mv " + apppath + '/' + appname + '/newapp.py' + ' ' + apppath + '/' + appname + '/' + appname + '.py'
+        eprint("mv_app_command:", mv_app_command)
+        os.system(mv_app_command)
 
-    replace_text_command = "replace-text --recursive " + "newapp" + ' ' + appname + ' ' + apppath
-    eprint("replace_text_command:", replace_text_command)
-    os.system(replace_text_command)
+        replace_text_command = "replace-text --recursive " + "newapp" + ' ' + appname + ' ' + apppath
+        eprint("replace_text_command:", replace_text_command)
+        os.system(replace_text_command)
 
-    os.chdir(apppath)
-    os.system("git init")
+        os.chdir(apppath)
+        os.system("git init")
+    elif git_repo:
+        git_repo = urllib.parse(git_repo)
+        print(git_repo)
 
 if __name__ == '__main__':
     newapp()
