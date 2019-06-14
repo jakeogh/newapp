@@ -2,12 +2,14 @@
 # -*- coding: utf8 -*-
 
 import os
+from pathlib import Path
 import click
 from urllib.parse import urlparse
 from kcl.dirops import dir_exists
 from kcl.dirops import create_dir
 from kcl.printops import eprint
 
+APPS = Path("/home/cfg/_myapps")
 
 @click.group()
 def cli():
@@ -64,10 +66,19 @@ def new(ctx, new_apppath, git_repo, verbose):
         git_repo = urlparse(git_repo)
         print(git_repo)
         print(dir(git_repo))
-        print(git_repo.path)
+        git_repo_path = git_repo.path
+        if "." in git_repo_path:
+            if git_repo_path.endswith('.git'):
+                git_repo_path = git_repo_path[:-4]
+            else:
+                assert False
+
+        app_path = APPS / Path(app_path)
+        print(app_path)
 
 if __name__ == '__main__':
     cli()
+
 
 #import os
 #import sys
