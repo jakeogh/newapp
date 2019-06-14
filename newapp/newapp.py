@@ -63,10 +63,10 @@ def new(ctx, new_apppath, git_repo, verbose):
         os.system("git init")
 
     elif git_repo:
-        git_repo = urlparse(git_repo)
+        git_repo_parsed = urlparse(git_repo)
         #print(git_repo)
         #print(dir(git_repo))
-        git_repo_path = git_repo.path
+        git_repo_path = git_repo_parsed.path
         if "." in git_repo_path:
             if git_repo_path.endswith('.git'):
                 git_repo_path = git_repo_path[:-4]
