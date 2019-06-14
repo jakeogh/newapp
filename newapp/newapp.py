@@ -10,7 +10,7 @@ from kcl.printops import eprint
 
 
 @click.command()
-@click.option('--new-apppath', type=click.Path(exists=False, file_okay=False, dir_okay=False, writable=False, readable=True, resolve_path=true, allow_dash=False, path_type=None))
+@click.option('--new-apppath', type=click.Path(exists=False, file_okay=False, dir_okay=False, writable=False, readable=True, resolve_path=True, allow_dash=False, path_type=None))
 @click.option('--git-repo', type=str)
 @click.option('--verbose', is_flag=True)
 def newapp(new_apppath, git_repo, verbose):
