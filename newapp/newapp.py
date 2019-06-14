@@ -52,6 +52,7 @@ def newapp(new_apppath, git_repo, verbose):
     elif git_repo:
         git_repo = urllib.parse(git_repo)
         print(git_repo)
+        print(dir(git_repo))
 
 if __name__ == '__main__':
     newapp()
