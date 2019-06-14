@@ -15,10 +15,10 @@ def cli():
 
 
 @cli.command()
-@cli.option('--new-apppath', type=click.Path(exists=False, file_okay=False, dir_okay=False, writable=False, readable=True, resolve_path=True, allow_dash=False, path_type=None))
-@cli.option('--git-repo', type=str)
-@cli.option('--verbose', is_flag=True)
-@cli.pass_context
+@click.option('--new-apppath', type=click.Path(exists=False, file_okay=False, dir_okay=False, writable=False, readable=True, resolve_path=True, allow_dash=False, path_type=None))
+@click.option('--git-repo', type=str)
+@click.option('--verbose', is_flag=True)
+@click.pass_context
 def new(ctx, new_apppath, git_repo, verbose):
     if not (new_apppath or get_repo):
         print(ctx.parser.get_usage())
