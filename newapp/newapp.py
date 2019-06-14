@@ -20,9 +20,11 @@ def cli():
 @click.option('--verbose', is_flag=True)
 @click.pass_context
 def new(ctx, new_apppath, git_repo, verbose):
+
     if not (new_apppath or git_repo):
         #click.echo(ctx.parent.get_help(), color=ctx.color)
         click.echo(ctx.get_help(), color=ctx.color)
+
     if new_apppath:
         apppath = os.path.realpath(os.path.expanduser(new_apppath))
         app_collection_folder, appname = os.path.split(apppath)
@@ -58,6 +60,7 @@ def new(ctx, new_apppath, git_repo, verbose):
 
         os.chdir(apppath)
         os.system("git init")
+
     elif git_repo:
         git_repo = urllib.parse(git_repo)
         print(git_repo)
