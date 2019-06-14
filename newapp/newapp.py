@@ -64,8 +64,8 @@ def new(ctx, new_apppath, git_repo, verbose):
 
     elif git_repo:
         git_repo = urlparse(git_repo)
-        print(git_repo)
-        print(dir(git_repo))
+        #print(git_repo)
+        #print(dir(git_repo))
         git_repo_path = git_repo.path
         if "." in git_repo_path:
             if git_repo_path.endswith('.git'):
@@ -75,8 +75,9 @@ def new(ctx, new_apppath, git_repo, verbose):
 
         git_repo_path = Path(git_repo_path)
         app_path = APPS / git_repo_path.parts[-1]
-        print(app_path)
-
+        eprint("app_path:", app_path)
+        git_clone_cmd = " ".join(["git clone", git_repo, str(app_path)])
+        print(git_clone_cmd)
 
 if __name__ == '__main__':
     cli()
