@@ -8,12 +8,19 @@ from kcl.dirops import dir_exists
 from kcl.dirops import create_dir
 from kcl.printops import eprint
 
+@click.group()
+    def cli():
+        pass
 
-@click.command()
-@click.option('--new-apppath', type=click.Path(exists=False, file_okay=False, dir_okay=False, writable=False, readable=True, resolve_path=True, allow_dash=False, path_type=None))
-@click.option('--git-repo', type=str)
-@click.option('--verbose', is_flag=True)
-def newapp(new_apppath, git_repo, verbose):
+
+@cli.command()
+@cli.option('--new-apppath', type=click.Path(exists=False, file_okay=False, dir_okay=False, writable=False, readable=True, resolve_path=True, allow_dash=False, path_type=None))
+@cli.option('--git-repo', type=str)
+@cli.option('--verbose', is_flag=True)
+@cli.pass_context
+def new(ctx, new_apppath, git_repo, verbose):
+    if not (new_apppath or get_repo):
+        print(ctx.parser.get_usage())
     if new_apppath:
         apppath = os.path.realpath(os.path.expanduser(new_apppath))
         app_collection_folder, appname = os.path.split(apppath)
@@ -55,7 +62,7 @@ def newapp(new_apppath, git_repo, verbose):
         print(dir(git_repo))
 
 if __name__ == '__main__':
-    newapp()
+    cli()
 
 #import os
 #import sys
