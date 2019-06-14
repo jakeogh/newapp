@@ -21,7 +21,8 @@ def cli():
 @click.pass_context
 def new(ctx, new_apppath, git_repo, verbose):
     if not (new_apppath or git_repo):
-        click.echo(ctx.parent.get_help(), color=ctx.color)
+        #click.echo(ctx.parent.get_help(), color=ctx.color)
+        click.echo(ctx.get_help(), color=ctx.color)
     if new_apppath:
         apppath = os.path.realpath(os.path.expanduser(new_apppath))
         app_collection_folder, appname = os.path.split(apppath)
