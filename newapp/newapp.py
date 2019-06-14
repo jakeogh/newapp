@@ -64,6 +64,7 @@ def new(ctx, new_apppath, git_repo, verbose):
         git_repo = urlparse(git_repo)
         print(git_repo)
         print(dir(git_repo))
+        print(git_repo.path)
 
 if __name__ == '__main__':
     cli()
