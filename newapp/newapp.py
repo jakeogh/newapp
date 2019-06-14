@@ -20,7 +20,7 @@ def cli():
 @click.option('--verbose', is_flag=True)
 @click.pass_context
 def new(ctx, new_apppath, git_repo, verbose):
-    if not (new_apppath or get_repo):
+    if not (new_apppath or git_repo):
         print(ctx.parser.get_usage())
     if new_apppath:
         apppath = os.path.realpath(os.path.expanduser(new_apppath))
