@@ -8,9 +8,10 @@ from kcl.dirops import dir_exists
 from kcl.dirops import create_dir
 from kcl.printops import eprint
 
+
 @click.group()
-    def cli():
-        pass
+def cli():
+    pass
 
 
 @cli.command()
