@@ -91,6 +91,7 @@ def new(ctx, git_repo, branch, verbose):
         app_name = git_repo_path.parts[-1]
         app_path = APPS / app_name
         eprint("app_path:", app_path)
+        assert not app_path.exists()
         git_clone_cmd = " ".join(["git clone", git_repo, str(app_path)])
         print(git_clone_cmd)
         os.system(git_clone_cmd)
