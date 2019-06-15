@@ -22,19 +22,20 @@ def valid_branch(ctx, param, value):
         raise click.BadParameter('Invalid branch name.')
     return True
 
+
 @cli.command()
 #@click.option('--new-apppath', type=click.Path(exists=False, file_okay=False, dir_okay=False, writable=False, readable=True, resolve_path=True, allow_dash=False, path_type=None))
-@click.argument('git_repo', type=str)
-@click.argument('branch', type=str, callback=valid_branch)
+@click.argument('git_repo', type=str, nargs=1)
+@click.argument('branch', type=str, callback=valid_branch, nargs=1)
 @click.option('--verbose', is_flag=True)
 @click.pass_context
 def new(ctx, git_repo, branch, verbose):
 
-    if not (new_apppath or git_repo):
-        click.echo(ctx.get_help(), color=ctx.color)
+    #if not (new_apppath or git_repo):
+    #    click.echo(ctx.get_help(), color=ctx.color)
 
-    if git_repo:
-        assert new_branch
+    #if git_repo:
+    #    assert new_branch
 
     #if new_apppath:
     #    apppath = os.path.realpath(os.path.expanduser(new_apppath))
