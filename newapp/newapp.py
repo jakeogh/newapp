@@ -86,10 +86,10 @@ def new(ctx, new_apppath, git_repo, new_branch, verbose):
         print(git_clone_cmd)
         os.system(git_clone_cmd)
         os.chdir(app_path)
-        repo_config_cmd = "git remote set-url origin git@github.com:jakeogh" + app_name + '.git'
+        repo_config_cmd = "git remote set-url origin git@github.com:jakeogh/" + app_name + '.git'
         print(repo_config_cmd)
         os.system(repo_config_cmd)
-        branch_cmd = "git checkout -b " + new_branch
+        branch_cmd = "git checkout -b " + '"' + new_branch + '"'
         print(branch_cmd)
         os.system(branch_cmd)
 
