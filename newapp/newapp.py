@@ -97,7 +97,7 @@ def new(ctx, git_repo, branch, verbose):
         repo_config_cmd = "git remote set-url origin git@github.com:jakeogh/" + app_name + '.git'
         print(repo_config_cmd)
         os.system(repo_config_cmd)
-        branch_cmd = "git checkout -b " + '"' + new_branch + '"'
+        branch_cmd = "git checkout -b " + '"' + branch + '"'
         print(branch_cmd)
         os.system(branch_cmd)
 
