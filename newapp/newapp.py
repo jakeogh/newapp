@@ -16,10 +16,16 @@ def cli():
     pass
 
 
+def valid_branch(ctx, param, value):
+    branch_check_cmd = "git check-ref-format --branch " + value
+    if not os.system(branch_check_cmd):
+        raise click.BadParameter('Invalid branch name.')
+    return True
+
 @cli.command()
 @click.option('--new-apppath', type=click.Path(exists=False, file_okay=False, dir_okay=False, writable=False, readable=True, resolve_path=True, allow_dash=False, path_type=None))
 @click.option('--git-repo', type=str)
-@click.option('--new-branch', type=str)
+@click.option('--new-branch', type=str, callback=valid_branch)
 @click.option('--verbose', is_flag=True)
 @click.pass_context
 def new(ctx, new_apppath, git_repo, new_branch, verbose):
