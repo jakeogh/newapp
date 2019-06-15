@@ -23,12 +23,12 @@ def valid_branch(ctx, param, value):
     return True
 
 @cli.command()
-@click.option('--new-apppath', type=click.Path(exists=False, file_okay=False, dir_okay=False, writable=False, readable=True, resolve_path=True, allow_dash=False, path_type=None))
-@click.option('--git-repo', type=str)
-@click.option('--new-branch', type=str, callback=valid_branch)
+#@click.option('--new-apppath', type=click.Path(exists=False, file_okay=False, dir_okay=False, writable=False, readable=True, resolve_path=True, allow_dash=False, path_type=None))
+@click.argument('git_repo', type=str)
+@click.argument('branch', type=str, callback=valid_branch)
 @click.option('--verbose', is_flag=True)
 @click.pass_context
-def new(ctx, new_apppath, git_repo, new_branch, verbose):
+def new(ctx, git_repo, branch, verbose):
 
     if not (new_apppath or git_repo):
         click.echo(ctx.get_help(), color=ctx.color)
@@ -36,43 +36,44 @@ def new(ctx, new_apppath, git_repo, new_branch, verbose):
     if git_repo:
         assert new_branch
 
-    if new_apppath:
-        apppath = os.path.realpath(os.path.expanduser(new_apppath))
-        app_collection_folder, appname = os.path.split(apppath)
-        #app_collection_folder = os.path.dirname(apppath)
-        newapp_template_folder = app_collection_folder + '/newapp'
-        eprint("newapp_template_folder:", newapp_template_folder)
-        assert dir_exists(newapp_template_folder)
-        eprint("creating app:", appname)
-        eprint("in:", app_collection_folder)
-        assert not dir_exists(apppath)
-        create_dir(apppath)
-        #create_dir(apppath + '/' + appname)
+    #if new_apppath:
+    #    apppath = os.path.realpath(os.path.expanduser(new_apppath))
+    #    app_collection_folder, appname = os.path.split(apppath)
+    #    #app_collection_folder = os.path.dirname(apppath)
+    #    newapp_template_folder = app_collection_folder + '/newapp'
+    #    eprint("newapp_template_folder:", newapp_template_folder)
+    #    assert dir_exists(newapp_template_folder)
+    #    eprint("creating app:", appname)
+    #    eprint("in:", app_collection_folder)
+    #    assert not dir_exists(apppath)
+    #    create_dir(apppath)
+    #    #create_dir(apppath + '/' + appname)
 
-        cp_command = "cp -avr " + newapp_template_folder + '/*' + ' ' + apppath + '/'
-        eprint("cp_command:", cp_command)
-        os.system(cp_command)
+    #    cp_command = "cp -avr " + newapp_template_folder + '/*' + ' ' + apppath + '/'
+    #    eprint("cp_command:", cp_command)
+    #    os.system(cp_command)
 
-        cp_edit_cfg_command = "cp -av " + newapp_template_folder + '/.edit_config' + ' ' + apppath + '/'
-        eprint("cp_edit_cfg_command:", cp_edit_cfg_command)
-        os.system(cp_edit_cfg_command)
+    #    cp_edit_cfg_command = "cp -av " + newapp_template_folder + '/.edit_config' + ' ' + apppath + '/'
+    #    eprint("cp_edit_cfg_command:", cp_edit_cfg_command)
+    #    os.system(cp_edit_cfg_command)
 
-        mv_command = "mv " + apppath + '/newapp' + ' ' + apppath + '/' + appname
-        eprint("mv_command:", mv_command)
-        os.system(mv_command)
+    #    mv_command = "mv " + apppath + '/newapp' + ' ' + apppath + '/' + appname
+    #    eprint("mv_command:", mv_command)
+    #    os.system(mv_command)
 
-        mv_app_command = "mv " + apppath + '/' + appname + '/newapp.py' + ' ' + apppath + '/' + appname + '/' + appname + '.py'
-        eprint("mv_app_command:", mv_app_command)
-        os.system(mv_app_command)
+    #    mv_app_command = "mv " + apppath + '/' + appname + '/newapp.py' + ' ' + apppath + '/' + appname + '/' + appname + '.py'
+    #    eprint("mv_app_command:", mv_app_command)
+    #    os.system(mv_app_command)
 
-        replace_text_command = "replace-text --recursive " + "newapp" + ' ' + appname + ' ' + apppath
-        eprint("replace_text_command:", replace_text_command)
-        os.system(replace_text_command)
+    #    replace_text_command = "replace-text --recursive " + "newapp" + ' ' + appname + ' ' + apppath
+    #    eprint("replace_text_command:", replace_text_command)
+    #    os.system(replace_text_command)
 
-        os.chdir(apppath)
-        os.system("git init")
+    #    os.chdir(apppath)
+    #    os.system("git init")
 
-    elif git_repo:
+    #elif git_repo:
+    if git_repo:
         assert git_repo.startswith('https://github.com/jakeogh/')
         git_repo_parsed = urlparse(git_repo)
         #print(git_repo)
