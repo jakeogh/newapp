@@ -19,12 +19,16 @@ def cli():
 @cli.command()
 @click.option('--new-apppath', type=click.Path(exists=False, file_okay=False, dir_okay=False, writable=False, readable=True, resolve_path=True, allow_dash=False, path_type=None))
 @click.option('--git-repo', type=str)
+@click.option('--new-branch', type=str)
 @click.option('--verbose', is_flag=True)
 @click.pass_context
-def new(ctx, new_apppath, git_repo, verbose):
+def new(ctx, new_apppath, git_repo, new_branch, verbose):
 
     if not (new_apppath or git_repo):
         click.echo(ctx.get_help(), color=ctx.color)
+
+    if git_repo:
+        assert new_branch
 
     if new_apppath:
         apppath = os.path.realpath(os.path.expanduser(new_apppath))
@@ -81,6 +85,13 @@ def new(ctx, new_apppath, git_repo, verbose):
         git_clone_cmd = " ".join(["git clone", git_repo, str(app_path)])
         print(git_clone_cmd)
         os.system(git_clone_cmd)
+        os.chdir(app_path)
+        repo_config_cmd = "git remote set-url origin git@github.com:jakeogh" + app_name + '.git'
+        print(repo_config_cmd)
+        os.system(repo_config_cmd)
+        branch_cmd = "git checkout -b " + new_branch
+        print(branch_cmd)
+        os.system(branch_cmd)
 
 
 if __name__ == '__main__':
