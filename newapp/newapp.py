@@ -18,9 +18,9 @@ def cli():
 
 def valid_branch(ctx, param, value):
     branch_check_cmd = "git check-ref-format --branch " + value
-    if not os.system(branch_check_cmd):
+    if os.system(branch_check_cmd):
         raise click.BadParameter('Invalid branch name.')
-    return True
+    return value
 
 
 @cli.command()
