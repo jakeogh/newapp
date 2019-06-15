@@ -63,6 +63,7 @@ def new(ctx, new_apppath, git_repo, verbose):
         os.system("git init")
 
     elif git_repo:
+        assert git_repo.startswith('https://github.com/jakeogh/')
         git_repo_parsed = urlparse(git_repo)
         #print(git_repo)
         #print(dir(git_repo))
@@ -74,10 +75,13 @@ def new(ctx, new_apppath, git_repo, verbose):
                 assert False
 
         git_repo_path = Path(git_repo_path)
-        app_path = APPS / git_repo_path.parts[-1]
+        app_name = git_repo_path.parts[-1]
+        app_path = APPS / app_name
         eprint("app_path:", app_path)
         git_clone_cmd = " ".join(["git clone", git_repo, str(app_path)])
         print(git_clone_cmd)
+        os.system(git_clone_cmd)
+
 
 if __name__ == '__main__':
     cli()
