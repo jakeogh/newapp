@@ -17,6 +17,7 @@ def cli():
 
 
 def valid_branch(ctx, param, value):
+    eprint("value:", value)
     branch_check_cmd = "git check-ref-format --branch " + value
     if os.system(branch_check_cmd):
         raise click.BadParameter('Invalid branch name.')
