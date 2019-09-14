@@ -53,9 +53,9 @@ def generate_edit_config(package_name, package_group, local):
 def generate_setup_py(url, package_name, license, owner, owner_email, description):
     setup_py = [
         '''# -*- coding: utf-8 -*-''',
-        '''import sys''',
+        '''\nimport sys''',
         '''from setuptools import find_packages, setup''',
-        '''if not sys.version_info[0] == 3: sys.exit("Python 3 is required. Use: \'python3 setup.py install\'")''',
+        '''if not sys.version_info[0] == 3: sys.exit("Python 3 is required. Use: \\'python3 setup.py install\\'")''',
         "\n"]
 
     setup_py = "\n".join(setup_py)
@@ -75,7 +75,7 @@ def generate_setup_py(url, package_name, license, owner, owner_email, descriptio
         '''    zip_safe=False''',
         '''    platforms="any"''',
         '''    install_requires=dependencies''',
-        "\n"]
+        ""]
 
     config = ",\n".join(config)
     config = '''config = [\n''' + config + ''']'''
