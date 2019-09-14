@@ -59,7 +59,7 @@ def generate_setup_py(url, package_name, license, owner, owner_email, descriptio
         "\n"]
 
     setup_py = "\n".join(setup_py)
-    setup_py += "\ndependencies = []"
+    setup_py += "dependencies = []\n\n"
 
     config = [
         '''    "version":"0.01"''',
@@ -80,7 +80,7 @@ def generate_setup_py(url, package_name, license, owner, owner_email, descriptio
     config = '''config = {\n''' + config
 
     entry_points = [
-        '''\n    entry_points:{''',
+        '''\n    "entry_points":{''',
         '''        "console_scripts": [''',
         '''            "{0} = {0}.{0}:cli",'''.format(package_name),
         '''        ],''',
