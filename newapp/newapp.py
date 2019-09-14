@@ -74,8 +74,7 @@ def generate_setup_py(url, package_name, license, owner, owner_email, descriptio
         '''    include_package_data = True''',
         '''    zip_safe = False''',
         '''    platforms = "any"''',
-        '''    install_requires = dependencies''',
-        ""]
+        '''    install_requires = dependencies''']
 
     config = ",\n".join(config)
     config = '''config = [\n''' + config
