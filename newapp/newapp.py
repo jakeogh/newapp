@@ -59,9 +59,9 @@ def generate_setup_py(url, package_name, license, owner, owner_email, descriptio
         "\n"]
 
     setup_py = "\n".join(setup_py)
+    setup_py += "\ndependencies = []"
 
     config = [
-        '''    "dependencies":[]''',
         '''    "version":"0.01"''',
         '''    "name":"{}"'''.format(package_name),
         '''    "url":"{}"'''.format(url),
