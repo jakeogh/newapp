@@ -190,6 +190,10 @@ def new(ctx, git_repo, group, branch, verbose, license, owner, owner_email, desc
                                    url=git_repo))
 
     os.system("fastep")
+    os.chdir(app_name)
+    with open(app_name + '.py', 'w') as fh:
+        fh.write('''#!/usr/bin/env python3\n''')
+
 
 if __name__ == '__main__':
     cli()
