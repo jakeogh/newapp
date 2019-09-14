@@ -80,7 +80,7 @@ def generate_setup_py(url, package_name, license, owner, owner_email, descriptio
     config = '''config = {\n''' + config
 
     entry_points = [
-        '''\n    entry_points = {''',
+        '''\n    entry_points:{''',
         '''        "console_scripts": [''',
         '''            "{0} = {0}.{0}:cli",'''.format(package_name),
         '''        ],''',
