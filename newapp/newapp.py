@@ -50,6 +50,46 @@ def generate_edit_config(package_name, package_group, local):
     return edit_config
 
 
+def generate_setup_py(url, package_name, license, owner, owner_email, description):
+    setup_py = [
+        '''# -*- coding: utf-8 -*-''',
+        '''import sys''',
+        '''from setuptools import find_packages, setup''',
+        '''if not sys.version_info[0] == 3: sys.exit("Python 3 is required. Use: \'python3 setup.py install\'")''',
+        "\n"]
+
+    setup_py = "\n".join(setup_py)
+
+    config = [
+        '''    dependencies = []''',
+        '''    version = 0.01''',
+        '''    name = {}'''.format(package_name),
+        '''    url = {}'''.format(url),
+        '''    license = {}'''.format(license),
+        '''    author = {}'''.format(owner),
+        '''    author_email = {}'''.format(owner_email),
+        '''    description = {}'''.format(description),
+        '''    long_description=__doc__''',
+        '''    packages=find_packages(exclude=['tests'])''',
+        '''    include_package_data=True''',
+        '''    zip_safe=False''',
+        '''    platforms="any"''',
+        '''    install_requires=dependencies''']
+
+    config = ",\n".join(config)
+    config = '''config = [\n''' + config + ''']'''
+
+    entry_points = [
+        '''    entry_points={''',
+        '''        "console_scripts": [''',
+        '''            "{0} = {0}.{0}:cli",'''.format(package_name),
+        '''        ],''',
+        '''    },''']
+    entry_points = "\n".join(entry_points)
+
+    setup_py = setup_py + config + entry_points + '''\n)'''
+    return setup_py
+
 
 @cli.command()
 #@click.option('--new-apppath', type=click.Path(exists=False, file_okay=False, dir_okay=False, writable=False, readable=True, resolve_path=True, allow_dash=False, path_type=None))
@@ -57,28 +97,13 @@ def generate_edit_config(package_name, package_group, local):
 @click.argument('group', type=str, nargs=1)
 @click.argument('branch', type=str, callback=valid_branch, nargs=1, default="master")
 @click.option('--verbose', is_flag=True)
+@click.option('--license', type=click.Choice(["ISC"]), default="ISC")
+@click.option('--owner', type=str, default="Justin Keogh")
+@click.option('--owner-email', type=str, default="github.com@v6y.net")
+@click.option('--description', type=str, default="Short explination of what it does _here_")
 @click.option('--local', is_flag=True)
 @click.pass_context
-def new(ctx, git_repo, group, branch, verbose, local):
-
-    #if not (new_apppath or git_repo):
-    #    click.echo(ctx.get_help(), color=ctx.color)
-
-    #if git_repo:
-    #    assert new_branch
-
-    #if new_apppath:
-    #    apppath = os.path.realpath(os.path.expanduser(new_apppath))
-    #    app_collection_folder, appname = os.path.split(apppath)
-    #    #app_collection_folder = os.path.dirname(apppath)
-    #    newapp_template_folder = app_collection_folder + '/newapp'
-    #    eprint("newapp_template_folder:", newapp_template_folder)
-    #    assert dir_exists(newapp_template_folder)
-    #    eprint("creating app:", appname)
-    #    eprint("in:", app_collection_folder)
-    #    assert not dir_exists(apppath)
-    #    create_dir(apppath)
-    #    #create_dir(apppath + '/' + appname)
+def new(ctx, git_repo, group, branch, verbose, license, owner, owner_email, description, local):
 
     #    cp_command = "cp -avr " + newapp_template_folder + '/*' + ' ' + apppath + '/'
     #    eprint("cp_command:", cp_command)
@@ -154,6 +179,13 @@ def new(ctx, git_repo, group, branch, verbose, local):
     with open(".edit_config", 'w') as fh:
         fh.write(generate_edit_config(package_name=app_name, package_group=group, local=local))
 
+    with open("setup.py", 'w') as fh:
+        fh.write(generate_setup_py(package_name=app_name,
+                                   owner=owner,
+                                   owner_email=owner_email,
+                                   description=description,
+                                   license=license,
+                                   url=git_repo))
 
 
 if __name__ == '__main__':
