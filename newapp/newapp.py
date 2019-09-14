@@ -77,7 +77,7 @@ def generate_setup_py(url, package_name, license, owner, owner_email, descriptio
         '''    install_requires=dependencies''']
 
     config = ",\n".join(config)
-    config = '''config = [\n''' + config
+    config = '''config = {\n''' + config
 
     entry_points = [
         '''\n    entry_points = {''',
@@ -87,7 +87,7 @@ def generate_setup_py(url, package_name, license, owner, owner_email, descriptio
         '''    },''']
     entry_points = "\n".join(entry_points)
 
-    setup_py = setup_py + config + entry_points + '''\n)'''
+    setup_py = setup_py + config + entry_points + '''\n}'''
     return setup_py
 
 
