@@ -93,6 +93,19 @@ def generate_setup_py(url, package_name, license, owner, owner_email, descriptio
     return setup_py
 
 
+def generate_app_template():
+    template = [
+            '''#!/usr/bin/env python3\n''',
+            '''import os''',
+            '''import sys''',
+            '''import click\n''',
+            '''@click.group()''',
+            '''def cli():''',
+            '''    pass''']
+
+    template = "\n".join(template)
+    return template
+
 @cli.command()
 #@click.option('--new-apppath', type=click.Path(exists=False, file_okay=False, dir_okay=False, writable=False, readable=True, resolve_path=True, allow_dash=False, path_type=None))
 @click.argument('git_repo', type=str, nargs=1)
@@ -191,8 +204,9 @@ def new(ctx, git_repo, group, branch, verbose, license, owner, owner_email, desc
 
     os.system("fastep")
     os.chdir(app_name)
+    template = generate_app_template()
     with open(app_name + '.py', 'w') as fh:
-        fh.write('''#!/usr/bin/env python3\n''')
+        fh.write(template)
 
     os.system("touch __init__.py")
 
