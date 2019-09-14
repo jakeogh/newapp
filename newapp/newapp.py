@@ -88,7 +88,7 @@ def generate_setup_py(url, package_name, license, owner, owner_email, descriptio
     entry_points = "\n".join(entry_points)
 
     setup_py = setup_py + config + entry_points + '''\n}\n\n'''
-    setup_py += '''setup(**config)'''
+    setup_py += '''setup(**config)\n'''
     return setup_py
 
 
