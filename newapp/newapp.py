@@ -42,7 +42,8 @@ def generate_edit_config(package_name, package_group, local):
     edit_config += [
         '''test_command_arg=""''',
         '''pre_lint_command=""''',
-        '''dont_unmerge=""''']
+        '''dont_unmerge=""''',
+        "\n"]
 
     edit_config = "\n".join(edit_config)
 
