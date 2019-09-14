@@ -27,7 +27,7 @@ def valid_branch(ctx, param, value):
 @cli.command()
 #@click.option('--new-apppath', type=click.Path(exists=False, file_okay=False, dir_okay=False, writable=False, readable=True, resolve_path=True, allow_dash=False, path_type=None))
 @click.argument('git_repo', type=str, nargs=1)
-@click.argument('branch', type=str, callback=valid_branch, nargs=1)
+@click.argument('branch', type=str, callback=valid_branch, nargs=1, default="master")
 @click.option('--verbose', is_flag=True)
 @click.pass_context
 def new(ctx, git_repo, branch, verbose):
