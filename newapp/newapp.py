@@ -54,6 +54,7 @@ def generate_setup_py(url, package_name, license, owner, owner_email, descriptio
     setup_py = [
         '''# -*- coding: utf-8 -*-''',
         '''\nimport sys''',
+        '''import fastentrypoints''',
         '''from setuptools import find_packages, setup''',
         '''if not sys.version_info[0] == 3:\n    sys.exit("Python 3 is required. Use: \\'python3 setup.py install\\'")''',
         "\n"]
