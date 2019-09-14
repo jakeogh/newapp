@@ -133,9 +133,19 @@ def new(ctx, git_repo, group, branch, verbose, local):
         os.makedirs(app_name, exist_ok=False)
         os.system("git init")
 
-    repo_config_cmd = "git remote set-url origin git@github.com:jakeogh/" + app_name + '.git'
-    print(repo_config_cmd)
-    os.system(repo_config_cmd)
+    repo_config_command = "git remote set-url origin git@github.com:jakeogh/" + app_name + '.git'
+    print(repo_config_command)
+    if not local:
+        os.system(repo_config_command)
+    else:
+        enable_github = [
+                "#!/bin/sh",
+                repo_config_command,
+                "\n"]
+        enable_github = "\n".join(enable_github)
+        with open("enable_github.sh", 'w') as fh:
+            fh.write(enable_github)
+
     if branch != "master":
         branch_cmd = "git checkout -b " + '"' + branch + '"'
         print(branch_cmd)
