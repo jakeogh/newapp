@@ -5,8 +5,8 @@ import os
 from pathlib import Path
 import click
 from urllib.parse import urlparse
-from kcl.dirops import dir_exists
-from kcl.dirops import create_dir
+#from kcl.dirops import path_is_dir
+#from kcl.dirops import create_dir
 from kcl.printops import eprint
 
 APPS = Path("/home/cfg/_myapps")
@@ -102,6 +102,9 @@ def new(ctx, git_repo, branch, verbose):
         branch_cmd = "git checkout -b " + '"' + branch + '"'
         print(branch_cmd)
         os.system(branch_cmd)
+    #    cp_edit_cfg_command = "cp -av " + newapp_template_folder + '/.edit_config' + ' ' + apppath + '/'
+    #    eprint("cp_edit_cfg_command:", cp_edit_cfg_command)
+    #    os.system(cp_edit_cfg_command)
 
 
 if __name__ == '__main__':
