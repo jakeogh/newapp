@@ -69,12 +69,12 @@ def generate_setup_py(url, package_name, license, owner, owner_email, descriptio
         '''    author = "{}"'''.format(owner),
         '''    author_email = "{}"'''.format(owner_email),
         '''    description = "{}"'''.format(description),
-        '''    long_description=__doc__''',
+        '''    long_description = __doc__''',
         '''    packages=find_packages(exclude=['tests'])''',
-        '''    include_package_data=True''',
-        '''    zip_safe=False''',
-        '''    platforms="any"''',
-        '''    install_requires=dependencies''',
+        '''    include_package_data = True''',
+        '''    zip_safe = False''',
+        '''    platforms = "any"''',
+        '''    install_requires = dependencies''',
         ""]
 
     config = ",\n".join(config)
