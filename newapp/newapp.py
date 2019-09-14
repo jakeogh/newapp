@@ -83,7 +83,7 @@ def generate_setup_py(url, package_name, license, owner, owner_email, descriptio
     entry_points = [
         '''\n    "entry_points": {''',
         '''        "console_scripts": [''',
-        '''            "{0} = {0}.{0}:cli",'''.format(package_name),
+        '''            "{0}={0}.{0}:cli",'''.format(package_name),
         '''        ],''',
         '''    },''']
     entry_points = "\n".join(entry_points)
