@@ -95,16 +95,19 @@ def generate_setup_py(url, package_name, license, owner, owner_email, descriptio
 
 def generate_app_template():
     template = [
-            '''#!/usr/bin/env python3\n''',
-            '''import os''',
-            '''import sys''',
-            '''import click\n''',
-            '''@click.group()''',
-            '''def cli():''',
-            '''    pass''']
+        '''#!/usr/bin/env python3\n''',
+        '''import os''',
+        '''import sys''',
+        '''import click\n''',
+        '''@click.group()''',
+        '''def cli():''',
+        '''    pass\n\n''',
+        '''if __name__ == "__main__":''',
+        '''    cli()''']
 
     template = "\n".join(template)
     return template
+
 
 @cli.command()
 #@click.option('--new-apppath', type=click.Path(exists=False, file_okay=False, dir_okay=False, writable=False, readable=True, resolve_path=True, allow_dash=False, path_type=None))
