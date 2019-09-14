@@ -75,33 +75,33 @@ def new(ctx, git_repo, branch, verbose):
     #    os.system("git init")
 
     #elif git_repo:
-    if git_repo:
-        assert git_repo.startswith('https://github.com/jakeogh/')
-        git_repo_parsed = urlparse(git_repo)
-        #print(git_repo)
-        #print(dir(git_repo))
-        git_repo_path = git_repo_parsed.path
-        if "." in git_repo_path:
-            if git_repo_path.endswith('.git'):
-                git_repo_path = git_repo_path[:-4]
-            else:
-                assert False
+    #if git_repo:
+    assert git_repo.startswith('https://github.com/jakeogh/')
+    git_repo_parsed = urlparse(git_repo)
+    #print(git_repo)
+    #print(dir(git_repo))
+    git_repo_path = git_repo_parsed.path
+    if "." in git_repo_path:
+        if git_repo_path.endswith('.git'):
+            git_repo_path = git_repo_path[:-4]
+        else:
+            assert False
 
-        git_repo_path = Path(git_repo_path)
-        app_name = git_repo_path.parts[-1]
-        app_path = APPS / app_name
-        eprint("app_path:", app_path)
-        assert not app_path.exists()
-        git_clone_cmd = " ".join(["git clone", git_repo, str(app_path)])
-        print(git_clone_cmd)
-        os.system(git_clone_cmd)
-        os.chdir(app_path)
-        repo_config_cmd = "git remote set-url origin git@github.com:jakeogh/" + app_name + '.git'
-        print(repo_config_cmd)
-        os.system(repo_config_cmd)
-        branch_cmd = "git checkout -b " + '"' + branch + '"'
-        print(branch_cmd)
-        os.system(branch_cmd)
+    git_repo_path = Path(git_repo_path)
+    app_name = git_repo_path.parts[-1]
+    app_path = APPS / app_name
+    eprint("app_path:", app_path)
+    assert not app_path.exists()
+    git_clone_cmd = " ".join(["git clone", git_repo, str(app_path)])
+    print(git_clone_cmd)
+    os.system(git_clone_cmd)
+    os.chdir(app_path)
+    repo_config_cmd = "git remote set-url origin git@github.com:jakeogh/" + app_name + '.git'
+    print(repo_config_cmd)
+    os.system(repo_config_cmd)
+    branch_cmd = "git checkout -b " + '"' + branch + '"'
+    print(branch_cmd)
+    os.system(branch_cmd)
     #    cp_edit_cfg_command = "cp -av " + newapp_template_folder + '/.edit_config' + ' ' + apppath + '/'
     #    eprint("cp_edit_cfg_command:", cp_edit_cfg_command)
     #    os.system(cp_edit_cfg_command)
