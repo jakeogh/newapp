@@ -62,13 +62,13 @@ def generate_setup_py(url, package_name, license, owner, owner_email, descriptio
 
     config = [
         '''    dependencies = []''',
-        '''    version = 0.01''',
-        '''    name = {}'''.format(package_name),
-        '''    url = {}'''.format(url),
-        '''    license = {}'''.format(license),
-        '''    author = {}'''.format(owner),
-        '''    author_email = {}'''.format(owner_email),
-        '''    description = {}'''.format(description),
+        '''    version = "0.01"''',
+        '''    name = "{}"'''.format(package_name),
+        '''    url = "{}"'''.format(url),
+        '''    license = "{}"'''.format(license),
+        '''    author = "{}"'''.format(owner),
+        '''    author_email = "{}"'''.format(owner_email),
+        '''    description = "{}"'''.format(description),
         '''    long_description=__doc__''',
         '''    packages=find_packages(exclude=['tests'])''',
         '''    include_package_data=True''',
@@ -78,10 +78,10 @@ def generate_setup_py(url, package_name, license, owner, owner_email, descriptio
         ""]
 
     config = ",\n".join(config)
-    config = '''config = [\n''' + config + ''']'''
+    config = '''config = [\n''' + config
 
     entry_points = [
-        '''\n    entry_points={''',
+        '''\n    entry_points = {''',
         '''        "console_scripts": [''',
         '''            "{0} = {0}.{0}:cli",'''.format(package_name),
         '''        ],''',
