@@ -24,13 +24,41 @@ def valid_branch(ctx, param, value):
     return value
 
 
+def generate_edit_config(package_name, package_group, local):
+    #remote = ""
+    edit_config = [
+            "#!/bin/sh",
+            '''short_package="{}"'''.format(package_name),
+            '''group="{}"'''.format(package_group),
+            '''package="${group}/${short_package}"''']
+    if local:
+        remote = "#"
+    remote += '''remote="https://github.com/jakeogh/{}.git"'''.format(package_name)
+    edit_config.append(remote)
+    if local:
+        remote = '''remote=""'''
+    edit_config.append(remote)
+
+    edit_config += [
+        '''test_command_arg=""''',
+        '''pre_lint_command=""''',
+        '''dont_unmerge=""''']
+
+    edit_config = "\n".join(edit_config)
+
+    return edit_config
+
+
+
 @cli.command()
 #@click.option('--new-apppath', type=click.Path(exists=False, file_okay=False, dir_okay=False, writable=False, readable=True, resolve_path=True, allow_dash=False, path_type=None))
 @click.argument('git_repo', type=str, nargs=1)
+@click.argument('group', type=str, nargs=1)
 @click.argument('branch', type=str, callback=valid_branch, nargs=1, default="master")
 @click.option('--verbose', is_flag=True)
+@click.option('--local', is_flag=True)
 @click.pass_context
-def new(ctx, git_repo, branch, verbose):
+def new(ctx, git_repo, group, branch, verbose, local):
 
     #if not (new_apppath or git_repo):
     #    click.echo(ctx.get_help(), color=ctx.color)
@@ -92,19 +120,29 @@ def new(ctx, git_repo, branch, verbose):
     app_path = APPS / app_name
     eprint("app_path:", app_path)
     assert not app_path.exists()
-    git_clone_cmd = " ".join(["git clone", git_repo, str(app_path)])
-    print(git_clone_cmd)
-    os.system(git_clone_cmd)
-    os.chdir(app_path)
+    if not local:
+        git_clone_cmd = " ".join(["git clone", git_repo, str(app_path)])
+        print(git_clone_cmd)
+        os.system(git_clone_cmd)
+        os.chdir(app_path)
+        #os.makedirs(app_name, exist_ok=False)  # hm
+    else:
+        os.makedirs(app_path, exist_ok=False)
+        os.chdir(app_path)
+        os.makedirs(app_name, exist_ok=False)
+        os.system("git init")
+
     repo_config_cmd = "git remote set-url origin git@github.com:jakeogh/" + app_name + '.git'
     print(repo_config_cmd)
     os.system(repo_config_cmd)
-    branch_cmd = "git checkout -b " + '"' + branch + '"'
-    print(branch_cmd)
-    os.system(branch_cmd)
-    #    cp_edit_cfg_command = "cp -av " + newapp_template_folder + '/.edit_config' + ' ' + apppath + '/'
-    #    eprint("cp_edit_cfg_command:", cp_edit_cfg_command)
-    #    os.system(cp_edit_cfg_command)
+    if branch != "master":
+        branch_cmd = "git checkout -b " + '"' + branch + '"'
+        print(branch_cmd)
+        os.system(branch_cmd)
+
+    with open(".edit_config", 'w') as fh:
+        fh.write(generate_edit_config(package_name=app_name, package_group=group, local=local))
+
 
 
 if __name__ == '__main__':
