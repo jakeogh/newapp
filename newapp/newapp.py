@@ -111,8 +111,6 @@ if __name__ == '__main__':
     cli()
 
 
-#import os
-#import sys
 #
 ## drop into shell anywhere with:
 ## import IPython; IPython.embed()
