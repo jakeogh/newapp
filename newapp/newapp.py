@@ -188,6 +188,7 @@ def new(ctx, git_repo, group, branch, verbose, license, owner, owner_email, desc
                                    license=license,
                                    url=git_repo))
 
+    os.system("fastep")
 
 if __name__ == '__main__':
     cli()
