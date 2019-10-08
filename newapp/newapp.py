@@ -123,35 +123,8 @@ def generate_app_template():
 @click.pass_context
 def new(ctx, git_repo, group, branch, verbose, license, owner, owner_email, description, local):
 
-    #    cp_command = "cp -avr " + newapp_template_folder + '/*' + ' ' + apppath + '/'
-    #    eprint("cp_command:", cp_command)
-    #    os.system(cp_command)
-
-    #    cp_edit_cfg_command = "cp -av " + newapp_template_folder + '/.edit_config' + ' ' + apppath + '/'
-    #    eprint("cp_edit_cfg_command:", cp_edit_cfg_command)
-    #    os.system(cp_edit_cfg_command)
-
-    #    mv_command = "mv " + apppath + '/newapp' + ' ' + apppath + '/' + appname
-    #    eprint("mv_command:", mv_command)
-    #    os.system(mv_command)
-
-    #    mv_app_command = "mv " + apppath + '/' + appname + '/newapp.py' + ' ' + apppath + '/' + appname + '/' + appname + '.py'
-    #    eprint("mv_app_command:", mv_app_command)
-    #    os.system(mv_app_command)
-
-    #    replace_text_command = "replace-text --recursive " + "newapp" + ' ' + appname + ' ' + apppath
-    #    eprint("replace_text_command:", replace_text_command)
-    #    os.system(replace_text_command)
-
-    #    os.chdir(apppath)
-    #    os.system("git init")
-
-    #elif git_repo:
-    #if git_repo:
     assert git_repo.startswith('https://github.com/jakeogh/')
     git_repo_parsed = urlparse(git_repo)
-    #print(git_repo)
-    #print(dir(git_repo))
     git_repo_path = git_repo_parsed.path
     if "." in git_repo_path:
         if git_repo_path.endswith('.git'):
