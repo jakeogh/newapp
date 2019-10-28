@@ -201,6 +201,7 @@ def new(ctx, git_repo, group, branch, verbose, license, owner, owner_email, desc
 
         with open(ebuild_name, 'w') as fh:
             fh.write(generate_ebuild_template(description, git_repo))
+        os.system("git add " + ebuild_name)
     else:
         eprint("Not creating new ebuild, {} already exists.".format(ebuild_path))
 
