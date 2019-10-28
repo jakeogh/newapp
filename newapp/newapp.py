@@ -9,6 +9,7 @@ from kcl.printops import eprint
 from kcl.fileops import write_unique_line_to_file
 from icecream import ic
 from .templates import ebuild
+from .templates import gitignore
 
 APPS = Path("/home/cfg/_myapps")
 OVERLAY = APPS / Path("jakeogh")
@@ -115,6 +116,10 @@ def generate_ebuild_template(description, homepage, app_path):
     return ebuild.format(description=description, homepage=homepage, app_path=app_path)
 
 
+def generate_gitignore_template():
+    return gitignore.format()
+
+
 @cli.command()
 #@click.option('--new-apppath', type=click.Path(exists=False, file_okay=False, dir_okay=False, writable=False, readable=True, resolve_path=True, allow_dash=False, path_type=None))
 @click.argument('git_repo', type=str, nargs=1)
@@ -190,7 +195,13 @@ def new(ctx, git_repo, group, branch, verbose, license, owner, owner_email, desc
         with open(app_name + '.py', 'wx') as fh:
             fh.write(template)
 
+        template = generate_gitignore_template()
+        with open('.gitignore', 'wx') as fh:
+            fh.write(template)
+
         os.system("touch __init__.py")
+
+        os.system("git add --all")
     else:
         eprint("Not creating new app, {} already exists.".format(app_path))
 

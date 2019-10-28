@@ -37,3 +37,7 @@ DEPEND="${{RDEPEND}}"
 #	popd > /dev/null || die
 #}}
 '''
+
+gitignore = '''.git
+.edit_config
+'''
