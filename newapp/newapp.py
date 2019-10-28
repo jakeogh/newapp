@@ -3,8 +3,8 @@
 
 import os
 from pathlib import Path
-import click
 from urllib.parse import urlparse
+import click
 from kcl.printops import eprint
 from kcl.fileops import write_unique_line_to_file
 from icecream import ic
@@ -63,7 +63,7 @@ def generate_setup_py(url, package_name, license, owner, owner_email, descriptio
         "\n"]
 
     setup_py = "\n".join(setup_py)
-    setup_py += "dependencies = []\n\n"
+    setup_py += 'dependencies = ["icecream", "click", "colorama"]\n\n'
 
     config = [
         '''    "version": "0.01"''',
@@ -101,6 +101,11 @@ def generate_app_template():
         '''#!/usr/bin/env python3\n''',
         '''import os''',
         '''import sys''',
+        '''from shutil import get_terminal_size''',
+        '''ic.configureOutput(includeContext=True)''',
+        '''ic.lineWrapWidth, _ = get_terminal_size((80, 20))''',
+        '''#ic.disable()''',
+        '''from icecream import ic''',
         '''import click\n''',
         '''@click.group()''',
         '''def cli():''',
