@@ -5,11 +5,12 @@ import os
 from pathlib import Path
 import click
 from urllib.parse import urlparse
-#from kcl.dirops import path_is_dir
-#from kcl.dirops import create_dir
 from kcl.printops import eprint
+from icecream import ic
+from templates import ebuild
 
 APPS = Path("/home/cfg/_myapps")
+OVERLAY = APPS / Path("jakeogh")
 
 @click.group()
 def cli():
@@ -109,6 +110,10 @@ def generate_app_template():
     return template
 
 
+def generate_ebuild_template(description, homepage):
+    return ebuild.format(description=description, homepage=homepage)
+
+
 @cli.command()
 #@click.option('--new-apppath', type=click.Path(exists=False, file_okay=False, dir_okay=False, writable=False, readable=True, resolve_path=True, allow_dash=False, path_type=None))
 @click.argument('git_repo', type=str, nargs=1)
@@ -135,56 +140,70 @@ def new(ctx, git_repo, group, branch, verbose, license, owner, owner_email, desc
     git_repo_path = Path(git_repo_path)
     app_name = git_repo_path.parts[-1]
     app_path = APPS / app_name
-    eprint("app_path:", app_path)
-    assert not app_path.exists()
-    if not local:
-        git_clone_cmd = " ".join(["git clone", git_repo, str(app_path)])
-        print(git_clone_cmd)
-        os.system(git_clone_cmd)
-        os.chdir(app_path)
-        #os.makedirs(app_name, exist_ok=False)  # hm
+    ic(app_path)
+    if not app_path.exists():
+        if not local:
+            git_clone_cmd = " ".join(["git clone", git_repo, str(app_path)])
+            print(git_clone_cmd)
+            os.system(git_clone_cmd)
+            os.chdir(app_path)
+            #os.makedirs(app_name, exist_ok=False)  # hm
+        else:
+            os.makedirs(app_path, exist_ok=False)
+            os.chdir(app_path)
+            os.makedirs(app_name, exist_ok=False)
+            os.system("git init")
+
+        repo_config_command = "git remote set-url origin git@github.com:jakeogh/" + app_name + '.git'
+        print(repo_config_command)
+        if not local:
+            os.system(repo_config_command)
+        else:
+            enable_github = [
+                    "#!/bin/sh",
+                    repo_config_command,
+                    "\n"]
+            enable_github = "\n".join(enable_github)
+            with open("enable_github.sh", 'wx') as fh:
+                fh.write(enable_github)
+
+        if branch != "master":
+            branch_cmd = "git checkout -b " + '"' + branch + '"'
+            print(branch_cmd)
+            os.system(branch_cmd)
+
+        with open(".edit_config", 'wx') as fh:
+            fh.write(generate_edit_config(package_name=app_name, package_group=group, local=local))
+
+        with open("setup.py", 'wx') as fh:
+            fh.write(generate_setup_py(package_name=app_name,
+                                       owner=owner,
+                                       owner_email=owner_email,
+                                       description=description,
+                                       license=license,
+                                       url=git_repo))
+
+        os.system("fastep")
+        os.chdir(app_name)
+        template = generate_app_template()
+        with open(app_name + '.py', 'wx') as fh:
+            fh.write(template)
+
+        os.system("touch __init__.py")
     else:
-        os.makedirs(app_path, exist_ok=False)
-        os.chdir(app_path)
-        os.makedirs(app_name, exist_ok=False)
-        os.system("git init")
+        eprint("Not creating new app, {} already exists.".format(app_path))
 
-    repo_config_command = "git remote set-url origin git@github.com:jakeogh/" + app_name + '.git'
-    print(repo_config_command)
-    if not local:
-        os.system(repo_config_command)
+    ebuild_path = OVERLAY / Path(group) / Path(app_name)
+    if not ebuild_path.exists():
+        os.makedirs(ebuild_path, exist_ok=False)
+        os.chdir(ebuild_path)
+        ebuild_name = app_name + "-9999.ebuild"
+
+        with open(ebuild_name, 'w') as fh:
+            fh.write(generate_ebuild_template(description, git_repo))
     else:
-        enable_github = [
-                "#!/bin/sh",
-                repo_config_command,
-                "\n"]
-        enable_github = "\n".join(enable_github)
-        with open("enable_github.sh", 'w') as fh:
-            fh.write(enable_github)
+        eprint("Not creating new ebuild, {} already exists.".format(ebuild_path))
 
-    if branch != "master":
-        branch_cmd = "git checkout -b " + '"' + branch + '"'
-        print(branch_cmd)
-        os.system(branch_cmd)
-
-    with open(".edit_config", 'w') as fh:
-        fh.write(generate_edit_config(package_name=app_name, package_group=group, local=local))
-
-    with open("setup.py", 'w') as fh:
-        fh.write(generate_setup_py(package_name=app_name,
-                                   owner=owner,
-                                   owner_email=owner_email,
-                                   description=description,
-                                   license=license,
-                                   url=git_repo))
-
-    os.system("fastep")
-    os.chdir(app_name)
-    template = generate_app_template()
-    with open(app_name + '.py', 'w') as fh:
-        fh.write(template)
-
-    os.system("touch __init__.py")
 
 if __name__ == '__main__':
     cli()
