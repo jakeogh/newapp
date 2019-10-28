@@ -111,8 +111,8 @@ def generate_app_template():
     return template
 
 
-def generate_ebuild_template(description, homepage):
-    return ebuild.format(description=description, homepage=homepage)
+def generate_ebuild_template(description, homepage, app_path):
+    return ebuild.format(description=description, homepage=homepage, app_path=app_path)
 
 
 @cli.command()
@@ -201,7 +201,7 @@ def new(ctx, git_repo, group, branch, verbose, license, owner, owner_email, desc
         ebuild_name = app_name + "-9999.ebuild"
 
         with open(ebuild_name, 'w') as fh:
-            fh.write(generate_ebuild_template(description, git_repo))
+            fh.write(generate_ebuild_template(description=description, git_repo=git_repo, app_path=app_path))
         os.system("git add " + ebuild_name)
         accept_keyword = "={}/{}-9999 **".format(group, app_name)
         accept_keywords = Path("/etc/portage/package.accept_keywords")
