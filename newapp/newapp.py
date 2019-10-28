@@ -6,6 +6,7 @@ from pathlib import Path
 import click
 from urllib.parse import urlparse
 from kcl.printops import eprint
+from kcl.fileops import write_unique_line_to_file
 from icecream import ic
 from .templates import ebuild
 
@@ -202,6 +203,9 @@ def new(ctx, git_repo, group, branch, verbose, license, owner, owner_email, desc
         with open(ebuild_name, 'w') as fh:
             fh.write(generate_ebuild_template(description, git_repo))
         os.system("git add " + ebuild_name)
+        accept_keyword = "={}/{}-9999 **".format(group, app_name)
+        accept_keywords = Path("/etc/portage/package.accept_keywords")
+        write_unique_line_to_file(file_to_write=accept_keywords, line=accept_keyword, make_new=False)
     else:
         eprint("Not creating new ebuild, {} already exists.".format(ebuild_path))
 
