@@ -7,7 +7,7 @@ import click
 from urllib.parse import urlparse
 from kcl.printops import eprint
 from icecream import ic
-from templates import ebuild
+from .templates import ebuild
 
 APPS = Path("/home/cfg/_myapps")
 OVERLAY = APPS / Path("jakeogh")
