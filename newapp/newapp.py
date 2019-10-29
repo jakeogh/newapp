@@ -194,18 +194,20 @@ def new(ctx, git_repo, group, branch, verbose, license, owner, owner_email, desc
                                        license=license,
                                        url=git_repo))
 
+        template = generate_gitignore_template()
+        with open('.gitignore', 'x') as fh:
+            fh.write(template)
+
         os.system("fastep")
+
         os.chdir(app_name)
         template = generate_app_template()
         with open(app_name + '.py', 'x') as fh:
             fh.write(template)
 
-        template = generate_gitignore_template()
-        with open('.gitignore', 'x') as fh:
-            fh.write(template)
-
         os.system("touch __init__.py")
 
+        os.chdir(app_path)
         os.system("git add --all")
     else:
         eprint("Not creating new app, {} already exists.".format(app_path))
