@@ -219,7 +219,7 @@ def new(ctx, git_repo, group, branch, verbose, license, owner, owner_email, desc
         with open(ebuild_name, 'w') as fh:
             fh.write(generate_ebuild_template(description=description, homepage=git_repo, app_path=app_path))
         os.system("git add " + ebuild_name)
-        accept_keyword = "={}/{}-9999 **".format(group, app_name)
+        accept_keyword = "={}/{}-9999 **\n".format(group, app_name)
         accept_keywords = Path("/etc/portage/package.accept_keywords")
         write_unique_line_to_file(file_to_write=accept_keywords, line=accept_keyword, make_new=False)
     else:
