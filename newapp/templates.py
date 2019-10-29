@@ -41,4 +41,5 @@ DEPEND="${{RDEPEND}}"
 
 gitignore = '''.git
 .edit_config
+enable_github.sh
 '''

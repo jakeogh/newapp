@@ -175,7 +175,7 @@ def new(ctx, git_repo, group, branch, verbose, license, owner, owner_email, desc
                     repo_config_command,
                     "\n"]
             enable_github = "\n".join(enable_github)
-            with open("enable_github.sh", 'wx') as fh:
+            with open("enable_github.sh", 'x') as fh:
                 fh.write(enable_github)
 
         if branch != "master":
@@ -183,10 +183,10 @@ def new(ctx, git_repo, group, branch, verbose, license, owner, owner_email, desc
             print(branch_cmd)
             os.system(branch_cmd)
 
-        with open(".edit_config", 'wx') as fh:
+        with open(".edit_config", 'x') as fh:
             fh.write(generate_edit_config(package_name=app_name, package_group=group, local=local))
 
-        with open("setup.py", 'wx') as fh:
+        with open("setup.py", 'x') as fh:
             fh.write(generate_setup_py(package_name=app_name,
                                        owner=owner,
                                        owner_email=owner_email,
@@ -197,11 +197,11 @@ def new(ctx, git_repo, group, branch, verbose, license, owner, owner_email, desc
         os.system("fastep")
         os.chdir(app_name)
         template = generate_app_template()
-        with open(app_name + '.py', 'wx') as fh:
+        with open(app_name + '.py', 'x') as fh:
             fh.write(template)
 
         template = generate_gitignore_template()
-        with open('.gitignore', 'wx') as fh:
+        with open('.gitignore', 'x') as fh:
             fh.write(template)
 
         os.system("touch __init__.py")
