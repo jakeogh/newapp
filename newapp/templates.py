@@ -1,5 +1,28 @@
 #!/usr/bin/env python3
 
+app = '''#!/usr/bin/env python3
+
+import os
+import sys
+import click
+
+from icecream import ic
+ic.configureOutput(includeContext=True)
+from shutil import get_terminal_size
+ic.lineWrapWidth, _ = get_terminal_size((80, 20))
+#ic.disable()
+
+
+# DONT CHANGE FUNC NAME
+@click.group()
+def cli():
+    pass
+
+
+if __name__ == "__main__":
+    cli()'''
+
+
 ebuild = '''# Copyright 1999-2019 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 

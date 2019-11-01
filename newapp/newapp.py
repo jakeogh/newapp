@@ -8,6 +8,7 @@ import click
 from kcl.printops import eprint
 from kcl.fileops import write_unique_line_to_file
 from icecream import ic
+from .templates import app
 from .templates import ebuild
 from .templates import gitignore
 
@@ -96,25 +97,26 @@ def generate_setup_py(url, package_name, license, owner, owner_email, descriptio
     return setup_py
 
 
-def generate_app_template():
-    template = [
-        '''#!/usr/bin/env python3\n''',
-        '''import os''',
-        '''import sys''',
-        '''from shutil import get_terminal_size''',
-        '''ic.configureOutput(includeContext=True)''',
-        '''ic.lineWrapWidth, _ = get_terminal_size((80, 20))''',
-        '''#ic.disable()''',
-        '''from icecream import ic''',
-        '''import click\n''',
-        '''@click.group()''',
-        '''def cli():''',
-        '''    pass\n\n''',
-        '''if __name__ == "__main__":''',
-        '''    cli()''']
-
-    template = "\n".join(template)
-    return template
+#def generate_app_template():
+#    template = [
+#        '''#!/usr/bin/env python3\n''',
+#        '''import os''',
+#        '''import sys''',
+#        '''from pathlib import Path''',
+#        '''from shutil import get_terminal_size''',
+#        '''ic.configureOutput(includeContext=True)''',
+#        '''ic.lineWrapWidth, _ = get_terminal_size((80, 20))''',
+#        '''#ic.disable()''',
+#        '''from icecream import ic''',
+#        '''import click\n''',
+#        '''@click.group()''',
+#        '''def cli():''',
+#        '''    pass\n\n''',
+#        '''if __name__ == "__main__":''',
+#        '''    cli()''']
+#
+#    template = "\n".join(template)
+#    return template
 
 
 def generate_ebuild_template(description, homepage, app_path):
@@ -123,6 +125,10 @@ def generate_ebuild_template(description, homepage, app_path):
 
 def generate_gitignore_template():
     return gitignore.format()
+
+
+def generate_app_template():
+    return app
 
 
 @cli.command()
