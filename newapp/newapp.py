@@ -102,7 +102,7 @@ def generate_app_template():
 @click.argument('git_repo', type=str, nargs=1)
 @click.argument('group', type=str, nargs=1)
 @click.argument('branch', type=str, callback=valid_branch, nargs=1, default="master")
-@click.option('--apps-folder', type=str)
+@click.option('--apps-folder', type=str, default="junk")
 @click.option('--verbose', is_flag=True)
 @click.option('--license', type=click.Choice(["ISC"]), default="ISC")
 @click.option('--owner', type=str, default="Justin Keogh")
@@ -113,7 +113,7 @@ def generate_app_template():
 def new(ctx, git_repo, group, branch, apps_folder, verbose, license, owner, owner_email, description, local):
     ic(apps_folder)
 
-    OVERLAY = apps_folder / Path("jakeogh")
+    OVERLAY = Path(apps_folder) / Path("jakeogh")
     if not git_repo.startswith('https://github.com/jakeogh/'):
         assert local
     git_repo_parsed = urlparse(git_repo)
