@@ -11,6 +11,7 @@ from icecream import ic
 from .templates import app
 from .templates import ebuild
 from .templates import gitignore
+from .templates import edit_config
 
 APPS = Path("/home/cfg/_myapps")
 OVERLAY = APPS / Path("jakeogh")
@@ -30,28 +31,30 @@ def valid_branch(ctx, param, value):
 
 def generate_edit_config(package_name, package_group, local):
     #remote = ""
-    edit_config = [
-            "#!/bin/sh",
-            '''short_package="{}"'''.format(package_name),
-            '''group="{}"'''.format(package_group),
-            '''package="${group}/${short_package}"''']
+#    edit_config = [
+#            "#!/bin/sh",
+#            '''short_package="{}"'''.format(package_name),
+#            '''group="{}"'''.format(package_group),
+#            '''package="${group}/${short_package}"''']
     if local:
         remote = "#"
     remote += '''remote="https://github.com/jakeogh/{}.git"'''.format(package_name)
-    edit_config.append(remote)
+
+    optional_blank_remote = ''
     if local:
-        remote = '''remote=""'''
-    edit_config.append(remote)
+        optional_blank_remote = '''remote=""'''
 
-    edit_config += [
-        '''test_command_arg=""''',
-        '''pre_lint_command=""''',
-        '''dont_unmerge=""''',
-        "\n"]
+#    edit_config += [
+#        '''test_command_arg=""''',
+#        '''pre_lint_command=""''',
+#        '''dont_unmerge=""''',
+#        "\n"]
+#
+#    edit_config = "\n".join(edit_config)
 
-    edit_config = "\n".join(edit_config)
 
-    return edit_config
+
+    return edit_config.format(package_name=package_name, package_group=package_group, optional_blank_remote=optional_blank_remote)
 
 
 def generate_setup_py(url, package_name, license, owner, owner_email, description):

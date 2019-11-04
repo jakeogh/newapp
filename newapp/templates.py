@@ -1,5 +1,18 @@
 #!/usr/bin/env python3
 
+
+edit_config='''#!/bin/sh
+short_package="{package_name}"
+group="{package_group}"
+package="${{group}}/${{short_package}}"
+{remote}
+{optional_blank_remote}
+test_command_arg=""
+pre_lint_command=""
+dont_unmerge=""
+'''
+
+
 app = '''#!/usr/bin/env python3
 
 import os
