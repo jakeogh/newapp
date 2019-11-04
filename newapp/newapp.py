@@ -54,7 +54,7 @@ def generate_edit_config(package_name, package_group, local):
 
 
 
-    return edit_config.format(package_name=package_name, package_group=package_group, optional_blank_remote=optional_blank_remote)
+    return edit_config.format(package_name=package_name, package_group=package_group, optional_blank_remote=optional_blank_remote, remote=remote)
 
 
 def generate_setup_py(url, package_name, license, owner, owner_email, description):
