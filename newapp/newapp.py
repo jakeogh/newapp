@@ -16,7 +16,6 @@ from .templates import edit_config
 
 #APPS = Path("/home/cfg/_myapps")
 
-CFG = click_read_config(click_instance=click, app_name='newapp', verbose=True)
 
 @click.group()
 def cli():
@@ -205,6 +204,7 @@ def new(ctx, git_repo, group, branch, apps_folder, verbose, license, owner, owne
 
 
 if __name__ == '__main__':
+    CFG = click_read_config(click_instance=click, app_name='newapp', verbose=True)
     if CFG.keys():
         print("using CFG:", CFG)
         cli(default_map=CFG)
