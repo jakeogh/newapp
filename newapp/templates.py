@@ -33,7 +33,12 @@ def cli():
 
 
 if __name__ == "__main__":
-    cli()'''
+    cli()
+
+
+# import IPython; IPython.embed()
+# import pdb; pdb.set_trace()
+# from pudb import set_trace; set_trace(paused=False)'''
 
 
 ebuild = '''# Copyright 1999-2019 Gentoo Authors

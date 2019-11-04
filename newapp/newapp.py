@@ -7,6 +7,7 @@ from urllib.parse import urlparse
 import click
 from kcl.printops import eprint
 from kcl.fileops import write_unique_line_to_file
+from kcl.configops import click_read_config
 from icecream import ic
 from .templates import app
 from .templates import ebuild
@@ -15,6 +16,8 @@ from .templates import edit_config
 
 APPS = Path("/home/cfg/_myapps")
 OVERLAY = APPS / Path("jakeogh")
+
+CFG = click_read_config(click_instance=click, app_name='newapp')
 
 @click.group()
 def cli():
@@ -30,12 +33,6 @@ def valid_branch(ctx, param, value):
 
 
 def generate_edit_config(package_name, package_group, local):
-    #remote = ""
-#    edit_config = [
-#            "#!/bin/sh",
-#            '''short_package="{}"'''.format(package_name),
-#            '''group="{}"'''.format(package_group),
-#            '''package="${group}/${short_package}"''']
     if local:
         remote = "#"
     remote += '''remote="https://github.com/jakeogh/{}.git"'''.format(package_name)
@@ -43,17 +40,6 @@ def generate_edit_config(package_name, package_group, local):
     optional_blank_remote = ''
     if local:
         optional_blank_remote = '''remote=""'''
-
-#    edit_config += [
-#        '''test_command_arg=""''',
-#        '''pre_lint_command=""''',
-#        '''dont_unmerge=""''',
-#        "\n"]
-#
-#    edit_config = "\n".join(edit_config)
-
-
-
     return edit_config.format(package_name=package_name, package_group=package_group, optional_blank_remote=optional_blank_remote, remote=remote)
 
 
@@ -100,28 +86,6 @@ def generate_setup_py(url, package_name, license, owner, owner_email, descriptio
     return setup_py
 
 
-#def generate_app_template():
-#    template = [
-#        '''#!/usr/bin/env python3\n''',
-#        '''import os''',
-#        '''import sys''',
-#        '''from pathlib import Path''',
-#        '''from shutil import get_terminal_size''',
-#        '''ic.configureOutput(includeContext=True)''',
-#        '''ic.lineWrapWidth, _ = get_terminal_size((80, 20))''',
-#        '''#ic.disable()''',
-#        '''from icecream import ic''',
-#        '''import click\n''',
-#        '''@click.group()''',
-#        '''def cli():''',
-#        '''    pass\n\n''',
-#        '''if __name__ == "__main__":''',
-#        '''    cli()''']
-#
-#    template = "\n".join(template)
-#    return template
-
-
 def generate_ebuild_template(description, homepage, app_path):
     return ebuild.format(description=description, homepage=homepage, app_path=app_path)
 
@@ -148,7 +112,8 @@ def generate_app_template():
 @click.pass_context
 def new(ctx, git_repo, group, branch, verbose, license, owner, owner_email, description, local):
 
-    assert git_repo.startswith('https://github.com/jakeogh/')
+    if not git_repo.startswith('https://github.com/jakeogh/'):
+        assert local
     git_repo_parsed = urlparse(git_repo)
     git_repo_path = git_repo_parsed.path
     if "." in git_repo_path:
@@ -238,15 +203,12 @@ def new(ctx, git_repo, group, branch, verbose, license, owner, owner_email, desc
 
 
 if __name__ == '__main__':
-    cli()
+    if CFG.keys():
+        cli(default_map=CFG)
+    else:
+        cli()
 
 
-#
-## drop into shell anywhere with:
-## import IPython; IPython.embed()
-## import pdb; pdb.set_trace()
-## from pudb import set_trace; set_trace(paused=False)
-## https://news.ycombinator.com/item?id=16611827 3.7
 #
 ##from pudb.remote import set_trace
 ##set_trace(term_size=(80, 24))
@@ -492,27 +454,6 @@ if __name__ == '__main__':
 #            seen.add(item)
 #            yield item
 #
-#
-#
-#def exec_command(command):
-#    tar_cmd_proc = subprocess.Popen(tar_command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False)
-#    cprint("executing tar_command:", tar_command)
-#    tar_cmd_proc_output_stdout, tar_cmd_proc_output_stderr = tar_cmd_proc.communicate(gpg_cmd_proc_output_stdout)
-#    cprint("tar_cmd_proc_output_stdout:")
-#    tar_cmd_proc_output_stdout_decoded = tar_cmd_proc_output_stdout.decode('utf-8')
-#    for line in tar_cmd_proc_output_stdout_decoded.split('\n'):
-#        cprint("STDOUT:", line)
-#
-#    cprint("tar_cmd_proc_output_stderr:")
-#    tar_cmd_proc_output_stderr_decoded = tar_cmd_proc_output_stderr.decode('utf-8')
-#    for line in tar_cmd_proc_output_stderr_decoded.split('\n'):
-#        cprint("STDERR:", line)
-#
-#    cprint("tar_cmd_proc.returncode:", tar_cmd_proc.returncode)
-#
-#    if tar_cmd_proc.returncode != 0:
-#        cprint("tar did not return 0")
-#        return False
 #
 #
 #def reverse_sort_list(domains):
