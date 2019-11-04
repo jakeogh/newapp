@@ -126,7 +126,7 @@ def new(ctx, git_repo, group, branch, apps_folder, verbose, license, owner, owne
 
     git_repo_path = Path(git_repo_path)
     app_name = git_repo_path.parts[-1]
-    app_path = apps_folder / app_name
+    app_path = Path(apps_folder) / Path(app_name)
     ic(app_path)
     if not app_path.exists():
         if not local:
