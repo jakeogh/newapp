@@ -206,6 +206,7 @@ def new(ctx, git_repo, group, branch, apps_folder, verbose, license, owner, owne
 
 if __name__ == '__main__':
     if CFG.keys():
+        print("using CFG:", CFG)
         cli(default_map=CFG)
     else:
         cli()
