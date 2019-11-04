@@ -15,7 +15,6 @@ from .templates import gitignore
 from .templates import edit_config
 
 #APPS = Path("/home/cfg/_myapps")
-OVERLAY = APPS / Path("jakeogh")
 
 CFG = click_read_config(click_instance=click, app_name='newapp', verbose=True)
 
@@ -114,6 +113,7 @@ def generate_app_template():
 def new(ctx, git_repo, group, branch, apps_folder, verbose, license, owner, owner_email, description, local):
     ic(apps_folder)
 
+    OVERLAY = apps_folder / Path("jakeogh")
     if not git_repo.startswith('https://github.com/jakeogh/'):
         assert local
     git_repo_parsed = urlparse(git_repo)
@@ -126,7 +126,7 @@ def new(ctx, git_repo, group, branch, apps_folder, verbose, license, owner, owne
 
     git_repo_path = Path(git_repo_path)
     app_name = git_repo_path.parts[-1]
-    app_path = APPS / app_name
+    app_path = apps_folder / app_name
     ic(app_path)
     if not app_path.exists():
         if not local:
