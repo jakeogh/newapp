@@ -14,7 +14,7 @@ from .templates import ebuild
 from .templates import gitignore
 from .templates import edit_config
 
-APPS = Path("/home/cfg/_myapps")
+#APPS = Path("/home/cfg/_myapps")
 OVERLAY = APPS / Path("jakeogh")
 
 CFG = click_read_config(click_instance=click, app_name='newapp', verbose=True)
@@ -103,6 +103,7 @@ def generate_app_template():
 @click.argument('git_repo', type=str, nargs=1)
 @click.argument('group', type=str, nargs=1)
 @click.argument('branch', type=str, callback=valid_branch, nargs=1, default="master")
+@click.option('--apps-folder', type=str)
 @click.option('--verbose', is_flag=True)
 @click.option('--license', type=click.Choice(["ISC"]), default="ISC")
 @click.option('--owner', type=str, default="Justin Keogh")
@@ -110,7 +111,8 @@ def generate_app_template():
 @click.option('--description', type=str, default="Short explination of what it does _here_")
 @click.option('--local', is_flag=True)
 @click.pass_context
-def new(ctx, git_repo, group, branch, verbose, license, owner, owner_email, description, local):
+def new(ctx, git_repo, group, branch, apps_folder, verbose, license, owner, owner_email, description, local):
+    ic(apps_folder)
 
     if not git_repo.startswith('https://github.com/jakeogh/'):
         assert local
