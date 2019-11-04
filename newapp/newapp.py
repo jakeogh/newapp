@@ -17,7 +17,7 @@ from .templates import edit_config
 APPS = Path("/home/cfg/_myapps")
 OVERLAY = APPS / Path("jakeogh")
 
-CFG = click_read_config(click_instance=click, app_name='newapp')
+CFG = click_read_config(click_instance=click, app_name='newapp', verbose=True)
 
 @click.group()
 def cli():
