@@ -105,24 +105,25 @@ def generate_app_template():
 
 
 @cli.command()
-#@click.option('--new-apppath', type=click.Path(exists=False, file_okay=False, dir_okay=False, writable=False, readable=True, resolve_path=True, allow_dash=False, path_type=None))
 @click.argument('git_repo', type=str, nargs=1)
 @click.argument('group', type=str, nargs=1)
 @click.argument('branch', type=str, callback=valid_branch, nargs=1, default="master")
 @click.option('--apps-folder', type=str, required=True)
+@click.option('--gentoo-overlay-repo', type=str, required=True)
+@click.option('--github-user', type=str, required=True)
 @click.option('--verbose', is_flag=True)
 @click.option('--license', type=click.Choice(["ISC"]), default="ISC")
-@click.option('--owner', type=str, default="Justin Keogh")
-@click.option('--owner-email', type=str, default="github.com@v6y.net")
+@click.option('--owner', type=str, required=True)
+@click.option('--owner-email', type=str, required=True)
 @click.option('--description', type=str, default="Short explination of what it does _here_")
 @click.option('--local', is_flag=True)
+@click.option('--template', is_flag=True)
 @click.pass_context
-def new(ctx, git_repo, group, branch, apps_folder, verbose, license, owner, owner_email, description, local):
+def new(ctx, git_repo, group, branch, apps_folder, gentoo_overlay_repo, github_user, verbose, license, owner, owner_email, description, local, template):
     ic(apps_folder)
 
-    OVERLAY = Path(apps_folder) / Path("jakeogh")
-    if not git_repo.startswith('https://github.com/jakeogh/'):
-        assert local
+    if not git_repo.startswith('https://github.com/{}/'.format(github_user)):
+        assert template
     git_repo_parsed = urlparse(git_repo)
     git_repo_path = git_repo_parsed.path
     if "." in git_repo_path:
@@ -195,7 +196,7 @@ def new(ctx, git_repo, group, branch, apps_folder, verbose, license, owner, owne
     else:
         eprint("Not creating new app, {} already exists.".format(app_path))
 
-    ebuild_path = OVERLAY / Path(group) / Path(app_name)
+    ebuild_path = Path(gentoo_overlay_repo) / Path(group) / Path(app_name)
     if not ebuild_path.exists():
         os.makedirs(ebuild_path, exist_ok=False)
         os.chdir(ebuild_path)
@@ -209,15 +210,6 @@ def new(ctx, git_repo, group, branch, apps_folder, verbose, license, owner, owne
         write_unique_line_to_file(file_to_write=accept_keywords, line=accept_keyword, make_new=False)
     else:
         eprint("Not creating new ebuild, {} already exists.".format(ebuild_path))
-
-#
-#if __name__ == '__main__':
-#    if CFG.keys():
-#        print("using CFG:", CFG)
-#        cli(default_map=CFG)
-#    else:
-#        cli()
-
 
 #
 ##from pudb.remote import set_trace
