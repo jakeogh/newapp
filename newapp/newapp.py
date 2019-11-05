@@ -16,6 +16,14 @@ from .templates import edit_config
 
 #APPS = Path("/home/cfg/_myapps")
 
+CFG = click_read_config(click_instance=click, app_name='newapp', verbose=True)
+
+# https://github.com/mitsuhiko/click/issues/441
+CONTEXT_SETTINGS = dict(default_map=CFG)
+    #dict(help_option_names=['--help'],
+    #     terminal_width=shutil.get_terminal_size((80, 20)).columns)
+
+
 
 @click.group()
 def cli():
@@ -202,14 +210,13 @@ def new(ctx, git_repo, group, branch, apps_folder, verbose, license, owner, owne
     else:
         eprint("Not creating new ebuild, {} already exists.".format(ebuild_path))
 
-
-if __name__ == '__main__':
-    CFG = click_read_config(click_instance=click, app_name='newapp', verbose=True)
-    if CFG.keys():
-        print("using CFG:", CFG)
-        cli(default_map=CFG)
-    else:
-        cli()
+#
+#if __name__ == '__main__':
+#    if CFG.keys():
+#        print("using CFG:", CFG)
+#        cli(default_map=CFG)
+#    else:
+#        cli()
 
 
 #
