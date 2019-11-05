@@ -95,7 +95,7 @@ if not sys.version_info[0] == 3:
 
 dependencies = ["icecream", "click", "colorama"]
 
-config = {
+config = {{
     "version": "0.1",
     "name": "{package_name}",
     "url": "{url}",
@@ -109,12 +109,12 @@ config = {
     "zip_safe": False,
     "platforms": "any",
     "install_requires": dependencies,
-    "entry_points": {
+    "entry_points": {{
         "console_scripts": [
             "{package_name}={package_name}.{package_name}:cli",
         ],
-    },
-}
+    }},
+}}
 
 setup(**config)'''
 
