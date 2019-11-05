@@ -25,7 +25,7 @@ CONTEXT_SETTINGS = dict(default_map=CFG)
 
 
 
-@click.group()
+@click.group(context_settings=CONTEXT_SETTINGS)
 def cli():
     pass
 
