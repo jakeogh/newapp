@@ -84,3 +84,37 @@ gitignore = '''.git
 .edit_config
 enable_github.sh
 '''
+
+setup_py='''# -*- coding: utf-8 -*-
+
+import sys
+import fastentrypoints
+from setuptools import find_packages, setup
+if not sys.version_info[0] == 3:
+    sys.exit("Python 3 is required. Use: \'python3 setup.py install\'")
+
+dependencies = ["icecream", "click", "colorama"]
+
+config = {
+    "version": "0.1",
+    "name": "{package_name}",
+    "url": "{url}",
+    "license": "{license}",
+    "author": "{owner}",
+    "author_email": "{owner_email}",
+    "description": "{description}",
+    "long_description": __doc__,
+    "packages": find_packages(exclude=['tests']),
+    "include_package_data": True,
+    "zip_safe": False,
+    "platforms": "any",
+    "install_requires": dependencies,
+    "entry_points": {
+        "console_scripts": [
+            "{package_name}={package_name}.{package_name}:cli",
+        ],
+    },
+}
+
+setup(**config)'''
+
