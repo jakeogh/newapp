@@ -48,45 +48,6 @@ def generate_edit_config(package_name, package_group, local):
 
 
 def generate_setup_py(url, package_name, license, owner, owner_email, description):
-    #setup_py = [
-    #    '''# -*- coding: utf-8 -*-''',
-    #    '''\nimport sys''',
-    #    '''import fastentrypoints''',
-    #    '''from setuptools import find_packages, setup''',
-    #    '''if not sys.version_info[0] == 3:\n    sys.exit("Python 3 is required. Use: \\'python3 setup.py install\\'")''',
-    #    "\n"]
-
-    #setup_py = "\n".join(setup_py)
-    #setup_py += 'dependencies = ["icecream", "click", "colorama"]\n\n'
-
-    #config = [
-    #    '''    "version": "0.01"''',
-    #    '''    "name": "{}"'''.format(package_name),
-    #    '''    "url": "{}"'''.format(url),
-    #    '''    "license": "{}"'''.format(license),
-    #    '''    "author": "{}"'''.format(owner),
-    #    '''    "author_email": "{}"'''.format(owner_email),
-    #    '''    "description": "{}"'''.format(description),
-    #    '''    "long_description": __doc__''',
-    #    '''    "packages": find_packages(exclude=['tests'])''',
-    #    '''    "include_package_data": True''',
-    #    '''    "zip_safe": False''',
-    #    '''    "platforms": "any"''',
-    #    '''    "install_requires": dependencies,''']
-
-    #config = ",\n".join(config)
-    #config = '''config = {\n''' + config
-
-    #entry_points = [
-    #    '''\n    "entry_points": {''',
-    #    '''        "console_scripts": [''',
-    #    '''            "{0}={0}.{0}:cli",'''.format(package_name),
-    #    '''        ],''',
-    #    '''    },''']
-    #entry_points = "\n".join(entry_points)
-
-    #setup_py = setup_py + config + entry_points + '''\n}\n\n'''
-    #setup_py += '''setup(**config)\n'''
     return setup_py.format(package_name=package_name, url=url, license=license, owner=owner, owner_email=owner_email, description=description)
 
 
@@ -164,29 +125,30 @@ def new(ctx, git_repo, group, branch, apps_folder, gentoo_overlay_repo, github_u
         with open(".edit_config", 'x') as fh:
             fh.write(generate_edit_config(package_name=app_name, package_group=group, local=local))
 
-        with open("setup.py", 'x') as fh:
-            fh.write(generate_setup_py(package_name=app_name,
-                                       owner=owner,
-                                       owner_email=owner_email,
-                                       description=description,
-                                       license=license,
-                                       url=git_repo))
+        if not template:
+            with open("setup.py", 'x') as fh:
+                fh.write(generate_setup_py(package_name=app_name,
+                                           owner=owner,
+                                           owner_email=owner_email,
+                                           description=description,
+                                           license=license,
+                                           url=git_repo))
 
-        template = generate_gitignore_template()
-        with open('.gitignore', 'x') as fh:
-            fh.write(template)
+            template = generate_gitignore_template()
+            with open('.gitignore', 'x') as fh:
+                fh.write(template)
 
-        os.system("fastep")
+            os.system("fastep")
 
-        os.chdir(app_name)
-        template = generate_app_template()
-        with open(app_name + '.py', 'x') as fh:
-            fh.write(template)
+            os.chdir(app_name)
+            app_template = generate_app_template()
+            with open(app_name + '.py', 'x') as fh:
+                fh.write(app_template)
 
-        os.system("touch __init__.py")
+            os.system("touch __init__.py")
 
-        os.chdir(app_path)
-        os.system("git add --all")
+            os.chdir(app_path)
+            os.system("git add --all")
     else:
         eprint("Not creating new app, {} already exists.".format(app_path))
 
@@ -216,12 +178,6 @@ def new(ctx, git_repo, group, branch, apps_folder, gentoo_overlay_repo, github_u
 ##
 ##sys.excepthook = log_uncaught_exceptions
 #
-##https://github.com/Lukasa/utils/blob/master/two_digit_numbers.py
-#
-#def main(path):
-#    print(path)
-#    with open(path, 'rb') as fh:
-#        data = fh.read()
 #
 ## handle stdin or a filename as input
 #if __name__ == '__main__':
@@ -263,47 +219,6 @@ def new(ctx, git_repo, group, branch, apps_folder, gentoo_overlay_repo, github_u
 #if (not filedir[-1] == '/'):
 #    filedir += '/'
 #files = os.listdir(filedir)
-#
-#
-#
-##standard example:
-#def main(dsn):
-#    "Do something"
-#    print("ok")
-#
-#if __name__ == '__main__':
-#    import sys
-#    n = len(sys.argv[1:])
-#    if n == 0:
-#        sys.exit('usage: python %s dsn' % sys.argv[0])
-#    elif n == 1:
-#        main(sys.argv[1])
-#    else:
-#        sys.exit('Unrecognized arguments: %s' % ' '.join(sys.argv[2:]))
-#
-#
-##argparse example:
-#def main(dsn):
-#    "Do something"
-#    print(dsn)
-#
-#if __name__ == '__main__':
-#    import argparse
-#    p = argparse.ArgumentParser()
-#    p.add_argument('dsn')
-#    arg = p.parse_args()
-#    main(arg.dsn)
-#
-#
-##plac example (uses argparse): -h and --help work
-#def main(dsn):
-#    "Do something"
-#    print(dsn)
-#
-#if __name__ == '__main__':
-#    import plac
-#    plac.call(main)
-#
 #
 #def debug(func):
 #    msg = func.__qualname__
@@ -435,12 +350,6 @@ def new(ctx, git_repo, group, branch, apps_folder, gentoo_overlay_repo, github_u
 #
 #    report = "%s %s %s"%(excName, excArgsString, excTbString)
 #    return(report)
-#
-#
-#
-##formatting strings
-#
-#
 #
 ##http://stackoverflow.com/questions/1549509/remove-duplicates-in-a-list-while-keeping-its-order-python
 #def unique(seq):
