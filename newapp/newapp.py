@@ -124,20 +124,16 @@ def new(ctx, git_repo, group, branch, apps_folder, gentoo_overlay_repo, github_u
 
     if not git_repo.startswith('https://github.com/{}/'.format(github_user)):
         assert template
-    git_repo_parsed = urlparse(git_repo)
-    git_repo_path = git_repo_parsed.path
-    if "." in git_repo_path:
-        if git_repo_path.endswith('.git'):
-            git_repo_path = git_repo_path[:-4]
-        else:
-            assert False
+    if git_repo.endswith('.git'):
+        git_repo = git_repo[:-4]
 
-    git_repo_path = Path(git_repo_path)
+    git_repo_parsed = urlparse(git_repo)
+    git_repo_path = Path(git_repo_parsed.path)
     app_name = git_repo_path.parts[-1]
     app_path = Path(apps_folder) / Path(app_name)
     ic(app_path)
     if not app_path.exists():
-        if not local:
+        if template:
             git_clone_cmd = " ".join(["git clone", git_repo, str(app_path)])
             print(git_clone_cmd)
             os.system(git_clone_cmd)
