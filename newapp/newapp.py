@@ -23,11 +23,6 @@ CONTEXT_SETTINGS = dict(default_map=CFG)
     #     terminal_width=shutil.get_terminal_size((80, 20)).columns)
 
 
-@click.group(context_settings=CONTEXT_SETTINGS)
-def cli():
-    pass
-
-
 def valid_branch(ctx, param, value):
     eprint("value:", value)
     branch_check_cmd = "git check-ref-format --branch " + value
@@ -78,7 +73,7 @@ def generate_app_template():
 @click.option('--local', is_flag=True)
 @click.option('--template', is_flag=True)
 @click.pass_context
-def new(ctx, git_repo, group, branch, apps_folder, gentoo_overlay_repo, github_user, verbose, license, owner, owner_email, description, local, template):
+def cli(ctx, git_repo, group, branch, apps_folder, gentoo_overlay_repo, github_user, verbose, license, owner, owner_email, description, local, template):
     ic(apps_folder)
 
     if not git_repo.startswith('https://github.com/{}/'.format(github_user)):
