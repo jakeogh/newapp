@@ -39,6 +39,8 @@ def valid_branch(ctx, param, value):
 def generate_edit_config(package_name, package_group, local):
     if local:
         remote = "#"
+    else:
+        remote = ''
     remote += '''remote="https://github.com/jakeogh/{}.git"'''.format(package_name)
 
     optional_blank_remote = ''
