@@ -23,6 +23,11 @@ CONTEXT_SETTINGS = dict(default_map=CFG)
     #     terminal_width=shutil.get_terminal_size((80, 20)).columns)
 
 
+@click.group(context_settings=CONTEXT_SETTINGS)
+def cli():
+    pass
+
+
 def valid_branch(ctx, param, value):
     eprint("value:", value)
     branch_check_cmd = "git check-ref-format --branch " + value
@@ -58,7 +63,7 @@ def generate_app_template():
     return app
 
 
-@click.command(context_settings=CONTEXT_SETTINGS)
+@cli.command()
 @click.argument('git_repo', type=str, nargs=1)
 @click.argument('group', type=str, nargs=1)
 @click.argument('branch', type=str, callback=valid_branch, nargs=1, default="master")
