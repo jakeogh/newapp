@@ -15,7 +15,7 @@ from .templates import gitignore
 from .templates import edit_config
 from .templates import setup_py
 
-CFG = click_read_config(click_instance=click, app_name='newapp', verbose=True)
+CFG = click_read_config(click_instance=click, app_name='newapp', verbose=False)
 
 # https://github.com/mitsuhiko/click/issues/441
 CONTEXT_SETTINGS = dict(default_map=CFG)
