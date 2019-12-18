@@ -66,7 +66,7 @@ def generate_app_template():
 
 
 @cli.command()
-@click.argument('git_repo', type=str, nargs=1)
+@click.argument('git_repo_url', type=str, nargs=1)
 @click.argument('group', type=str, nargs=1)
 @click.argument('branch', type=str, callback=valid_branch, nargs=1, default="master")
 @click.option('--apps-folder', type=str, required=True)
@@ -80,13 +80,13 @@ def generate_app_template():
 @click.option('--local', is_flag=True)
 @click.option('--template', is_flag=True)
 @click.pass_context
-def new(ctx, git_repo, group, branch, apps_folder, gentoo_overlay_repo, github_user, verbose, license, owner, owner_email, description, local, template):
+def new(ctx, git_repo_url, group, branch, apps_folder, gentoo_overlay_repo, github_user, verbose, license, owner, owner_email, description, local, template):
     ic(apps_folder)
 
-    if not git_repo.startswith('https://github.com/{}/'.format(github_user)):
+    if not git_repo_url.startswith('https://github.com/{}/'.format(github_user)):
         assert template
-    if git_repo.endswith('.git'):
-        git_repo = git_repo[:-4]
+    if git_repo_url.endswith('.git'):
+        git_repo = git_repo_url[:-4]
 
     git_repo_parsed = urlparse(git_repo)
     git_repo_path = Path(git_repo_parsed.path)
