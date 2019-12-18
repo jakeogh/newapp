@@ -27,6 +27,7 @@ ic.lineWrapWidth, _ = get_terminal_size((80, 20))
 
 
 # DONT CHANGE FUNC NAME
+#@click.command()
 @click.group()
 def cli():
     pass
