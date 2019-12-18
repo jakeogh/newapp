@@ -86,16 +86,16 @@ def new(ctx, git_repo_url, group, branch, apps_folder, gentoo_overlay_repo, gith
     if not git_repo_url.startswith('https://github.com/{}/'.format(github_user)):
         assert template
     if git_repo_url.endswith('.git'):
-        git_repo = git_repo_url[:-4]
+        git_repo_url = git_repo_url[:-4]
 
-    git_repo_parsed = urlparse(git_repo)
-    git_repo_path = Path(git_repo_parsed.path)
-    app_name = git_repo_path.parts[-1]
+    git_repo_url_parsed = urlparse(git_repo_url)
+    git_repo_url_path = Path(git_repo_url_parsed.path)
+    app_name = git_repo_url_path.parts[-1]
     app_path = Path(apps_folder) / Path(app_name)
     ic(app_path)
     if not app_path.exists():
         if template:
-            git_clone_cmd = " ".join(["git clone", git_repo, str(app_path)])
+            git_clone_cmd = " ".join(["git clone", git_repo_url, str(app_path)])
             print(git_clone_cmd)
             os.system(git_clone_cmd)
             os.chdir(app_path)
@@ -134,7 +134,7 @@ def new(ctx, git_repo_url, group, branch, apps_folder, gentoo_overlay_repo, gith
                                            owner_email=owner_email,
                                            description=description,
                                            license=license,
-                                           url=git_repo))
+                                           url=git_repo_url))
 
             template = generate_gitignore_template()
             with open('.gitignore', 'x') as fh:
@@ -161,7 +161,7 @@ def new(ctx, git_repo_url, group, branch, apps_folder, gentoo_overlay_repo, gith
         ebuild_name = app_name + "-9999.ebuild"
 
         with open(ebuild_name, 'w') as fh:
-            fh.write(generate_ebuild_template(description=description, homepage=git_repo, app_path=app_path))
+            fh.write(generate_ebuild_template(description=description, homepage=git_repo_url, app_path=app_path))
         os.system("git add " + ebuild_name)
         accept_keyword = "={}/{}-9999 **\n".format(group, app_name)
         accept_keywords = Path("/etc/portage/package.accept_keywords")
