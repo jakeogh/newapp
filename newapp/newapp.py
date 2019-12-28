@@ -66,6 +66,16 @@ def generate_app_template():
 
 
 @cli.command()
+@click.argument("app", type=str)
+@click.pass_context
+def nineify(ctx, app):
+    assert '/' in app
+    group, name = app.split('/')
+    ic(group)
+    ic(name)
+
+
+@cli.command()
 @click.argument('git_repo_url', type=str, nargs=1)
 @click.argument('group', type=str, nargs=1)
 @click.argument('branch', type=str, callback=valid_branch, nargs=1, default="master")
