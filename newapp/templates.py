@@ -44,6 +44,7 @@ ic.lineWrapWidth, _ = get_terminal_size((80, 20))
 
 # DONT CHANGE FUNC NAME
 #@click.command()
+#@click.argument("sysskel", type=click.Path(exists=False, dir_okay=True, path_type=str, allow_dash=False), nargs=1, required=True)
 @click.group()
 def cli():
     pass

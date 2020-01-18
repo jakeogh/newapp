@@ -176,6 +176,8 @@ def new(ctx, git_repo_url, group, branch, apps_folder, gentoo_overlay_repo, gith
         os.system("ebuild {} manifest".format(ebuild_name))
         os.system("git add *")
         os.system("git commit -m 'newapp {}'".format(app_name))
+        os.system("git push")
+        os.system("sudo emaint sync -A")
         accept_keyword = "={}/{}-9999 **\n".format(group, app_name)
         accept_keywords = Path("/etc/portage/package.accept_keywords")
         write_unique_line_to_file(file_to_write=accept_keywords, line=accept_keyword, make_new=False)
