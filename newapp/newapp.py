@@ -95,7 +95,8 @@ def nineify(ctx, app):
 def new(ctx, git_repo_url, group, branch, apps_folder, gentoo_overlay_repo, github_user, verbose, license, owner, owner_email, description, local, template):
     ic(apps_folder)
 
-    assert git_repo_url.startswith('https://github.com/{}/'.format(github_user))
+    if not template:
+        assert git_repo_url.startswith('https://github.com/{}/'.format(github_user))
 
     if git_repo_url.endswith('.git'):
         git_repo_url = git_repo_url[:-4]
