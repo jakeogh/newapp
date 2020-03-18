@@ -99,7 +99,7 @@ def new(ctx, git_repo_url, group, branch, apps_folder, gentoo_overlay_repo, gith
     if git_repo_url.endswith('.git'):
         git_repo_url = git_repo_url[:-4]
 
-    assert '/' in group
+    assert '/' not in group
     assert ':' not in group
 
     git_repo_url_parsed = urlparse(git_repo_url)
