@@ -89,7 +89,8 @@ def nineify(ctx, app):
 @click.option('--owner-email', type=str, required=True)
 @click.option('--description', type=str, default="Short explination of what it does _here_")
 @click.option('--local', is_flag=True)
-@click.option('--template', type=str)
+@click.option('--template', is_flag=True)
+#@click.option('--template', type=str)
 @click.pass_context
 def new(ctx, git_repo_url, group, branch, apps_folder, gentoo_overlay_repo, github_user, verbose, license, owner, owner_email, description, local, template):
     ic(apps_folder)
@@ -110,7 +111,7 @@ def new(ctx, git_repo_url, group, branch, apps_folder, gentoo_overlay_repo, gith
     if not app_path.exists():
         if template:
             git_clone_cmd = " ".join(["git clone", git_repo_url, str(app_path)])
-            print(git_clone_cmd)
+            ic(git_clone_cmd)
             os.system(git_clone_cmd)
             os.chdir(app_path)
             if template.startswith('https://github.com/'):
@@ -125,7 +126,7 @@ def new(ctx, git_repo_url, group, branch, apps_folder, gentoo_overlay_repo, gith
             os.system("git init")
 
         repo_config_command = "git remote set-url origin git@github.com:jakeogh/" + app_name + '.git'
-        print(repo_config_command)
+        ic(repo_config_command)
         if not local:
             os.system(repo_config_command)
         else:
@@ -139,7 +140,7 @@ def new(ctx, git_repo_url, group, branch, apps_folder, gentoo_overlay_repo, gith
 
         if branch != "master":
             branch_cmd = "git checkout -b " + '"' + branch + '"'
-            print(branch_cmd)
+            ic(branch_cmd)
             os.system(branch_cmd)
 
         with open(".edit_config", 'x') as fh:
