@@ -115,11 +115,11 @@ def new(ctx, git_repo_url, group, branch, apps_folder, gentoo_overlay_repo, gith
             ic(git_clone_cmd)
             os.system(git_clone_cmd)
             os.chdir(app_path)
-            if template.startswith('https://github.com/'):
-                git_fork_cmd = "hub fork"
-                os.system(git_fork_cmd)
-            else:
-                raise NotImplementedError
+            #if template.startswith('https://github.com/'):
+            git_fork_cmd = "hub fork"
+            os.system(git_fork_cmd)
+            #else:
+            #    raise NotImplementedError
         else:
             os.makedirs(app_path, exist_ok=False)
             os.chdir(app_path)
