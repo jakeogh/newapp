@@ -8,6 +8,7 @@ import click
 from kcl.printops import eprint
 from kcl.fileops import write_unique_line_to_file
 from kcl.configops import click_read_config
+from kcl.commandops import run_command
 from icecream import ic
 from .templates import app
 from .templates import ebuild
@@ -88,13 +89,13 @@ def nineify(ctx, app):
 @click.option('--owner-email', type=str, required=True)
 @click.option('--description', type=str, default="Short explination of what it does _here_")
 @click.option('--local', is_flag=True)
-@click.option('--template', is_flag=True)
+@click.option('--template', type=str)
 @click.pass_context
 def new(ctx, git_repo_url, group, branch, apps_folder, gentoo_overlay_repo, github_user, verbose, license, owner, owner_email, description, local, template):
     ic(apps_folder)
 
-    if not git_repo_url.startswith('https://github.com/{}/'.format(github_user)):
-        assert template
+    assert git_repo_url.startswith('https://github.com/{}/'.format(github_user))
+
     if git_repo_url.endswith('.git'):
         git_repo_url = git_repo_url[:-4]
 
@@ -109,7 +110,11 @@ def new(ctx, git_repo_url, group, branch, apps_folder, gentoo_overlay_repo, gith
             print(git_clone_cmd)
             os.system(git_clone_cmd)
             os.chdir(app_path)
-            #os.makedirs(app_name, exist_ok=False)  # hm
+            if template.startswith('https://github.com/'):
+                git_fork_cmd = "hub fork"
+                os.system(git_fork_cmd)
+            else:
+                raise NotImplementedError
         else:
             os.makedirs(app_path, exist_ok=False)
             os.chdir(app_path)

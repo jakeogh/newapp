@@ -45,8 +45,9 @@ ic.lineWrapWidth, _ = get_terminal_size((80, 20))
 # DONT CHANGE FUNC NAME
 #@click.command()
 #@click.argument("sysskel", type=click.Path(exists=False, dir_okay=True, path_type=str, allow_dash=False), nargs=1, required=True)
+@click.option('--verbose', is_flag=True)
 @click.group()
-def cli():
+def cli(verbose):
     pass
 
 
@@ -59,7 +60,7 @@ if __name__ == "__main__":
 # from pudb import set_trace; set_trace(paused=False)'''
 
 
-ebuild = '''# Copyright 1999-2019 Gentoo Authors
+ebuild = '''# Copyright 1999-2020 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
