@@ -74,8 +74,13 @@ def nineify(ctx, app):
     group, name = app.split('/')
     ic(group)
     ic(name)
-    template_path = Path("/var/db/repos/gentoo") / Path(group) / Path(name)
+    relative_destination = Path(group) / Path(name)
+    template_path = Path("/var/db/repos/gentoo") / relative_destination
     ic(template_path)
+    local_overlay = Path("/home/cfg/_myapps/jakeogh")
+    destination = local_overlay / relative_destination
+    ic(template_path, destination)
+    #shutil.copytree(template_path, destination)
 
 
 @cli.command()
