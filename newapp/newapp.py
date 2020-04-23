@@ -74,6 +74,8 @@ def nineify(ctx, app):
     group, name = app.split('/')
     ic(group)
     ic(name)
+    template_path = Path("/var/db/repos/gentoo") / Path(group) / Path(name)
+    ic(template_path)
 
 
 @cli.command()
