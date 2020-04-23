@@ -80,7 +80,7 @@ def nineify(ctx, app):
     local_overlay = Path("/home/cfg/_myapps/jakeogh")
     destination = local_overlay / relative_destination
     ic(template_path, destination)
-    #shutil.copytree(template_path, destination)
+    shutil.copytree(template_path, destination)
 
 
 @cli.command()
