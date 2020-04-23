@@ -2,6 +2,7 @@
 # -*- coding: utf8 -*-
 
 import os
+import shutil
 from pathlib import Path
 from urllib.parse import urlparse
 import click
