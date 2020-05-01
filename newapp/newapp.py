@@ -138,7 +138,8 @@ def new(ctx, git_repo_url, group, branch, apps_folder, gentoo_overlay_repo, gith
             os.makedirs(app_name, exist_ok=False)
             os.system("git init")
 
-        repo_config_command = "git remote set-url origin git@github.com:jakeogh/" + app_name + '.git'
+        #repo_config_command = "git remote set-url origin git@github.com:jakeogh/" + app_name + '.git'
+        repo_config_command = "git remote add origin git@github.com:jakeogh/" + app_name + '.git'
         ic(repo_config_command)
         if not local:
             os.system(repo_config_command)
