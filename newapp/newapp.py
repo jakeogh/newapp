@@ -30,10 +30,14 @@ def cli():
     pass
 
 
-def get_url_for_overlay(overlay):
+def get_url_for_overlay(overlay, verbose=False):
     command = ["eselect", "repository", "list"]
     command_output = run_command(command)
+    if verbose:
+        ic(command_output)
     for line in command_output:
+        if verbose:
+            ic(line)
         index, repo_name, repo_url = [item for item in line.split() if item]
         repo_url = repo_url.split("(")[-1].split(")")[0]
         if repo_name == overlay:
@@ -81,7 +85,7 @@ def generate_app_template():
 @click.argument('overlay_name', type=str, nargs=1)
 @click.pass_context
 def get_overlay_url(ctx, overlay_name):
-    url = get_url_for_overlay(overlay_name)
+    url = get_url_for_overlay(overlay_name, verbose=ctx.obj['verbose'])
     print(url)
 
 
@@ -112,16 +116,30 @@ def nineify(ctx, app):
 @click.option('--apps-folder', type=str, required=True)
 @click.option('--gentoo-overlay-repo', type=str, required=True)
 @click.option('--github-user', type=str, required=True)
-@click.option('--verbose', is_flag=True)
 @click.option('--license', type=click.Choice(["ISC"]), default="ISC")
 @click.option('--owner', type=str, required=True)
 @click.option('--owner-email', type=str, required=True)
 @click.option('--description', type=str, default="Short explination of what it does _here_")
 @click.option('--local', is_flag=True)
 @click.option('--template', is_flag=True)
+@click.option('--verbose', is_flag=True)
 #@click.option('--template', type=str)
 @click.pass_context
-def new(ctx, git_repo_url, group, branch, apps_folder, gentoo_overlay_repo, github_user, verbose, license, owner, owner_email, description, local, template):
+def new(ctx,
+        git_repo_url,
+        group, branch,
+        apps_folder,
+        gentoo_overlay_repo,
+        github_user,
+        verbose,
+        license,
+        owner,
+        owner_email,
+        description,
+        local,
+        template):
+
+    ctx.obj['verbose'] = verbose
     ic(apps_folder)
 
     if not template:
