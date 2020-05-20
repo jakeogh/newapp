@@ -34,7 +34,7 @@ def get_url_for_overlay(overlay):
     command = ["eselect", "repository", "list"]
     command_output = run_command(command)
     for line in command_output:
-        index, repo_name, repo_url = line.split()
+        index, repo_name, repo_url = [item for item in line.split() if item]
         repo_url = repo_url.split("(")[-1].split(")")[0]
         if repo_name == overlay:
             return repo_url
