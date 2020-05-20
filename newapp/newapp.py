@@ -28,7 +28,7 @@ CONTEXT_SETTINGS = dict(default_map=CFG)
 @click.group(context_settings=CONTEXT_SETTINGS)
 @click.option('--verbose', is_flag=True)
 @click.pass_context
-def cli(ctx):
+def cli(ctx, verbose):
     ctx.obj['verbose'] = verbose
 
 
