@@ -29,7 +29,8 @@ CONTEXT_SETTINGS = dict(default_map=CFG)
 @click.option('--verbose', is_flag=True)
 @click.pass_context
 def cli(ctx, verbose):
-    ctx.obj.verbose = verbose
+    ctx.ensure_object(dict)
+    ctx.obj['verbose'] = verbose
 
 
 def get_url_for_overlay(overlay, verbose=False):
