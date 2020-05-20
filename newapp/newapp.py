@@ -135,7 +135,7 @@ def nineify(ctx, app):
 @click.option('--description', type=str, default="Short explination of what it does _here_")
 @click.option('--local', is_flag=True)
 @click.option('--template', is_flag=True)
-#@click.option('--template', type=str)
+@click.option('--rename', type=str)
 @click.pass_context
 def new(ctx,
         git_repo_url,
@@ -149,12 +149,16 @@ def new(ctx,
         owner_email,
         description,
         local,
-        template):
+        template,
+        rename):
 
     ic(apps_folder)
 
     if not template:
         assert git_repo_url.startswith('https://github.com/{}/'.format(github_user))
+
+    if rename:
+        assert template
 
     if git_repo_url.endswith('.git'):
         git_repo_url = git_repo_url[:-4]
@@ -165,6 +169,8 @@ def new(ctx,
     git_repo_url_parsed = urlparse(git_repo_url)
     git_repo_url_path = Path(git_repo_url_parsed.path)
     app_name = git_repo_url_path.parts[-1]
+    if rename:
+        app_name = rename
     app_path = Path(apps_folder) / Path(app_name)
     ic(app_path)
     if not app_path.exists():
