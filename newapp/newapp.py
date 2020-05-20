@@ -30,6 +30,16 @@ def cli():
     pass
 
 
+def get_url_for_overlay(overlay):
+    command = ["eselect", "repository", "list"]
+    command_output = run_command(command)
+    for line in command_output:
+        index, repo_name, repo_url = line.split()
+        repo_url = repo_url.split("(")[-1].split(")")[0]
+        if repo_name == overlay:
+            return repo_url
+
+
 def valid_branch(ctx, param, value):
     eprint("value:", value)
     branch_check_cmd = "git check-ref-format --branch " + value
@@ -68,6 +78,14 @@ def generate_app_template():
 
 
 @cli.command()
+@click.argument('overlay_name', type=str, nargs=1)
+@click.pass_context
+def get_overlay_url(ctx, overlay_name):
+    url = get_url_for_overlay(overlay_name)
+    print(url)
+
+
+@cli.command()
 @click.argument("app", type=str)
 @click.pass_context
 def nineify(ctx, app):
@@ -85,7 +103,6 @@ def nineify(ctx, app):
         shutil.copytree(template_path, destination)
     except FileExistsError as e:
         ic(e)
-
 
 
 @cli.command()
