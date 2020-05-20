@@ -26,8 +26,10 @@ CONTEXT_SETTINGS = dict(default_map=CFG)
 
 
 @click.group(context_settings=CONTEXT_SETTINGS)
-def cli():
-    pass
+@click.option('--verbose', is_flag=True)
+@click.pass_context
+def cli(ctx):
+    ctx.obj['verbose'] = verbose
 
 
 def get_url_for_overlay(overlay, verbose=False):
@@ -122,7 +124,6 @@ def nineify(ctx, app):
 @click.option('--description', type=str, default="Short explination of what it does _here_")
 @click.option('--local', is_flag=True)
 @click.option('--template', is_flag=True)
-@click.option('--verbose', is_flag=True)
 #@click.option('--template', type=str)
 @click.pass_context
 def new(ctx,
@@ -139,7 +140,6 @@ def new(ctx,
         local,
         template):
 
-    ctx.obj['verbose'] = verbose
     ic(apps_folder)
 
     if not template:
