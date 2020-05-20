@@ -143,7 +143,6 @@ def new(ctx,
         apps_folder,
         gentoo_overlay_repo,
         github_user,
-        verbose,
         license,
         owner,
         owner_email,
@@ -151,6 +150,8 @@ def new(ctx,
         local,
         template,
         rename):
+
+    verbose = ctx.obj['verbose']
 
     ic(apps_folder)
 
