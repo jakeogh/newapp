@@ -16,6 +16,9 @@ from .templates import ebuild
 from .templates import gitignore
 from .templates import edit_config
 from .templates import setup_py
+ic.configureOutput(includeContext=True)
+from shutil import get_terminal_size
+ic.lineWrapWidth, _ = get_terminal_size((80, 20))
 
 CFG = click_read_config(click_instance=click, app_name='newapp', verbose=False)
 
