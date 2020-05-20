@@ -44,7 +44,7 @@ def get_url_for_overlay(overlay, verbose=False):
         ic(type(command_output))
         ic(command_output)
 
-    for line in command_output:
+    for line in command_output[1:]:
         if verbose:
             ic(line)
         index, repo_name, repo_url = [item for item in line.split() if item]
