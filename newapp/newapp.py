@@ -39,6 +39,7 @@ def cli(ctx, verbose):
 def get_url_for_overlay(overlay, verbose=False):
     command = ["eselect", "repository", "list"]
     command_output = run_command(command, str_output=True)
+    command_output = command_output.split('\n')
     if verbose:
         ic(type(command_output))
         ic(command_output)
