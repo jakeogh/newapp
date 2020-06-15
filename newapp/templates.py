@@ -41,7 +41,7 @@ ic.configureOutput(includeContext=True)
 ic.lineWrapWidth, _ = get_terminal_size((80, 20))
 # import IPython; IPython.embed()
 # import pdb; pdb.set_trace()
-# from pudb import set_trace; set_trace(paused=False)'''
+# from pudb import set_trace; set_trace(paused=False)
 
 
 # DONT CHANGE FUNC NAME
@@ -56,7 +56,7 @@ def cli(verbose):
 if __name__ == "__main__":
     cli()
 
-
+'''
 
 ebuild = '''# Copyright 1999-2020 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
