@@ -35,11 +35,13 @@ import os
 import sys
 import click
 from pathlib import Path
+from shutil import get_terminal_size
 from icecream import ic
 ic.configureOutput(includeContext=True)
-from shutil import get_terminal_size
 ic.lineWrapWidth, _ = get_terminal_size((80, 20))
-#ic.disable()
+# import IPython; IPython.embed()
+# import pdb; pdb.set_trace()
+# from pudb import set_trace; set_trace(paused=False)'''
 
 
 # DONT CHANGE FUNC NAME
@@ -54,10 +56,6 @@ def cli(verbose):
 if __name__ == "__main__":
     cli()
 
-
-# import IPython; IPython.embed()
-# import pdb; pdb.set_trace()
-# from pudb import set_trace; set_trace(paused=False)'''
 
 
 ebuild = '''# Copyright 1999-2020 Gentoo Authors
