@@ -37,6 +37,22 @@ import click
 from pathlib import Path
 from shutil import get_terminal_size
 from icecream import ic
+
+import ConfigParser
+
+APP_NAME = '{package_name}'
+
+def read_config():
+    cfg = os.path.join(click.get_app_dir(APP_NAME), 'config.ini')
+    parser = ConfigParser.RawConfigParser()
+    parser.read([cfg])
+    rv = {}
+    for section in parser.sections():
+        for key, value in parser.items(section):
+            rv['%s.%s' % (section, key)] = value
+    return rv
+
+
 ic.configureOutput(includeContext=True)
 ic.lineWrapWidth, _ = get_terminal_size((80, 20))
 # import IPython; IPython.embed()
@@ -46,15 +62,21 @@ ic.lineWrapWidth, _ = get_terminal_size((80, 20))
 
 # DONT CHANGE FUNC NAME
 #@click.command()
-#@click.argument("sysskel", type=click.Path(exists=False, dir_okay=True, path_type=str, allow_dash=False), nargs=1, required=True)
+#@click.argument("sysskel",
+                 type=click.Path(exists=False,
+                                 dir_okay=True,
+                                 file_okay=False,
+                                 symlink_okay=False,
+                                 path_type=str,
+                                 allow_dash=False), nargs=1, required=True)
 @click.option('--verbose', is_flag=True)
 @click.group()
-def cli(verbose):
+def cli(sysskel, verbose):
     pass
 
 
-if __name__ == "__main__":
-    cli()
+#if __name__ == "__main__":
+#    cli()
 
 '''
 
