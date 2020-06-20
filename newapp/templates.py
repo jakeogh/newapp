@@ -37,7 +37,8 @@ import click
 from pathlib import Path
 from shutil import get_terminal_size
 from icecream import ic
-import configparser
+from kcl.configops import click_read_config
+from kcl.configops import click_write_config_entry
 
 
 ic.configureOutput(includeContext=True)
@@ -47,16 +48,6 @@ ic.lineWrapWidth, _ = get_terminal_size((80, 20))
 # from pudb import set_trace; set_trace(paused=False)
 
 APP_NAME = '{package_name}'
-
-def read_config():
-    cfg = os.path.join(click.get_app_dir(APP_NAME), 'config.ini')
-    parser = ConfigParser.RawConfigParser()
-    parser.read([cfg])
-    rv = {}
-    for section in parser.sections():
-        for key, value in parser.items(section):
-            rv['%s.%s' % (section, key)] = value
-    return rv
 
 
 # DONT CHANGE FUNC NAME
@@ -68,10 +59,21 @@ def read_config():
                                  symlink_okay=False,
                                  path_type=str,
                                  allow_dash=False), nargs=1, required=True)
+@click.option('--add', is_flag=True)
 @click.option('--verbose', is_flag=True)
 @click.group()
-def cli(sysskel, verbose):
-    pass
+def cli(sysskel, add, verbose):
+    config = click_read_config(click, APP_NAME, verbose)
+    if verbose:
+        ic(config)
+    if add:
+        section = "test_section"
+        key = "test_key"
+        value = "test_value"
+        click_write_config_entry(click, APP_NAME, section, key, value)
+        config = click_read_config(click, APP_NAME, verbose)
+        if verbose:
+            ic(config)
 
 
 #if __name__ == "__main__":
