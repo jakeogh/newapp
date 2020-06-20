@@ -37,7 +37,7 @@ import click
 from pathlib import Path
 from shutil import get_terminal_size
 from icecream import ic
-import ConfigParser
+import configparser
 
 
 ic.configureOutput(includeContext=True)
