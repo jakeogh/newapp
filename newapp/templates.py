@@ -37,8 +37,14 @@ import click
 from pathlib import Path
 from shutil import get_terminal_size
 from icecream import ic
-
 import ConfigParser
+
+
+ic.configureOutput(includeContext=True)
+ic.lineWrapWidth, _ = get_terminal_size((80, 20))
+# import IPython; IPython.embed()
+# import pdb; pdb.set_trace()
+# from pudb import set_trace; set_trace(paused=False)
 
 APP_NAME = '{package_name}'
 
@@ -53,16 +59,9 @@ def read_config():
     return rv
 
 
-ic.configureOutput(includeContext=True)
-ic.lineWrapWidth, _ = get_terminal_size((80, 20))
-# import IPython; IPython.embed()
-# import pdb; pdb.set_trace()
-# from pudb import set_trace; set_trace(paused=False)
-
-
 # DONT CHANGE FUNC NAME
 #@click.command()
-#@click.argument("sysskel",
+@click.argument("sysskel",
                  type=click.Path(exists=False,
                                  dir_okay=True,
                                  file_okay=False,

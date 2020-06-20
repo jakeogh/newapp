@@ -90,8 +90,8 @@ def generate_gitignore_template():
     return gitignore.format()
 
 
-def generate_app_template():
-    return app
+def generate_app_template(package_name):
+    return app.format(package_name=package_name)
 
 
 @cli.command()
@@ -229,7 +229,7 @@ def new(ctx,
             os.system("fastep")
 
             os.chdir(app_name)
-            app_template = generate_app_template()
+            app_template = generate_app_template(package_name=app_name)
             with open(app_name + '.py', 'x') as fh:
                 fh.write(app_template)
 
