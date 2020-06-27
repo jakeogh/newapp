@@ -7,7 +7,7 @@ group="{package_group}"
 package="${{group}}/${{short_package}}"
 {remote}
 {optional_blank_remote}
-test_command_arg=""
+test_command_arg="--help"
 pre_lint_command=""
 dont_unmerge=""
 '''
@@ -52,13 +52,13 @@ APP_NAME = '{package_name}'
 
 # DONT CHANGE FUNC NAME
 #@click.command()
+@click.argument("urls", type=str, nargs=-1)
 @click.argument("sysskel",
-                 type=click.Path(exists=False,
-                                 dir_okay=True,
-                                 file_okay=False,
-                                 symlink_okay=False,
-                                 path_type=str,
-                                 allow_dash=False), nargs=1, required=True)
+                type=click.Path(exists=False,
+                                dir_okay=True,
+                                file_okay=False,
+                                path_type=str,
+                                allow_dash=False), nargs=1, required=True)
 @click.option('--add', is_flag=True)
 @click.option('--verbose', is_flag=True)
 @click.group()
