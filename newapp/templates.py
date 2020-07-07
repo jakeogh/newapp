@@ -62,9 +62,10 @@ APP_NAME = '{package_name}'
                                 allow_dash=False), nargs=1, required=True)
 @click.option('--add', is_flag=True)
 @click.option('--verbose', is_flag=True)
+@click.option('--debug', is_flag=True)
 @click.option("--null", is_flag=True)
 @click.group()
-def cli(urls, sysskel, add, verbose, null):
+def cli(urls, sysskel, add, verbose, debug, null):
 
     byte = b'{newline}'
     if null:
