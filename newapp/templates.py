@@ -64,11 +64,11 @@ APP_NAME = '{package_name}'
 @click.option('--verbose', is_flag=True)
 @click.option("--null", is_flag=True)
 @click.group()
-def cli(sysskel, add, verbose, null):
+def cli(urls, sysskel, add, verbose, null):
 
-    byte = b'\n'
+    byte = b'{newline}'
     if null:
-        byte = b'\x00'
+        byte = b'{null}'
 
     config, config_mtime = click_read_config(click_instance=click,
                                              app_name=APP_NAME,
