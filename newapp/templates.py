@@ -39,7 +39,7 @@ from shutil import get_terminal_size
 from icecream import ic
 from kcl.configops import click_read_config
 from kcl.configops import click_write_config_entry
-from kcl.byteops import read_by_byte
+from kcl.inputops import input_iterator
 
 
 ic.configureOutput(includeContext=True)
@@ -77,10 +77,10 @@ def cli(urls, sysskel, add, verbose, debug, null):
     if verbose:
         ic(config, config_mtime)
 
-
-    for index, url in enumerate(read_by_byte(sys.stdin.buffer, byte=byte)):
+    for index, url in enumerate(input_iterator(strings=urls, null=null, verbose=verbose))):
         if verbose:
             ic(index, url)
+
         if add:
             section = "test_section"
             key = "test_key"
