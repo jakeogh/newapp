@@ -91,7 +91,7 @@ def generate_gitignore_template():
 
 
 def generate_app_template(package_name):
-    return app.format(package_name=package_name, newline="\n", null="\x00")
+    return app.format(package_name=package_name, newline="\\n", null="\\x00")
 
 
 @cli.command()
