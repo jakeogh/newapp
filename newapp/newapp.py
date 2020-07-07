@@ -260,6 +260,9 @@ def new(ctx,
     else:
         eprint("Not creating new ebuild, {} already exists.".format(ebuild_path))
 
+    os.system("edit " + app_name + ".py")
+
+
 #
 ##from pudb.remote import set_trace
 ##set_trace(term_size=(80, 24))
