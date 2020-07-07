@@ -20,7 +20,7 @@ ic.configureOutput(includeContext=True)
 from shutil import get_terminal_size
 ic.lineWrapWidth, _ = get_terminal_size((80, 20))
 
-CFG = click_read_config(click_instance=click, app_name='newapp', verbose=False)
+CFG, CONFIG_MTIME = click_read_config(click_instance=click, app_name='newapp', verbose=False)
 
 # https://github.com/mitsuhiko/click/issues/441
 CONTEXT_SETTINGS = dict(default_map=CFG)
