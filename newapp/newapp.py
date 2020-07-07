@@ -11,11 +11,11 @@ from kcl.fileops import write_unique_line_to_file
 from kcl.configops import click_read_config
 from kcl.commandops import run_command
 from icecream import ic
-#from .templates import app
-#from .templates import ebuild
-#from .templates import gitignore
-#from .templates import edit_config
-#from .templates import setup_py
+from .templates import app
+from .templates import ebuild
+from .templates import gitignore
+from .templates import edit_config
+from .templates import setup_py
 ic.configureOutput(includeContext=True)
 from shutil import get_terminal_size
 ic.lineWrapWidth, _ = get_terminal_size((80, 20))
