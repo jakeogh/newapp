@@ -77,7 +77,9 @@ def cli(urls, sysskel, add, verbose, debug, null):
     if verbose:
         ic(config, config_mtime)
 
-    for index, url in enumerate(input_iterator(strings=urls, null=null, verbose=verbose)):
+    for index, url in enumerate(input_iterator(strings=urls,
+                                               null=null,
+                                               verbose=verbose)):
         if verbose:
             ic(index, url)
 
