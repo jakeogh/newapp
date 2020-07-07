@@ -70,9 +70,11 @@ def cli(sysskel, add, verbose, null):
     if null:
         byte = b'\x00'
 
-    config = click_read_config(click, APP_NAME, verbose)
+    config, config_mtime = click_read_config(click_instance=click,
+                                             app_name=APP_NAME,
+                                             verbose=verbose)
     if verbose:
-        ic(config)
+        ic(config, config_mtime)
 
 
     for index, url in enumerate(read_by_byte(sys.stdin.buffer, byte=byte)):
@@ -82,8 +84,12 @@ def cli(sysskel, add, verbose, null):
             section = "test_section"
             key = "test_key"
             value = "test_value"
-            click_write_config_entry(click, APP_NAME, section, key, value)
-            config = click_read_config(click, APP_NAME, verbose)
+            config, config_mtime = click_write_config_entry(click_instance=click,
+                                                            app_name=APP_NAME,
+                                                            section=section,
+                                                            key=key,
+                                                            value=value,
+                                                            verbose=verbose)
             if verbose:
                 ic(config)
 
