@@ -39,6 +39,7 @@ from shutil import get_terminal_size
 from icecream import ic
 from kcl.configops import click_read_config
 from kcl.configops import click_write_config_entry
+from kcl.byteops import read_by_byte
 
 
 ic.configureOutput(includeContext=True)
@@ -61,19 +62,30 @@ APP_NAME = '{package_name}'
                                 allow_dash=False), nargs=1, required=True)
 @click.option('--add', is_flag=True)
 @click.option('--verbose', is_flag=True)
+@click.option("--null", is_flag=True)
 @click.group()
-def cli(sysskel, add, verbose):
+def cli(sysskel, add, verbose, null):
+
+    byte = b'\n'
+    if null:
+        byte = b'\x00'
+
     config = click_read_config(click, APP_NAME, verbose)
     if verbose:
         ic(config)
-    if add:
-        section = "test_section"
-        key = "test_key"
-        value = "test_value"
-        click_write_config_entry(click, APP_NAME, section, key, value)
-        config = click_read_config(click, APP_NAME, verbose)
+
+
+    for index, url in enumerate(read_by_byte(sys.stdin.buffer, byte=byte)):
         if verbose:
-            ic(config)
+            ic(index, url)
+        if add:
+            section = "test_section"
+            key = "test_key"
+            value = "test_value"
+            click_write_config_entry(click, APP_NAME, section, key, value)
+            config = click_read_config(click, APP_NAME, verbose)
+            if verbose:
+                ic(config)
 
 
 #if __name__ == "__main__":
