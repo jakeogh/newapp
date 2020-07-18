@@ -63,9 +63,10 @@ APP_NAME = '{package_name}'
 @click.option('--add', is_flag=True)
 @click.option('--verbose', is_flag=True)
 @click.option('--debug', is_flag=True)
+@click.option('--ipython', is_flag=True)
 @click.option("--null", is_flag=True)
 @click.group()
-def cli(urls, sysskel, add, verbose, debug, null):
+def cli(urls, sysskel, add, verbose, debug, ipython, null):
 
     byte = b'{newline}'
     if null:
@@ -82,6 +83,9 @@ def cli(urls, sysskel, add, verbose, debug, null):
                                                verbose=verbose)):
         if verbose:
             ic(index, url)
+
+        if ipython:
+            import IPython; IPython.embed()
 
         if add:
             section = "test_section"
