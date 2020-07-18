@@ -66,7 +66,13 @@ APP_NAME = '{package_name}'
 @click.option('--ipython', is_flag=True)
 @click.option("--null", is_flag=True)
 #@click.group()
-def cli(paths, sysskel, add, verbose, debug, ipython, null):
+def cli(paths,
+        sysskel,
+        add,
+        verbose,
+        debug,
+        ipython,
+        null):
 
     byte = b'{newline}'
     if null:
