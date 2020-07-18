@@ -52,8 +52,8 @@ APP_NAME = '{package_name}'
 
 
 # DONT CHANGE FUNC NAME
-#@click.command()
-@click.argument("urls", type=str, nargs=-1)
+@click.command()
+@click.argument("paths", type=str, nargs=-1)
 @click.argument("sysskel",
                 type=click.Path(exists=False,
                                 dir_okay=True,
@@ -65,8 +65,8 @@ APP_NAME = '{package_name}'
 @click.option('--debug', is_flag=True)
 @click.option('--ipython', is_flag=True)
 @click.option("--null", is_flag=True)
-@click.group()
-def cli(urls, sysskel, add, verbose, debug, ipython, null):
+#@click.group()
+def cli(paths, sysskel, add, verbose, debug, ipython, null):
 
     byte = b'{newline}'
     if null:
@@ -78,11 +78,14 @@ def cli(urls, sysskel, add, verbose, debug, ipython, null):
     if verbose:
         ic(config, config_mtime)
 
-    for index, url in enumerate(input_iterator(strings=urls,
-                                               null=null,
-                                               verbose=verbose)):
+    for index, path in enumerate(input_iterator(strings=paths,
+                                                null=null,
+                                                verbose=verbose)):
         if verbose:
-            ic(index, url)
+            ic(index, path)
+
+        with open(path, 'rb') as fh:
+            path_bytes_data = fh.read()
 
         if ipython:
             import IPython; IPython.embed()
@@ -99,10 +102,6 @@ def cli(urls, sysskel, add, verbose, debug, ipython, null):
                                                             verbose=verbose)
             if verbose:
                 ic(config)
-
-
-#if __name__ == "__main__":
-#    cli()
 
 '''
 
