@@ -17,9 +17,10 @@ app = '''#!/usr/bin/env python3
 
 # pylint: disable=C0111     # docstrings are always outdated and wrong
 # pylint: disable=W0511     # todo is encouraged
+# pylint: disable=C0301     # line too long
 # pylint: disable=R0902     # too many instance attributes
 # pylint: disable=C0302     # too many lines in module
-# pylint: disable=C0103     # single letter var names
+# pylint: disable=C0103     # single letter var names, func name too descriptive
 # pylint: disable=R0911     # too many return statements
 # pylint: disable=R0912     # too many branches
 # pylint: disable=R0915     # too many statements
@@ -35,15 +36,13 @@ import os
 import sys
 import click
 from pathlib import Path
-from shutil import get_terminal_size
 from icecream import ic
 from kcl.configops import click_read_config
 from kcl.configops import click_write_config_entry
-from kcl.inputops import input_iterator
+from kcl.inputops import enumerate_input
 
 
 ic.configureOutput(includeContext=True)
-ic.lineWrapWidth, _ = get_terminal_size((80, 20))
 # import IPython; IPython.embed()
 # import pdb; pdb.set_trace()
 # from pudb import set_trace; set_trace(paused=False)
@@ -74,19 +73,16 @@ def cli(paths,
         ipython,
         null):
 
-    byte = b'{newline}'
-    if null:
-        byte = b'{null}'
-
     config, config_mtime = click_read_config(click_instance=click,
                                              app_name=APP_NAME,
                                              verbose=verbose)
     if verbose:
         ic(config, config_mtime)
 
-    for index, path in enumerate(input_iterator(strings=paths,
-                                                null=null,
-                                                verbose=verbose)):
+    for index, path in enumerate_input(iterator=paths,
+                                       null=null,
+                                       debug=debug,
+                                       verbose=verbose)):
         if verbose:
             ic(index, path)
 
