@@ -64,6 +64,7 @@ APP_NAME = '{package_name}'
 @click.option('--verbose', is_flag=True)
 @click.option('--debug', is_flag=True)
 @click.option('--ipython', is_flag=True)
+@click.option('--count', type=str)
 @click.option("--null", is_flag=True)
 #@click.group()
 def cli(paths,
@@ -72,6 +73,7 @@ def cli(paths,
         verbose,
         debug,
         ipython,
+        count,
         null):
 
     global APP_NAME
@@ -102,6 +104,9 @@ def cli(paths,
                                        verbose=verbose):
         if verbose:
             ic(index, path)
+        if count > index+1:
+            ic(count)
+            sys.exit(0)
 
         with open(path, 'rb') as fh:
             path_bytes_data = fh.read()
