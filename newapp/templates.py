@@ -79,10 +79,23 @@ def cli(paths,
     if verbose:
         ic(config, config_mtime)
 
+    if add:
+        section = "test_section"
+        key = "test_key"
+        value = "test_value"
+        config, config_mtime = click_write_config_entry(click_instance=click,
+                                                        app_name=APP_NAME,
+                                                        section=section,
+                                                        key=key,
+                                                        value=value,
+                                                        verbose=verbose)
+        if verbose:
+            ic(config)
+
     for index, path in enumerate_input(iterator=paths,
                                        null=null,
                                        debug=debug,
-                                       verbose=verbose)):
+                                       verbose=verbose):
         if verbose:
             ic(index, path)
 
@@ -92,18 +105,6 @@ def cli(paths,
         if ipython:
             import IPython; IPython.embed()
 
-        if add:
-            section = "test_section"
-            key = "test_key"
-            value = "test_value"
-            config, config_mtime = click_write_config_entry(click_instance=click,
-                                                            app_name=APP_NAME,
-                                                            section=section,
-                                                            key=key,
-                                                            value=value,
-                                                            verbose=verbose)
-            if verbose:
-                ic(config)
 
 '''
 

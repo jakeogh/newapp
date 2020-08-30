@@ -174,6 +174,7 @@ def new(ctx,
         app_name = rename
     app_path = Path(apps_folder) / Path(app_name)
     ic(app_path)
+    ic(app_name)
     if not app_path.exists():
         if template:
             git_clone_cmd = " ".join(["git clone", git_repo_url, str(app_path)])
