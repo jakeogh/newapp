@@ -104,9 +104,10 @@ def cli(paths,
                                        verbose=verbose):
         if verbose:
             ic(index, path)
-        if count > index+1:
-            ic(count)
-            sys.exit(0)
+        if count:
+            if count > (index + 1):
+                ic(count)
+                sys.exit(0)
 
         with open(path, 'rb') as fh:
             path_bytes_data = fh.read()
