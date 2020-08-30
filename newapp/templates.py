@@ -47,6 +47,7 @@ ic.configureOutput(includeContext=True)
 # import pdb; pdb.set_trace()
 # from pudb import set_trace; set_trace(paused=False)
 
+global APP_NAME
 APP_NAME = '{package_name}'
 
 
@@ -73,6 +74,7 @@ def cli(paths,
         ipython,
         null):
 
+    global APP_NAME
     config, config_mtime = click_read_config(click_instance=click,
                                              app_name=APP_NAME,
                                              verbose=verbose)
