@@ -94,6 +94,8 @@ def cli(paths,
         if verbose:
             ic(config)
 
+    if not paths:
+        ic('waiting for input')
     for index, path in enumerate_input(iterator=paths,
                                        null=null,
                                        debug=debug,
