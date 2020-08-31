@@ -64,6 +64,7 @@ APP_NAME = '{package_name}'
 @click.option('--verbose', is_flag=True)
 @click.option('--debug', is_flag=True)
 @click.option('--ipython', is_flag=True)
+@click.option('--simulate', is_flag=True)
 @click.option('--count', type=str)
 @click.option("--null", is_flag=True)
 #@click.group()
@@ -73,6 +74,7 @@ def cli(paths,
         verbose,
         debug,
         ipython,
+        simulate,
         count,
         null):
 
@@ -108,6 +110,9 @@ def cli(paths,
             if count > (index + 1):
                 ic(count)
                 sys.exit(0)
+
+        if simulate:
+            continue
 
         with open(path, 'rb') as fh:
             path_bytes_data = fh.read()
