@@ -106,7 +106,7 @@ def cli(paths,
                                        verbose=verbose):
         path = Path(path)
 
-        if verbose:
+        if verbose or simulate:
             ic(index, path)
         if count:
             if count > (index + 1):
