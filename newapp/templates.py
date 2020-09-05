@@ -78,6 +78,9 @@ def cli(paths,
         count,
         null):
 
+    if verbose:
+        ic(sys.stdout.isatty())
+
     global APP_NAME
     config, config_mtime = click_read_config(click_instance=click,
                                              app_name=APP_NAME,
@@ -100,6 +103,7 @@ def cli(paths,
 
     if not paths:
         ic('waiting for input')
+
     for index, path in enumerate_input(iterator=paths,
                                        null=null,
                                        debug=debug,
