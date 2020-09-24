@@ -97,6 +97,16 @@ def generate_app_template(package_name):
 @cli.command()
 @click.argument('overlay_name', type=str, nargs=1)
 @click.pass_context
+def get_pylint_config(ctx, overlay_name):
+    app_template = generate_app_template('TEMP')
+    for line in app_template.splitlines():
+        if line.startswith('# pylint: '):
+            print(line)
+
+
+@cli.command()
+@click.argument('overlay_name', type=str, nargs=1)
+@click.pass_context
 def get_overlay_url(ctx, overlay_name):
     url = get_url_for_overlay(overlay_name, verbose=ctx.obj['verbose'])
     print(url)
