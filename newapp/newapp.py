@@ -7,7 +7,7 @@ from pathlib import Path
 from urllib.parse import urlparse
 import click
 from kcl.printops import eprint
-from kcl.fileops import write_unique_line_to_file
+from kcl.fileops import write_line_to_file
 from kcl.configops import click_read_config
 from kcl.commandops import run_command
 from icecream import ic
@@ -266,7 +266,10 @@ def new(ctx,
         os.system("sudo emaint sync -A")
         accept_keyword = "={}/{}-9999 **\n".format(group, app_name)
         accept_keywords = Path("/etc/portage/package.accept_keywords")
-        write_unique_line_to_file(file_to_write=accept_keywords, line=accept_keyword, make_new=False)
+        write_line_to_file(file_to_write=accept_keywords,
+                           line=accept_keyword,
+                           unique=True,
+                           make_new=False)
     else:
         eprint("Not creating new ebuild, {} already exists.".format(ebuild_path))
 
