@@ -214,7 +214,8 @@ def new(ctx,
             repo_config_command = "git remote add origin git@github.com:jakeogh/" + app_name + '.git'
             ic(repo_config_command)
         if not local:
-            os.system(repo_config_command)
+            if not hg:
+                os.system(repo_config_command)
         else:
             enable_github = [
                     "#!/bin/sh",
