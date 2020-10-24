@@ -283,9 +283,10 @@ def new(ctx,
     else:
         eprint("Not creating new ebuild, {} already exists.".format(ebuild_path))
 
+    ic(app_path)
     ic(app_name)
 
-    os.system("edit " + app_name + ".py")
+    os.system("edit " + app_path + '/' + app_name + ".py")
 
 
 #
