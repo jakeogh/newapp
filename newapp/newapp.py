@@ -1,6 +1,22 @@
 #!/usr/bin/env python3
 # -*- coding: utf8 -*-
 
+# pylint: disable=C0111  # docstrings are always outdated and wrong
+# pylint: disable=W0511  # todo is encouraged
+# pylint: disable=C0301  # line too long
+# pylint: disable=R0902  # too many instance attributes
+# pylint: disable=C0302  # too many lines in module
+# pylint: disable=C0103  # single letter var names, func name too descriptive
+# pylint: disable=R0911  # too many return statements
+# pylint: disable=R0912  # too many branches
+# pylint: disable=R0915  # too many statements
+# pylint: disable=R0913  # too many arguments
+# pylint: disable=R1702  # too many nested blocks
+# pylint: disable=R0914  # too many local variables
+# pylint: disable=R0903  # too few public methods
+# pylint: disable=E1101  # no member for base
+# pylint: disable=W0201  # attribute defined outside __init__
+# pylint: disable=R0916  # Too many boolean expressions in if statement
 
 
 import os
@@ -77,15 +93,25 @@ def generate_edit_config(package_name, package_group, local):
     optional_blank_remote = ''
     if local:
         optional_blank_remote = '''remote=""'''
-    return edit_config.format(package_name=package_name, package_group=package_group, optional_blank_remote=optional_blank_remote, remote=remote)
+    return edit_config.format(package_name=package_name,
+                              package_group=package_group,
+                              optional_blank_remote=optional_blank_remote,
+                              remote=remote)
 
 
 def generate_setup_py(url, package_name, license, owner, owner_email, description):
-    return setup_py.format(package_name=package_name, url=url, license=license, owner=owner, owner_email=owner_email, description=description)
+    return setup_py.format(package_name=package_name,
+                           url=url,
+                           license=license,
+                           owner=owner,
+                           owner_email=owner_email,
+                           description=description)
 
 
 def generate_ebuild_template(description, homepage, app_path):
-    return ebuild.format(description=description, homepage=homepage, app_path=app_path)
+    return ebuild.format(description=description,
+                         homepage=homepage,
+                         app_path=app_path)
 
 
 def generate_gitignore_template():
@@ -220,9 +246,9 @@ def new(ctx,
                 os.system(repo_config_command)
         else:
             enable_github = [
-                    "#!/bin/sh",
-                    repo_config_command,
-                    "\n"]
+                "#!/bin/sh",
+                repo_config_command,
+                "\n"]
             enable_github = "\n".join(enable_github)
             with open("enable_github.sh", 'x') as fh:
                 fh.write(enable_github)
@@ -233,7 +259,9 @@ def new(ctx,
             os.system(branch_cmd)
 
         with open(".edit_config", 'x') as fh:
-            fh.write(generate_edit_config(package_name=app_name, package_group=group, local=local))
+            fh.write(generate_edit_config(package_name=app_name,
+                                          package_group=group,
+                                          local=local))
 
         if not template:
             with open("setup.py", 'x') as fh:
@@ -269,7 +297,9 @@ def new(ctx,
         ebuild_name = app_name + "-9999.ebuild"
 
         with open(ebuild_name, 'w') as fh:
-            fh.write(generate_ebuild_template(description=description, homepage=git_repo_url, app_path=app_path))
+            fh.write(generate_ebuild_template(description=description,
+                                              homepage=git_repo_url,
+                                              app_path=app_path))
         os.system("git add " + ebuild_name)
         os.system("ebuild {} manifest".format(ebuild_name))
         os.system("git add *")
