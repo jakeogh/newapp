@@ -33,15 +33,19 @@ app = '''#!/usr/bin/env python3
 # pylint: disable=R0916  # Too many boolean expressions in if statement
 ## pylint: disable=W0703  # catching too general exception
 
+
+# TODO:
+#   https://github.com/kvesteri/validators
 import os
 import sys
 import click
 from pathlib import Path
+from collections import defaultdict
 from icecream import ic
 from kcl.configops import click_read_config
 from kcl.configops import click_write_config_entry
 from kcl.inputops import enumerate_input
-
+#from getdents import files
 
 ic.configureOutput(includeContext=True)
 # import IPython; IPython.embed()
@@ -60,7 +64,9 @@ APP_NAME = '{package_name}'
                                 dir_okay=True,
                                 file_okay=False,
                                 path_type=str,
-                                allow_dash=False), nargs=1, required=True)
+                                allow_dash=False),
+                nargs=1,
+                required=True)
 @click.option('--add', is_flag=True)
 @click.option('--verbose', is_flag=True)
 @click.option('--debug', is_flag=True)

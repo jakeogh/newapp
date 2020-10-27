@@ -318,7 +318,9 @@ def new(ctx,
     ic(app_path)
     ic(app_name)
 
-    os.system("edit " + app_path + '/' + app_name + ".py")
+    main_py_path = app_path / app_name / Path(".py")
+    ic(main_py_path)
+    os.system("edit " + main_py_path.as_posix())
 
 
 #
