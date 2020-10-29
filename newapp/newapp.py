@@ -160,6 +160,14 @@ def nineify(ctx, app):
 
 
 @cli.command()
+@click.argument("package-name", type=str)
+@click.pass_context
+def get_app_template(ctx, package_name):
+    app_template = generate_app_template(package_name)
+    print(app_template)
+
+
+@cli.command()
 @click.argument('git_repo_url', type=str, nargs=1)
 @click.argument('group', type=str, nargs=1)
 @click.argument('branch', type=str, callback=valid_branch, nargs=1, default="master")
