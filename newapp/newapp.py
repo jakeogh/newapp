@@ -199,7 +199,6 @@ def new(ctx,
         rename):
 
     verbose = ctx.obj['verbose']
-
     ic(apps_folder)
 
     if not template:
@@ -326,7 +325,7 @@ def new(ctx,
     ic(app_path)
     ic(app_name)
 
-    main_py_path = app_path / app_name / Path(".py")
+    main_py_path = app_path / app_name / Path(app_name.as_posix() + ".py")
     ic(main_py_path)
     os.system("edit " + main_py_path.as_posix())
 
