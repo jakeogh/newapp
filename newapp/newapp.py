@@ -301,11 +301,11 @@ def new(ctx,
     else:
         eprint("Not creating new app, {} already exists.".format(app_path))
 
-    ebuild_path = Path(gentoo_overlay_repo) / Path(group) / Path(app_module_name)
+    ebuild_path = Path(gentoo_overlay_repo) / Path(group) / Path(app_name)
     if not ebuild_path.exists():
         os.makedirs(ebuild_path, exist_ok=False)
         os.chdir(ebuild_path)
-        ebuild_name = app_module_name + "-9999.ebuild"
+        ebuild_name = app_name + "-9999.ebuild"
 
         with open(ebuild_name, 'w') as fh:
             fh.write(generate_ebuild_template(description=description,
@@ -329,7 +329,7 @@ def new(ctx,
     ic(app_path)
     ic(app_module_name)
 
-    main_py_path = app_path / app_module_name / Path(app_module_name.as_posix() + ".py")
+    main_py_path = app_path / Path(app_module_name) / Path(app_module_name + ".py")
     ic(main_py_path)
     os.system("edit " + main_py_path.as_posix())
 
