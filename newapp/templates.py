@@ -194,7 +194,7 @@ config = {{
     "install_requires": dependencies,
     "entry_points": {{
         "console_scripts": [
-            "{package_name}={package_name}.{package_name}:cli",
+            "{command}={package_name}.{package_name}:cli",
         ],
     }},
 }}
