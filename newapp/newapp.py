@@ -221,7 +221,7 @@ def new(ctx,
 
     if rename:
         app_name = rename
-    app_path = Path(apps_folder) / Path(app_module_name))
+    app_path = Path(apps_folder) / Path(app_module_name)
     ic(app_path)
     ic(app_name)
     if not app_path.exists():
