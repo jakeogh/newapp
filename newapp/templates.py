@@ -70,7 +70,7 @@ APP_NAME = '{package_name}'
 @click.option('--add', is_flag=True)
 @click.option('--verbose', is_flag=True)
 @click.option('--debug', is_flag=True)
-@click.option('--ipython', is_flag=True)
+#@click.option('--ipython', is_flag=True)
 @click.option('--simulate', is_flag=True)
 @click.option('--count', type=str)
 @click.option("--null", is_flag=True)
@@ -130,8 +130,8 @@ def cli(paths,
         with open(path, 'rb') as fh:
             path_bytes_data = fh.read()
 
-        if ipython:
-            import IPython; IPython.embed()
+#        if ipython:
+#            import IPython; IPython.embed()
 
 
 '''
