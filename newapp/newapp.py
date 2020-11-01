@@ -99,8 +99,9 @@ def generate_edit_config(package_name, package_group, local):
                               remote=remote)
 
 
-def generate_setup_py(url, package_name, license, owner, owner_email, description):
+def generate_setup_py(url, package_name, command, license, owner, owner_email, description):
     return setup_py.format(package_name=package_name,
+                           command=command,
                            url=url,
                            license=license,
                            owner=owner,
@@ -216,9 +217,11 @@ def new(ctx,
     git_repo_url_parsed = urlparse(git_repo_url)
     git_repo_url_path = Path(git_repo_url_parsed.path)
     app_name = git_repo_url_path.parts[-1]
+    app_module_name = app_name.replace('-', '_')
+
     if rename:
         app_name = rename
-    app_path = Path(apps_folder) / Path(app_name)
+    app_path = Path(apps_folder) / Path(app_module_name))
     ic(app_path)
     ic(app_name)
     if not app_path.exists():
@@ -241,7 +244,7 @@ def new(ctx,
                 assert False
             os.makedirs(app_path, exist_ok=False)
             os.chdir(app_path)
-            os.makedirs(app_name, exist_ok=False)
+            os.makedirs(app_module_name, exist_ok=False)
             os.system("git init")
 
         #repo_config_command = "git remote set-url origin git@github.com:jakeogh/" + app_name + '.git'
@@ -272,7 +275,8 @@ def new(ctx,
 
         if not template:
             with open("setup.py", 'x') as fh:
-                fh.write(generate_setup_py(package_name=app_name,
+                fh.write(generate_setup_py(package_name=app_module_name,
+                                           command=app_name,
                                            owner=owner,
                                            owner_email=owner_email,
                                            description=description,
@@ -285,9 +289,9 @@ def new(ctx,
 
             os.system("fastep")
 
-            os.chdir(app_name)
-            app_template = generate_app_template(package_name=app_name)
-            with open(app_name + '.py', 'x') as fh:
+            os.chdir(app_module_name)
+            app_template = generate_app_template(package_name=app_module_name)
+            with open(app_module_name + '.py', 'x') as fh:
                 fh.write(app_template)
 
             os.system("touch __init__.py")
@@ -297,11 +301,11 @@ def new(ctx,
     else:
         eprint("Not creating new app, {} already exists.".format(app_path))
 
-    ebuild_path = Path(gentoo_overlay_repo) / Path(group) / Path(app_name)
+    ebuild_path = Path(gentoo_overlay_repo) / Path(group) / Path(app_module_name)
     if not ebuild_path.exists():
         os.makedirs(ebuild_path, exist_ok=False)
         os.chdir(ebuild_path)
-        ebuild_name = app_name + "-9999.ebuild"
+        ebuild_name = app_module_name + "-9999.ebuild"
 
         with open(ebuild_name, 'w') as fh:
             fh.write(generate_ebuild_template(description=description,
@@ -323,9 +327,9 @@ def new(ctx,
         eprint("Not creating new ebuild, {} already exists.".format(ebuild_path))
 
     ic(app_path)
-    ic(app_name)
+    ic(app_module_name)
 
-    main_py_path = app_path / app_name / Path(app_name.as_posix() + ".py")
+    main_py_path = app_path / app_module_name / Path(app_module_name.as_posix() + ".py")
     ic(main_py_path)
     os.system("edit " + main_py_path.as_posix())
 
