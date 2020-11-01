@@ -83,7 +83,7 @@ def cli(paths,
         ipython,
         simulate,
         count,
-        null):
+        null,):
 
     if verbose:
         ic(sys.stdout.isatty())
