@@ -1,6 +1,11 @@
 #!/usr/bin/env python3
 
 
+echo_url='''#!/bin/sh
+echo "{url}"
+'''
+
+
 edit_config='''#!/bin/sh
 short_package="{package_name}"
 group="{package_group}"

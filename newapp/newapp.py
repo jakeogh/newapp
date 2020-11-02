@@ -34,6 +34,7 @@ from .templates import ebuild
 from .templates import gitignore
 from .templates import edit_config
 from .templates import setup_py
+from .templates import echo_url
 ic.configureOutput(includeContext=True)
 from shutil import get_terminal_size
 ic.lineWrapWidth, _ = get_terminal_size((80, 20))
@@ -121,6 +122,10 @@ def generate_gitignore_template():
 
 def generate_app_template(package_name):
     return app.format(package_name=package_name, newline="\\n", null="\\x00")
+
+
+def generate_echo_url_template(url):
+    return echo_url.format(url=url)
 
 
 @cli.command()
@@ -293,6 +298,10 @@ def new(ctx,
             app_template = generate_app_template(package_name=app_module_name)
             with open(app_module_name + '.py', 'x') as fh:
                 fh.write(app_template)
+
+            echo_url_template = generate_echo_url_template(url=git_repo_url)
+            with open("echo_url.sh", 'x') as fh:
+                fh.write(echo_url_template)
 
             os.system("touch __init__.py")
 
