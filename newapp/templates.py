@@ -49,7 +49,7 @@ from collections import defaultdict
 from icecream import ic
 from kcl.configops import click_read_config
 from kcl.configops import click_write_config_entry
-from kcl.inputops import enumerate_input
+from kcl.iterops import enumerate_input
 #from getdents import files
 
 ic.configureOutput(includeContext=True)
@@ -165,7 +165,7 @@ RDEPEND="
 "
 
 DEPEND="${{RDEPEND}}"
-#}}
+
 '''
 
 gitignore = '''.git
