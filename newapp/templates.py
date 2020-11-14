@@ -49,7 +49,7 @@ from collections import defaultdict
 from icecream import ic
 from kcl.configops import click_read_config
 from kcl.configops import click_write_config_entry
-from kcl.iterops import enumerate_input
+from enumerate_input import enumerate_input
 #from getdents import files
 
 ic.configureOutput(includeContext=True)
@@ -75,20 +75,20 @@ APP_NAME = '{package_name}'
 @click.option('--add', is_flag=True)
 @click.option('--verbose', is_flag=True)
 @click.option('--debug', is_flag=True)
-#@click.option('--ipython', is_flag=True)
 @click.option('--simulate', is_flag=True)
 @click.option('--count', type=str)
-@click.option("--null", is_flag=True)
+@click.option("--printn", is_flag=True)
 #@click.group()
 def cli(paths,
         sysskel,
         add,
         verbose,
         debug,
-        ipython,
         simulate,
         count,
-        null,):
+        printn,):
+
+    null = not printn
 
     if verbose:
         ic(sys.stdout.isatty())
@@ -112,9 +112,6 @@ def cli(paths,
                                                         verbose=verbose)
         if verbose:
             ic(config)
-
-    if not paths:
-        ic('waiting for input')
 
     for index, path in enumerate_input(iterator=paths,
                                        null=null,
