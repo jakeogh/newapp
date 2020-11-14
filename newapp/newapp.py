@@ -302,6 +302,7 @@ def new(ctx,
             echo_url_template = generate_echo_url_template(url=git_repo_url)
             with open("echo_url.sh", 'x') as fh:
                 fh.write(echo_url_template)
+            os.system("chmod +x echo_url.sh")
 
             os.system("touch __init__.py")
 
