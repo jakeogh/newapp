@@ -89,14 +89,16 @@ def cli(paths,
         printn,):
 
     null = not printn
-
-    if verbose:
-        ic(sys.stdout.isatty())
+    end = '\n'
+    if null:
+        end = '\0'
+    if sys.stdout.isatty():
+        end = '\n'
 
     global APP_NAME
     config, config_mtime = click_read_config(click_instance=click,
                                              app_name=APP_NAME,
-                                             verbose=verbose)
+                                             verbose=verbose,)
     if verbose:
         ic(config, config_mtime)
 
@@ -109,14 +111,15 @@ def cli(paths,
                                                         section=section,
                                                         key=key,
                                                         value=value,
-                                                        verbose=verbose)
+                                                        verbose=verbose,)
         if verbose:
             ic(config)
 
     for index, path in enumerate_input(iterator=paths,
                                        null=null,
+                                       count=count,
                                        debug=debug,
-                                       verbose=verbose):
+                                       verbose=verbose,):
         path = Path(path)
 
         if verbose or simulate:
