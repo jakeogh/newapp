@@ -75,7 +75,7 @@ APP_NAME = '{package_name}'
 @click.option('--verbose', is_flag=True)
 @click.option('--debug', is_flag=True)
 @click.option('--simulate', is_flag=True)
-@click.option('--count', type=str)
+@click.option('--count', type=int)
 @click.option("--printn", is_flag=True)
 #@click.group()
 def cli(paths,
@@ -88,11 +88,11 @@ def cli(paths,
         printn,):
 
     null = not printn
-    end = '\n'
+    end = '{newline}'
     if null:
-        end = '\0'
+        end = '{null}'
     if sys.stdout.isatty():
-        end = '\n'
+        end = '{newline}'
 
     global APP_NAME
     config, config_mtime = click_read_config(click_instance=click,
