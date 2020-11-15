@@ -52,7 +52,6 @@ from kcl.configops import click_write_config_entry
 from enumerate_input import enumerate_input
 #from getdents import files
 
-ic.configureOutput(includeContext=True)
 # import IPython; IPython.embed()
 # import pdb; pdb.set_trace()
 # from pudb import set_trace; set_trace(paused=False)
