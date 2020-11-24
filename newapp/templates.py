@@ -115,7 +115,8 @@ def cli(paths,
 
     for index, path in enumerate_input(iterator=paths,
                                        null=null,
-                                       count=count,
+                                       head=count,
+                                       tail=None,
                                        debug=debug,
                                        verbose=verbose,):
         path = Path(path)
