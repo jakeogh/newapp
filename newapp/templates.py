@@ -45,13 +45,20 @@ import sys
 import click
 from pathlib import Path
 from collections import defaultdict
-from icecream import ic
+try:
+    from icecream import ic  # https://github.com/gruns/icecream
+except ImportError:
+    import sys
+    def eprint(*args, **kwargs):
+        if 'file' in kwargs.keys():
+            kwargs.pop('file')
+        print(*args, file=sys.stderr, **kwargs)
+
 from kcl.configops import click_read_config
 from kcl.configops import click_write_config_entry
 from enumerate_input import enumerate_input
 #from getdents import files
 
-# import IPython; IPython.embed()
 # import pdb; pdb.set_trace()
 # from pudb import set_trace; set_trace(paused=False)
 
