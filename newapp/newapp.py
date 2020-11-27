@@ -23,20 +23,19 @@ import os
 import shutil
 from pathlib import Path
 from urllib.parse import urlparse
+
 import click
-from kcl.printops import eprint
-from kcl.fileops import write_line_to_file
-from kcl.configops import click_read_config
-from kcl.commandops import run_command
 from icecream import ic
-from .templates import app
-from .templates import ebuild
-from .templates import gitignore
-from .templates import edit_config
-from .templates import setup_py
-from .templates import echo_url
+from kcl.commandops import run_command
+from kcl.configops import click_read_config
+from kcl.fileops import write_line_to_file
+from kcl.printops import eprint
+
+from .templates import app, ebuild, edit_config, gitignore, setup_py, url
+
 ic.configureOutput(includeContext=True)
 from shutil import get_terminal_size
+
 ic.lineWrapWidth, _ = get_terminal_size((80, 20))
 
 CFG, CONFIG_MTIME = click_read_config(click_instance=click, app_name='newapp', verbose=False)
@@ -84,7 +83,11 @@ def valid_branch(ctx, param, value):
     return value
 
 
-def generate_edit_config(package_name, package_group, local):
+def generate_edit_config(*,
+                         package_name,
+                         package_group,
+                         local,):
+
     if local:
         remote = "#"
     else:
@@ -100,7 +103,15 @@ def generate_edit_config(package_name, package_group, local):
                               remote=remote)
 
 
-def generate_setup_py(url, package_name, command, license, owner, owner_email, description):
+def generate_setup_py(*,
+                      url,
+                      package_name,
+                      command,
+                      license,
+                      owner,
+                      owner_email,
+                      description,):
+
     return setup_py.format(package_name=package_name,
                            command=command,
                            url=url,
@@ -124,8 +135,8 @@ def generate_app_template(package_name):
     return app.format(package_name=package_name, newline="\\n", null="\\x00")
 
 
-def generate_echo_url_template(url):
-    return echo_url.format(url=url)
+def generate_url_template(url):
+    return url.format(url=url)
 
 
 @cli.command()
@@ -259,7 +270,7 @@ def new(ctx,
         if not local:
             if not hg:
                 os.system(repo_config_command)
-        else:
+        if not hg:
             enable_github = [
                 "#!/bin/sh",
                 repo_config_command,
@@ -292,17 +303,17 @@ def new(ctx,
             with open('.gitignore', 'x') as fh:
                 fh.write(template)
 
+            url_template = generate_url_template(url=git_repo_url)
+            with open("url.sh", 'x') as fh:
+                fh.write(url_template)
+            os.system("chmod +x url.sh")
+
             os.system("fastep")
 
             os.chdir(app_module_name)
             app_template = generate_app_template(package_name=app_module_name)
             with open(app_module_name + '.py', 'x') as fh:
                 fh.write(app_template)
-
-            echo_url_template = generate_echo_url_template(url=git_repo_url)
-            with open("echo_url.sh", 'x') as fh:
-                fh.write(echo_url_template)
-            os.system("chmod +x echo_url.sh")
 
             os.system("touch __init__.py")
 
