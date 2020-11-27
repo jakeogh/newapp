@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 
-echo_url='''#!/bin/sh
+url='''#!/bin/sh
 echo "{url}"
 '''
 
