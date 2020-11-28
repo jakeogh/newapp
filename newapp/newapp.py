@@ -31,7 +31,7 @@ from kcl.configops import click_read_config
 from kcl.fileops import write_line_to_file
 from kcl.printops import eprint
 
-from .templates import app, ebuild, edit_config, gitignore, setup_py, url
+from .templates import app, ebuild, echo_url, edit_config, gitignore, setup_py
 
 ic.configureOutput(includeContext=True)
 from shutil import get_terminal_size
@@ -136,7 +136,11 @@ def generate_app_template(package_name):
 
 
 def generate_url_template(url):
-    return url.format(url=url)
+    return echo_url.format(url=url)
+
+
+def generate_init_template(package_name):
+    return app.format(package_name=package_name)
 
 
 @cli.command()
@@ -315,7 +319,10 @@ def new(ctx,
             with open(app_module_name + '.py', 'x') as fh:
                 fh.write(app_template)
 
-            os.system("touch __init__.py")
+            init_template = generate_init_template(package_name=app_module_name)
+            with open("__init__.py", 'x') as fh:
+                fh.write(init_template)
+            #os.system("touch __init__.py")
 
             os.chdir(app_path)
             os.system("git add --all")
