@@ -181,7 +181,7 @@ def nineify(ctx, app):
 
 
 @cli.command()
-@click.argument("package-name", type=str)
+@click.argument("package-name", type=str, default="TESTPACKAGE")
 @click.pass_context
 def get_app_template(ctx, package_name):
     app_template = generate_app_template(package_name)
