@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 
 
-init='''
-from ."{package_name}" import "{package_name}"
-'''
+init='''from .{package_name} import {package_name}'''
 
 
 echo_url='''#!/bin/sh
@@ -46,7 +44,7 @@ app = '''#!/usr/bin/env python3
 # TODO:
 #   https://github.com/kvesteri/validators
 import os
-import sys
+#import sys
 import click
 from pathlib import Path
 from collections import defaultdict
