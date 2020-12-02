@@ -31,7 +31,8 @@ from kcl.configops import click_read_config
 from kcl.fileops import write_line_to_file
 from kcl.printops import eprint
 
-from .templates import app, ebuild, echo_url, edit_config, gitignore, setup_py
+from .templates import (app, ebuild, echo_url, edit_config, gitignore, init,
+                        setup_py)
 
 ic.configureOutput(includeContext=True)
 from shutil import get_terminal_size
@@ -140,7 +141,7 @@ def generate_url_template(url):
 
 
 def generate_init_template(package_name):
-    return app.format(package_name=package_name)
+    return init.format(package_name=package_name)
 
 
 @cli.command()
