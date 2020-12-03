@@ -5,8 +5,7 @@ init='''from .{package_name} import {package_name}'''
 
 
 echo_url='''#!/bin/sh
-echo "{url}"
-'''
+echo "{url}"'''
 
 
 edit_config='''#!/bin/sh
@@ -52,6 +51,7 @@ try:
     from icecream import ic  # https://github.com/gruns/icecream
 except ImportError:
     import sys
+
     def eprint(*args, **kwargs):
         if 'file' in kwargs.keys():
             kwargs.pop('file')
@@ -102,6 +102,7 @@ def cli(paths,
         end = '{null}'
     if sys.stdout.isatty():
         end = '{newline}'
+        assert not ipython
 
     global APP_NAME
     config, config_mtime = click_read_config(click_instance=click,
