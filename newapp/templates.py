@@ -43,19 +43,21 @@ app = '''#!/usr/bin/env python3
 # TODO:
 #   https://github.com/kvesteri/validators
 import os
-#import sys
+import sys
 import click
 from pathlib import Path
 from collections import defaultdict
+
+def eprint(*args, **kwargs):
+    if 'file' in kwargs.keys():
+        kwargs.pop('file')
+    print(*args, file=sys.stderr, **kwargs)
+
 try:
     from icecream import ic  # https://github.com/gruns/icecream
 except ImportError:
-    import sys
+    ic = eprint
 
-    def eprint(*args, **kwargs):
-        if 'file' in kwargs.keys():
-            kwargs.pop('file')
-        print(*args, file=sys.stderr, **kwargs)
 
 from kcl.configops import click_read_config
 from kcl.configops import click_write_config_entry
