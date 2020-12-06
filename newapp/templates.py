@@ -87,6 +87,7 @@ APP_NAME = '{package_name}'
 @click.option('--verbose', is_flag=True)
 @click.option('--debug', is_flag=True)
 @click.option('--simulate', is_flag=True)
+@click.option('--ipython', is_flag=True)
 @click.option('--count', type=int)
 @click.option("--printn", is_flag=True)
 #@click.group()
@@ -96,6 +97,7 @@ def cli(paths,
         verbose,
         debug,
         simulate,
+        ipython,
         count,
         printn,):
 
