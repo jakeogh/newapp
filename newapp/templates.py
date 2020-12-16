@@ -129,8 +129,13 @@ def cli(paths,
         if verbose:
             ic(config)
 
+    progress = False
+    if not (kw['verbose'] or kw['debug']):
+        progress = True
+
     for index, path in enumerate_input(iterator=paths,
                                        null=null,
+                                       progress=progress,
                                        head=count,
                                        tail=None,
                                        debug=debug,
@@ -149,6 +154,8 @@ def cli(paths,
 
         with open(path, 'rb') as fh:
             path_bytes_data = fh.read()
+
+        print(path, end=end)
 
 #        if ipython:
 #            import IPython; IPython.embed()
