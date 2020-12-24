@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 
-init='''from .{package_name} import {package_name}'''
+init='''#from .{package_name} import {package_name}'''
 
 
 echo_url='''#!/bin/sh
