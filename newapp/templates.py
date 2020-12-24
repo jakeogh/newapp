@@ -90,6 +90,7 @@ APP_NAME = '{package_name}'
 @click.option('--ipython', is_flag=True)
 @click.option('--count', type=int)
 @click.option("--printn", is_flag=True)
+@click.option("--progress", is_flag=True)
 #@click.group()
 def cli(paths,
         sysskel,
@@ -99,6 +100,7 @@ def cli(paths,
         simulate,
         ipython,
         count,
+        progress,
         printn,):
 
     null = not printn
@@ -129,9 +131,9 @@ def cli(paths,
         if verbose:
             ic(config)
 
-    progress = False
-    if not (kw['verbose'] or kw['debug']):
-        progress = True
+    #progress = False
+    if (verbose or debug):
+        progress = False
 
     for index, path in enumerate_input(iterator=paths,
                                        null=null,
