@@ -46,6 +46,7 @@ import os
 import sys
 import click
 from pathlib import Path
+from retry_on_exception import retry_on_exception
 from collections import defaultdict
 
 def eprint(*args, **kwargs):
@@ -72,6 +73,22 @@ global APP_NAME
 APP_NAME = '{package_name}'
 
 
+#@cli.command()
+#@click.argument("urls", type=str, nargs=-1)
+#@click.pass_context
+#def some_command(ctx, urls):
+#    pass
+#    for index, url in enumerate_input(iterator=urls,
+#                                      null=ctx.obj['null'],
+#                                      progress=ctx.obj['progress'],
+#                                      tail=None,
+#                                      debug=ctx.obj['debug'],
+#                                      verbose=ctx.obj['verbose'],):
+#
+#        if ctx.obj['verbose']:
+#            ic(index, url)
+
+
 # DONT CHANGE FUNC NAME
 @click.command()
 @click.argument("paths", type=str, nargs=-1)
@@ -92,7 +109,9 @@ APP_NAME = '{package_name}'
 @click.option("--printn", is_flag=True)
 @click.option("--progress", is_flag=True)
 #@click.group()
-def cli(paths,
+@click.pass_context
+def cli(ctx,
+        paths,
         sysskel,
         add,
         verbose,
@@ -110,6 +129,17 @@ def cli(paths,
     if sys.stdout.isatty():
         end = '{newline}'
         assert not ipython
+
+    #progress = False
+    if (verbose or debug):
+        progress = False
+
+    ctx.ensure_object(dict)
+    ctx.obj['verbose'] = verbose
+    ctx.obj['debug'] = debug
+    ctx.obj['end'] = end
+    ctx.obj['null'] = null
+    ctx.obj['progress'] = progress
 
     global APP_NAME
     config, config_mtime = click_read_config(click_instance=click,
@@ -130,10 +160,6 @@ def cli(paths,
                                                         verbose=verbose,)
         if verbose:
             ic(config)
-
-    #progress = False
-    if (verbose or debug):
-        progress = False
 
     for index, path in enumerate_input(iterator=paths,
                                        null=null,
