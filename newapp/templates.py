@@ -48,6 +48,8 @@ import click
 from pathlib import Path
 from retry_on_exception import retry_on_exception
 from collections import defaultdict
+from prettyprinter import cpprint, install_extras
+install_extras(['attrs'])
 
 def eprint(*args, **kwargs):
     if 'file' in kwargs.keys():
