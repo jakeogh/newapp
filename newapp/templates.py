@@ -107,7 +107,10 @@ APP_NAME = '{package_name}'
 @click.option('--debug', is_flag=True)
 @click.option('--simulate', is_flag=True)
 @click.option('--ipython', is_flag=True)
-@click.option('--count', type=int)
+@click.option('--count', is_flag=True)
+@click.option('--skip', type=int, default=False)
+@click.option('--head', type=int, default=False)
+@click.option('--tail', type=int, default=False)
 @click.option("--printn", is_flag=True)
 @click.option("--progress", is_flag=True)
 #@click.group()
@@ -121,6 +124,9 @@ def cli(ctx,
         simulate,
         ipython,
         count,
+        skip
+        head,
+        tail,
         progress,
         printn,):
 
@@ -166,18 +172,19 @@ def cli(ctx,
     for index, path in enumerate_input(iterator=paths,
                                        null=null,
                                        progress=progress,
-                                       head=count,
-                                       tail=None,
+                                       skip=skip,
+                                       head=head,
+                                       tail=tail,
                                        debug=debug,
                                        verbose=verbose,):
         path = Path(path)
 
         if verbose or simulate:
             ic(index, path)
-        if count:
-            if count > (index + 1):
-                ic(count)
-                sys.exit(0)
+        #if count:
+        #    if count > (index + 1):
+        #        ic(count)
+        #        sys.exit(0)
 
         if simulate:
             continue
@@ -185,7 +192,11 @@ def cli(ctx,
         with open(path, 'rb') as fh:
             path_bytes_data = fh.read()
 
-        print(path, end=end)
+        if not count:
+            print(path, end=end)
+
+    if count:
+        print(index + 1, end=end)
 
 #        if ipython:
 #            import IPython; IPython.embed()
