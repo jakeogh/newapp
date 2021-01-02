@@ -279,6 +279,7 @@ def new(ctx,
         if not hg:
             enable_github = [
                 "#!/bin/sh",
+                'hub create',
                 repo_config_command,
                 "\n"]
             enable_github = "\n".join(enable_github)
