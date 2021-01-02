@@ -47,9 +47,13 @@ import sys
 import click
 from pathlib import Path
 from retry_on_exception import retry_on_exception
-from collections import defaultdict
-from prettyprinter import cpprint, install_extras
-install_extras(['attrs'])
+from enumerate_input import enumerate_input
+#from collections import defaultdict
+#from prettyprinter import cpprint, install_extras
+#install_extras(['attrs'])
+from kcl.configops import click_read_config
+from kcl.configops import click_write_config_entry
+#from getdents import files
 
 def eprint(*args, **kwargs):
     if 'file' in kwargs.keys():
@@ -63,10 +67,6 @@ except ImportError:
     ic = eprint
 
 
-from kcl.configops import click_read_config
-from kcl.configops import click_write_config_entry
-from enumerate_input import enumerate_input
-#from getdents import files
 
 # import pdb; pdb.set_trace()
 # from pudb import set_trace; set_trace(paused=False)
@@ -124,7 +124,7 @@ def cli(ctx,
         simulate,
         ipython,
         count,
-        skip
+        skip,
         head,
         tail,
         progress,
