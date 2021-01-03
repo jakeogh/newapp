@@ -83,7 +83,9 @@ APP_NAME = '{package_name}'
 #    for index, url in enumerate_input(iterator=urls,
 #                                      null=ctx.obj['null'],
 #                                      progress=ctx.obj['progress'],
-#                                      tail=None,
+#                                      skip=ctx.obj['skip'],
+#                                      head=ctx.obj['head'],
+#                                      tail=ctx.obj['tail'],
 #                                      debug=ctx.obj['debug'],
 #                                      verbose=ctx.obj['verbose'],):
 #
@@ -152,7 +154,8 @@ def cli(ctx,
     global APP_NAME
     config, config_mtime = click_read_config(click_instance=click,
                                              app_name=APP_NAME,
-                                             verbose=verbose,)
+                                             verbose=verbose,
+                                             debug=debug,)
     if verbose:
         ic(config, config_mtime)
 
@@ -165,7 +168,8 @@ def cli(ctx,
                                                         section=section,
                                                         key=key,
                                                         value=value,
-                                                        verbose=verbose,)
+                                                        verbose=verbose,
+                                                        debug=debug,)
         if verbose:
             ic(config)
 
