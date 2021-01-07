@@ -55,6 +55,10 @@ from kcl.configops import click_read_config
 from kcl.configops import click_write_config_entry
 #from getdents import files
 
+# click-command-tree
+#from click_plugins import with_plugins
+#from pkg_resources import iter_entry_points
+
 def eprint(*args, **kwargs):
     if 'file' in kwargs.keys():
         kwargs.pop('file')
@@ -115,6 +119,7 @@ APP_NAME = '{package_name}'
 @click.option('--tail', type=int, default=False)
 @click.option("--printn", is_flag=True)
 @click.option("--progress", is_flag=True)
+#@with_plugins(iter_entry_points('click_command_tree'))
 #@click.group()
 @click.pass_context
 def cli(ctx,
@@ -229,6 +234,7 @@ RDEPEND="
 	dev-python/click[${{PYTHON_USEDEP}}]
 	dev-python/icecream[${{PYTHON_USEDEP}}]
 	dev-python/colorama[${{PYTHON_USEDEP}}]
+	dev-python/click-command-tree[${{PYTHON_USEDEP}}]
 "
 
 DEPEND="${{RDEPEND}}"
@@ -248,7 +254,7 @@ from setuptools import find_packages, setup
 if not sys.version_info[0] == 3:
     sys.exit("Python 3 is required. Use: \\'python3 setup.py install\\'")
 
-dependencies = ["icecream", "click", "colorama"]
+dependencies = ["icecream", "click", "colorama", "click-command-tree"]
 
 config = {{
     "version": "0.1",
