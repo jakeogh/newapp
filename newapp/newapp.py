@@ -51,7 +51,7 @@ CONTEXT_SETTINGS = dict(default_map=CFG)
     #     terminal_width=shutil.get_terminal_size((80, 20)).columns)
 
 
-@click.group(context_settings=CONTEXT_SETTINGS)
+@click.group(context_settings=CONTEXT_SETTINGS, no_args_is_help=True)
 @click.option('--verbose', is_flag=True)
 @click.pass_context
 def cli(ctx, verbose):
