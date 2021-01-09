@@ -138,6 +138,9 @@ def cli(ctx,
     ctx.obj['null'] = null
     ctx.obj['progress'] = progress
     ctx.obj['count'] = count
+    ctx.obj['skip'] = skip
+    ctx.obj['head'] = head
+    ctx.obj['tail'] = tail
 
     global APP_NAME
     config, config_mtime = click_read_config(click_instance=click,
