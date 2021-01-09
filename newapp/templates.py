@@ -79,24 +79,6 @@ global APP_NAME
 APP_NAME = '{package_name}'
 
 
-#@cli.command()
-#@click.argument("urls", type=str, nargs=-1)
-#@click.pass_context
-#def some_command(ctx, urls):
-#    pass
-#    for index, url in enumerate_input(iterator=urls,
-#                                      null=ctx.obj['null'],
-#                                      progress=ctx.obj['progress'],
-#                                      skip=ctx.obj['skip'],
-#                                      head=ctx.obj['head'],
-#                                      tail=ctx.obj['tail'],
-#                                      debug=ctx.obj['debug'],
-#                                      verbose=ctx.obj['verbose'],):
-#
-#        if ctx.obj['verbose']:
-#            ic(index, url)
-
-
 # DONT CHANGE FUNC NAME
 @click.command()
 @click.argument("paths", type=str, nargs=-1)
@@ -155,6 +137,7 @@ def cli(ctx,
     ctx.obj['end'] = end
     ctx.obj['null'] = null
     ctx.obj['progress'] = progress
+    ctx.obj['count'] = count
 
     global APP_NAME
     config, config_mtime = click_read_config(click_instance=click,
@@ -178,7 +161,9 @@ def cli(ctx,
         if verbose:
             ic(config)
 
-    for index, path in enumerate_input(iterator=paths,
+    iterator = paths
+
+    for index, path in enumerate_input(iterator=iterator,
                                        null=null,
                                        progress=progress,
                                        skip=skip,
@@ -209,6 +194,25 @@ def cli(ctx,
 
 #        if ipython:
 #            import IPython; IPython.embed()
+
+#@cli.command()
+#@click.argument("urls", type=str, nargs=-1)
+#@click.pass_context
+#def some_command(ctx, urls):
+#    pass
+#    iterator = urls
+#    for index, url in enumerate_input(iterator=iterator,
+#                                      null=ctx.obj['null'],
+#                                      progress=ctx.obj['progress'],
+#                                      skip=ctx.obj['skip'],
+#                                      head=ctx.obj['head'],
+#                                      tail=ctx.obj['tail'],
+#                                      debug=ctx.obj['debug'],
+#                                      verbose=ctx.obj['verbose'],):
+#
+#        if ctx.obj['verbose']:
+#            ic(index, url)
+
 
 
 '''
