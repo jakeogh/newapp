@@ -344,7 +344,7 @@ def new(ctx,
         with open(ebuild_name, 'w') as fh:
             fh.write(generate_ebuild_template(description=description,
                                               homepage=git_repo_url,
-                                              app_path=app_path))
+                                              app_path=app_path,))
         os.system("git add " + ebuild_name)
         os.system("ebuild {} manifest".format(ebuild_name))
         os.system("git add *")
@@ -356,7 +356,9 @@ def new(ctx,
         write_line_to_file(file_to_write=accept_keywords,
                            line=accept_keyword,
                            unique=True,
-                           make_new=False)
+                           make_new=False,
+                           verbose=verbose,
+                           debug=debug,)
     else:
         eprint("Not creating new ebuild, {} already exists.".format(ebuild_path))
 
