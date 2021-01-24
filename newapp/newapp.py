@@ -53,10 +53,12 @@ CONTEXT_SETTINGS = dict(default_map=CFG)
 
 @click.group(context_settings=CONTEXT_SETTINGS, no_args_is_help=True)
 @click.option('--verbose', is_flag=True)
+@click.option('--debug', is_flag=True)
 @click.pass_context
-def cli(ctx, verbose):
+def cli(ctx, verbose, debug):
     ctx.ensure_object(dict)
     ctx.obj['verbose'] = verbose
+    ctx.obj['debug'] = debug
 
 
 def get_url_for_overlay(overlay, verbose=False):
@@ -225,6 +227,7 @@ def new(ctx,
         rename):
 
     verbose = ctx.obj['verbose']
+    debug = ctx.obj['debug']
     ic(apps_folder)
 
     if not template:
