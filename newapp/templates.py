@@ -53,6 +53,7 @@ from enumerate_input import enumerate_input
 #install_extras(['attrs'])
 from kcl.configops import click_read_config
 from kcl.configops import click_write_config_entry
+#from kcl.pathops import path_is_block_special
 #from getdents import files
 
 # click-command-tree

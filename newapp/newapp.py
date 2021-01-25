@@ -245,10 +245,10 @@ def new(ctx,
     git_repo_url_parsed = urlparse(git_repo_url)
     git_repo_url_path = Path(git_repo_url_parsed.path)
     app_name = git_repo_url_path.parts[-1]
-    app_module_name = app_name.replace('-', '_')
-
     if rename:
         app_name = rename
+    app_module_name = app_name.replace('-', '_')
+
     app_path = Path(apps_folder) / Path(app_module_name)
     ic(app_path)
     ic(app_name)
