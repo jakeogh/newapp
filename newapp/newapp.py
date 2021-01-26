@@ -332,6 +332,7 @@ def new(ctx,
             with open("__init__.py", 'x') as fh:
                 fh.write(init_template)
             #os.system("touch __init__.py")
+            os.system("touch py.typed")
 
             os.chdir(app_path)
             os.system("git add --all")

@@ -274,6 +274,7 @@ config = {{
     "description": "{description}",
     "long_description": __doc__,
     "packages": find_packages(exclude=['tests']),
+    package_data={"{package_name}": ["py.typed"]},
     "include_package_data": True,
     "zip_safe": False,
     "platforms": "any",
