@@ -26,6 +26,7 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 import click
+import sh
 from icecream import ic
 from kcl.commandops import run_command
 from kcl.configops import click_read_config
@@ -34,13 +35,6 @@ from kcl.printops import eprint
 
 from .templates import (app, ebuild, echo_url, edit_config, gitignore, init,
                         setup_py)
-
-ic.configureOutput(includeContext=True)
-from shutil import get_terminal_size
-
-import sh
-
-ic.lineWrapWidth, _ = get_terminal_size((80, 20))
 
 CFG, CONFIG_MTIME = click_read_config(click_instance=click,
                                       app_name='newapp',
