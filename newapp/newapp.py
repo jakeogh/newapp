@@ -38,6 +38,8 @@ from .templates import (app, ebuild, echo_url, edit_config, gitignore, init,
 ic.configureOutput(includeContext=True)
 from shutil import get_terminal_size
 
+import sh
+
 ic.lineWrapWidth, _ = get_terminal_size((80, 20))
 
 CFG, CONFIG_MTIME = click_read_config(click_instance=click,
@@ -253,6 +255,7 @@ def new(ctx,
     ic(app_path)
     ic(app_name)
     if not app_path.exists():
+        os.chdir(app_path)
         if template:
             if hg:
                 clone_cmd = " ".join(["hg clone", git_repo_url, str(app_path)])
@@ -260,7 +263,6 @@ def new(ctx,
                 clone_cmd = " ".join(["git clone", git_repo_url, str(app_path)])
             ic(clone_cmd)
             os.system(clone_cmd)
-            os.chdir(app_path)
             #if template.startswith('https://github.com/'):
             if not hg:
                 git_fork_cmd = "hub fork"
@@ -271,7 +273,6 @@ def new(ctx,
             if hg:
                 assert False
             os.makedirs(app_path, exist_ok=False)
-            os.chdir(app_path)
             os.makedirs(app_module_name, exist_ok=False)
             os.system("git init")
 
@@ -363,6 +364,7 @@ def new(ctx,
                            make_new=False,
                            verbose=verbose,
                            debug=debug,)
+        sh.ln('-s', ebuild_name, app_path / ebuild_name)
     else:
         eprint("Not creating new ebuild, {} already exists.".format(ebuild_path))
 
