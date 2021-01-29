@@ -255,7 +255,6 @@ def new(ctx,
     ic(app_path)
     ic(app_name)
     if not app_path.exists():
-        os.chdir(app_path)
         if template:
             if hg:
                 clone_cmd = " ".join(["hg clone", git_repo_url, str(app_path)])
@@ -269,10 +268,12 @@ def new(ctx,
                 os.system(git_fork_cmd)
             #else:
             #    raise NotImplementedError
+            os.chdir(app_path)
         else:
             if hg:
                 assert False
             os.makedirs(app_path, exist_ok=False)
+            os.chdir(app_path)
             os.makedirs(app_module_name, exist_ok=False)
             os.system("git init")
 
