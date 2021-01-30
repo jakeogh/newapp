@@ -285,7 +285,7 @@ def new(ctx,
             os.makedirs(app_module_name, exist_ok=False)
             os.system("git init")
 
-        #repo_config_command = "git remote set-url origin git@github.com:jakeogh/" + app_name + '.git'
+        # repo_config_command = "git remote set-url origin git@github.com:jakeogh/" + app_name + '.git'
         if not hg:
             repo_config_command = "git remote add origin git@github.com:jakeogh/" + app_name + '.git'
             ic(repo_config_command)
