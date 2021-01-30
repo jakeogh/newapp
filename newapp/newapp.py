@@ -33,8 +33,8 @@ from kcl.configops import click_read_config
 from kcl.fileops import write_line_to_file
 from kcl.printops import eprint
 
-from .templates import (app, ebuild, echo_url, edit_config, gitignore, init,
-                        setup_py)
+from newapp.templates import (app, ebuild, echo_url, edit_config, gitignore,
+                              init, setup_py)
 
 CFG, CONFIG_MTIME = click_read_config(click_instance=click,
                                       app_name='newapp',
@@ -114,6 +114,14 @@ def generate_setup_py(*,
                       owner,
                       owner_email,
                       description,):
+
+    ic(url,
+       package_name,
+       command,
+       license,
+       owner,
+       owner_email,
+       description,)
 
     return setup_py.format(package_name=package_name,
                            command=command,
