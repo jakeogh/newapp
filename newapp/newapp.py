@@ -1,6 +1,27 @@
 #!/usr/bin/env python3
 # -*- coding: utf8 -*-
 
+import os
+import shutil
+from pathlib import Path
+from urllib.parse import urlparse
+
+import click
+import sh
+from icecream import ic
+from kcl.commandops import run_command
+from kcl.configops import click_read_config
+from kcl.fileops import write_line_to_file
+from kcl.printops import eprint
+
+from .templates import app
+from .templates import ebuild
+from .templates import echo_url
+from .templates import edit_config
+from .templates import gitignore
+from .templates import init
+from .templates import setup_py
+
 # pylint: disable=C0111  # docstrings are always outdated and wrong
 # pylint: disable=W0511  # todo is encouraged
 # pylint: disable=C0301  # line too long
@@ -20,21 +41,7 @@
 # pylint: disable=C0305  # Trailing newlines
 
 
-import os
-import shutil
-from pathlib import Path
-from urllib.parse import urlparse
 
-import click
-import sh
-from icecream import ic
-from kcl.commandops import run_command
-from kcl.configops import click_read_config
-from kcl.fileops import write_line_to_file
-from kcl.printops import eprint
-
-from newapp.templates import (app, ebuild, echo_url, edit_config, gitignore,
-                              init, setup_py)
 
 CFG, CONFIG_MTIME = click_read_config(click_instance=click,
                                       app_name='newapp',
@@ -367,7 +374,7 @@ def new(ctx,
                            make_new=False,
                            verbose=verbose,
                            debug=debug,)
-        sh.ln('-s', ebuild_name, app_path / ebuild_name)
+        sh.ln('-s', ebuild_path / ebuild_name, app_path / ebuild_name)
     else:
         eprint("Not creating new ebuild, {} already exists.".format(ebuild_path))
 
