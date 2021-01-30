@@ -13,6 +13,7 @@ from kcl.commandops import run_command
 from kcl.configops import click_read_config
 from kcl.fileops import write_line_to_file
 from kcl.printops import eprint
+from kcl.userops import not_root
 
 from .templates import app
 from .templates import ebuild
@@ -61,6 +62,7 @@ def cli(ctx, verbose, debug):
     ctx.ensure_object(dict)
     ctx.obj['verbose'] = verbose
     ctx.obj['debug'] = debug
+    not_root()
 
 
 def get_url_for_overlay(overlay, verbose=False):

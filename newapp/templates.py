@@ -23,6 +23,7 @@ dont_unmerge=""
 
 
 app = '''#!/usr/bin/env python3
+# -*- coding: utf8 -*-
 
 # pylint: disable=C0111  # docstrings are always outdated and wrong
 # pylint: disable=W0511  # todo is encouraged
