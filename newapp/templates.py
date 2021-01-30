@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
 
+from icecream import ic
+
 init='''#from .{package_name} import {package_name}'''
 
 
@@ -274,7 +276,7 @@ config = {{
     "description": "{description}",
     "long_description": __doc__,
     "packages": find_packages(exclude=['tests']),
-    package_data={"{package_name}": ["py.typed"]},
+    "package_data": {"{package_name}": ['py.typed']},
     "include_package_data": True,
     "zip_safe": False,
     "platforms": "any",
