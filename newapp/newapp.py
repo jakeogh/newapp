@@ -62,7 +62,7 @@ def cli(ctx, verbose, debug):
     ctx.ensure_object(dict)
     ctx.obj['verbose'] = verbose
     ctx.obj['debug'] = debug
-    not_root()
+
 
 
 def get_url_for_overlay(overlay, verbose=False):
@@ -183,6 +183,7 @@ def get_overlay_url(ctx, overlay_name):
 @click.argument("app", type=str)
 @click.pass_context
 def nineify(ctx, app):
+    not_root()
     assert '/' in app
     group, name = app.split('/')
     ic(group)
@@ -238,6 +239,7 @@ def new(ctx,
         hg,
         rename):
 
+    not_root()
     verbose = ctx.obj['verbose']
     debug = ctx.obj['debug']
     ic(apps_folder)

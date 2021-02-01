@@ -56,6 +56,7 @@ from enumerate_input import enumerate_input
 #install_extras(['attrs'])
 from kcl.configops import click_read_config
 from kcl.configops import click_write_config_entry
+from kcl.userops import not_root
 #from kcl.pathops import path_is_block_special
 #from getdents import files
 
@@ -112,16 +113,16 @@ def cli(ctx,
         paths,
         sysskel,
         add,
-        verbose,
-        debug,
-        simulate,
-        ipython,
-        count,
-        skip,
-        head,
-        tail,
-        progress,
-        printn,):
+        verbose: bool,
+        debug: bool,
+        simulate: bool,
+        ipython: bool,
+        count: bool,
+        skip: int,
+        head: int,
+        tail: int,
+        progress: bool,
+        printn: bool,):
 
     null = not printn
     end = '{newline}'
