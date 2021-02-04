@@ -299,7 +299,7 @@ def new(ctx,
         if not hg:
             enable_github = [
                 "#!/bin/sh",
-                'hub create',
+                'hub create {}'.format('jakeogh/' + app_name ),
                 repo_config_command,
                 "\n"]
             enable_github = "\n".join(enable_github)
