@@ -301,6 +301,7 @@ def new(ctx,
                 "#!/bin/sh",
                 'hub create {}'.format('jakeogh/' + app_name ),
                 repo_config_command,
+                'git push --set-upstream origin master',
                 "\n"]
             enable_github = "\n".join(enable_github)
             with open("enable_github.sh", 'x') as fh:
