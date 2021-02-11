@@ -59,6 +59,9 @@ from kcl.configops import click_write_config_entry
 from kcl.userops import not_root
 #from kcl.pathops import path_is_block_special
 #from getdents import files
+from typing import List
+from typing import Sequence
+from typing import Generator
 
 # click-command-tree
 #from click_plugins import with_plugins
