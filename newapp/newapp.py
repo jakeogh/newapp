@@ -428,11 +428,6 @@ def new(ctx,
 
         os.chdir(app_path)
 
-        with open(".edit_config", 'x') as fh:
-            fh.write(generate_edit_config(package_name=app_name,
-                                          package_group=group,
-                                          local=local))
-
         if not template_repo_url:
             with open("setup.py", 'x') as fh:
                 fh.write(generate_setup_py(package_name=app_module_name,
@@ -468,6 +463,12 @@ def new(ctx,
             sh.git.add('--all')
     else:
         eprint("Not creating new app, {} already exists.".format(app_path))
+
+    os.chdir(app_path)
+    with open(".edit_config", 'x') as fh:
+        fh.write(generate_edit_config(package_name=app_name,
+                                      package_group=group,
+                                      local=local))
 
     ebuild_path = Path(gentoo_overlay_repo) / Path(group) / Path(app_name)
     if not ebuild_path.exists():
