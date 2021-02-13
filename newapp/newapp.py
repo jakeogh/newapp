@@ -222,6 +222,9 @@ def rename_repo(*,
         path = dent.pathlib
         if path.name.startswith('.'):
             continue
+        if path.as_posix().startswith(app_path / Path('.git')):
+            continue
+
         if old_name in path.name:
             new_path_name = path.name.replace(old_name, new_name)
             new_path = path.parent / Path(new_path_name)
@@ -231,6 +234,8 @@ def rename_repo(*,
     for dent in all_files:
         path = dent.pathlib
         if path.name.startswith('.'):
+            continue
+        if path.as_posix().startswith(app_path / Path('.git')):
             continue
         assert old_name not in path.name
         modify_file(file_to_modify=path,
