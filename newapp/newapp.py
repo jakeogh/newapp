@@ -419,13 +419,6 @@ def new(ctx,
                     verbose=verbose,
                     debug=debug,)
 
-        remote_add_origin(hg=hg,
-                          app_path=app_path,
-                          local=local,
-                          app_name=app_name,
-                          verbose=verbose,
-                          debug=debug,)
-
         os.chdir(app_path)
 
         if not template_repo_url:
@@ -469,6 +462,13 @@ def new(ctx,
         fh.write(generate_edit_config(package_name=app_name,
                                       package_group=group,
                                       local=local))
+
+    remote_add_origin(hg=hg,
+                      app_path=app_path,
+                      local=local,
+                      app_name=app_name,
+                      verbose=verbose,
+                      debug=debug,)
 
     ebuild_path = Path(gentoo_overlay_repo) / Path(group) / Path(app_name)
     if not ebuild_path.exists():
