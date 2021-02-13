@@ -8,6 +8,7 @@ from urllib.parse import urlparse
 
 import click
 import sh
+from getdents import files
 from getdents import paths
 from icecream import ic
 from kcl.commandops import run_command
@@ -226,8 +227,8 @@ def rename_repo(*,
             new_path = path.parent / Path(new_path_name)
             sh.git.mv(path, new_path)
 
-    all_paths = list(paths(app_path, verbose=verbose, debug=debug,))
-    for dent in all_paths:
+    all_files = list(files(app_path, verbose=verbose, debug=debug,))
+    for dent in all_files:
         path = dent.pathlib
         if path.name.startswith('.'):
             continue
