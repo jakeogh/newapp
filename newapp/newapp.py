@@ -8,12 +8,14 @@ from urllib.parse import urlparse
 
 import click
 import sh
+from getdents import paths
 from icecream import ic
 from kcl.commandops import run_command
 from kcl.configops import click_read_config
 from kcl.fileops import write_line_to_file
 from kcl.printops import eprint
 from kcl.userops import not_root
+from replace_text import modify_file
 
 from .templates import app
 from .templates import ebuild
@@ -42,7 +44,6 @@ from .templates import setup_py
 # pylint: disable=C0305  # Trailing newlines
 
 
-
 CFG, CONFIG_MTIME = click_read_config(click_instance=click,
                                       app_name='newapp',
                                       verbose=False,
@@ -62,7 +63,6 @@ def cli(ctx, verbose, debug):
     ctx.ensure_object(dict)
     ctx.obj['verbose'] = verbose
     ctx.obj['debug'] = debug
-
 
 
 def get_url_for_overlay(overlay, verbose=False):
@@ -208,6 +208,141 @@ def get_app_template(ctx, package_name):
     print(app_template)
 
 
+def rename_repo(*,
+                app_path: Path,
+                old_name: str,
+                new_name: str,
+                verbose: bool,
+                debug: bool,):
+    os.chdir(app_path)
+    sh.git.mv(old_name, new_name)
+    all_paths = list(paths(app_path, verbose=verbose, debug=debug,))
+    for dent in all_paths:
+        path = dent.pathlib
+        if path.name.startswith('.'):
+            continue
+        if old_name in path.name:
+            new_path_name = path.name.replace(old_name, new_name)
+            new_path = path.parent / Path(new_path_name)
+            sh.git.mv(path, new_path)
+
+    all_paths = list(paths(app_path, verbose=verbose, debug=debug,))
+    for dent in all_paths:
+        path = dent.pathlib
+        if path.name.startswith('.'):
+            continue
+        assert old_name not in path.name
+        modify_file(file_to_modify=path,
+                    match=old_name,
+                    replacement=new_name,
+                    verbose=verbose,
+                    debug=debug,)
+
+
+def clone_repo(*,
+               branch: str,
+               repo_url: str,
+               template_repo_url: str,
+               app_path: Path,
+               hg: bool,
+               verbose: bool,
+               debug: bool,):
+
+    app_name, app_user = parse_url(repo_url, verbose=verbose, debug=debug,)
+    if template_repo_url:
+        template_app_name, template_app_user = parse_url(template_repo_url, verbose=verbose, debug=debug,)
+        repo_to_clone_url = template_repo_url
+        if template_app_name != app_name:
+            rename = True
+    else:
+        repo_to_clone_url = repo_url
+        rename = False
+
+    if hg:
+        clone_cmd = "hg clone"
+    else:
+        clone_cmd = "git clone"
+
+    clone_cmd = " ".join([clone_cmd, repo_to_clone_url, str(app_path)])
+    ic(clone_cmd)
+    os.system(clone_cmd)
+
+    if branch != "master":
+        branch_cmd = "git checkout -b " + '"' + branch + '"'
+        ic(branch_cmd)
+        os.system(branch_cmd)
+
+    if not rename:  # when renaming a template repo, dont want to fork if its one of my repos
+        git_fork_cmd = "hub fork"
+        os.system(git_fork_cmd)
+    else:
+        rename_repo(app_path=app_path,
+                    old_name=template_app_name,
+                    new_name=app_name,
+                    verbose=verbose,
+                    debug=debug,)
+
+
+def create_repo(*,
+                app_path: Path,
+                app_module_name: str,
+                hg: bool,
+                verbose: bool,
+                debug: bool,):
+
+    if hg:
+        raise NotImplementedError('hg')
+    os.makedirs(app_path, exist_ok=False)
+    os.chdir(app_path)
+    os.makedirs(app_module_name, exist_ok=False)
+    os.system("git init")
+
+
+def remote_add_origin(*,
+                      app_path: Path,
+                      local: bool,
+                      app_name: str,
+                      hg: bool,
+                      verbose: bool,
+                      debug: bool,):
+
+    if hg:
+        raise NotImplementedError('hg')
+
+    repo_config_command = "git remote add origin git@github.com:jakeogh/{}.git".format(app_name)
+    ic(repo_config_command)
+    if not local:
+        os.chdir(app_path)
+        os.system(repo_config_command)
+    else:
+        ic('local == True, skipping:', repo_config_command)
+
+    enable_github = [
+        "#!/bin/sh",
+        'hub create {}'.format('jakeogh/' + app_name),
+        repo_config_command,
+        'git push --set-upstream origin master',
+        "\n"]
+    enable_github = "\n".join(enable_github)
+    output_file = app_path / Path('enable_github.sh')
+    with open(output_file, 'x') as fh:
+        fh.write(enable_github)
+
+
+def parse_url(repo_url: str, *,
+              verbose: bool,
+              debug: bool,):
+
+    url_parsed = urlparse(repo_url)
+    if verbose:
+        ic(url_parsed)
+
+    repo_url_path = Path(url_parsed.path)
+    app_name = repo_url_path.parts[-1]
+    app_user = repo_url_path.parts[-2]
+    return app_name, app_user
+
+
 @cli.command()
 @click.argument('git_repo_url', type=str, nargs=1)
 @click.argument('group', type=str, nargs=1)
@@ -220,12 +355,11 @@ def get_app_template(ctx, package_name):
 @click.option('--owner-email', type=str, required=True)
 @click.option('--description', type=str, default="Short explination of what it does _here_")
 @click.option('--local', is_flag=True)
-@click.option('--template', is_flag=True)
+@click.option('--template', type=str)
 @click.option('--hg', is_flag=True)
-@click.option('--rename', type=str)
 @click.pass_context
 def new(ctx,
-        git_repo_url,
+        repo_url,
         group, branch,
         apps_folder,
         gentoo_overlay_repo,
@@ -235,89 +369,62 @@ def new(ctx,
         owner_email,
         description,
         local,
-        template,
-        hg,
-        rename):
+        template_repo_url,
+        hg,):
 
     not_root()
     verbose = ctx.obj['verbose']
     debug = ctx.obj['debug']
     ic(apps_folder)
 
-    if not template:
-        assert git_repo_url.startswith('https://github.com/{}/'.format(github_user))
+    assert repo_url.startswith('https://github.com/{}/'.format(github_user))
 
-    if rename:
-        assert template
-
-    if git_repo_url.endswith('.git'):
-        git_repo_url = git_repo_url[:-4]
+    if repo_url.endswith('.git'):
+        repo_url = repo_url[:-4]
 
     assert '/' not in group
     assert ':' not in group
 
-    git_repo_url_parsed = urlparse(git_repo_url)
-    git_repo_url_path = Path(git_repo_url_parsed.path)
-    app_name = git_repo_url_path.parts[-1]
-    if rename:
-        app_name = rename
+    app_name, app_user = parse_url(repo_url, verbose=verbose, debug=debug,)
+    ic(app_name)
+    ic(app_user)
+    assert app_user == github_user
     app_module_name = app_name.replace('-', '_')
-
+    ic(app_module_name)
     app_path = Path(apps_folder) / Path(app_module_name)
     ic(app_path)
-    ic(app_name)
+
+    if template_repo_url:
+        clone_repo(repo_url=repo_url,
+                   template_repo_url=template_repo_url,
+                   hg=hg,
+                   branch=branch,
+                   app_path=app_path,
+                   verbose=verbose,
+                   debug=debug,)
+
     if not app_path.exists():
-        if template:
-            if hg:
-                clone_cmd = " ".join(["hg clone", git_repo_url, str(app_path)])
-            else:
-                clone_cmd = " ".join(["git clone", git_repo_url, str(app_path)])
-            ic(clone_cmd)
-            os.system(clone_cmd)
-            #if template.startswith('https://github.com/'):
-            if not hg:
-                git_fork_cmd = "hub fork"
-                os.system(git_fork_cmd)
-            #else:
-            #    raise NotImplementedError
-            os.chdir(app_path)
-        else:
-            if hg:
-                assert False
-            os.makedirs(app_path, exist_ok=False)
-            os.chdir(app_path)
-            os.makedirs(app_module_name, exist_ok=False)
-            os.system("git init")
+        create_repo(hg=hg,
+                    app_path=app_path,
+                    app_module_name=app_module_name,
+                    verbose=verbose,
+                    debug=debug,)
 
-        # repo_config_command = "git remote set-url origin git@github.com:jakeogh/" + app_name + '.git'
-        if not hg:
-            repo_config_command = "git remote add origin git@github.com:jakeogh/" + app_name + '.git'
-            ic(repo_config_command)
-        if not local:
-            if not hg:
-                os.system(repo_config_command)
-        if not hg:
-            enable_github = [
-                "#!/bin/sh",
-                'hub create {}'.format('jakeogh/' + app_name ),
-                repo_config_command,
-                'git push --set-upstream origin master',
-                "\n"]
-            enable_github = "\n".join(enable_github)
-            with open("enable_github.sh", 'x') as fh:
-                fh.write(enable_github)
+        remote_add_origin(hg=hg,
+                          app_path=app_path,
+                          local=local,
+                          app_name=app_name,
+                          verbose=verbose,
+                          debug=debug,)
 
-        if branch != "master":
-            branch_cmd = "git checkout -b " + '"' + branch + '"'
-            ic(branch_cmd)
-            os.system(branch_cmd)
+        os.chdir(app_path)
 
         with open(".edit_config", 'x') as fh:
             fh.write(generate_edit_config(package_name=app_name,
                                           package_group=group,
                                           local=local))
 
-        if not template:
+        if not template_repo_url:
             with open("setup.py", 'x') as fh:
                 fh.write(generate_setup_py(package_name=app_module_name,
                                            command=app_name,
@@ -325,16 +432,16 @@ def new(ctx,
                                            owner_email=owner_email,
                                            description=description,
                                            license=license,
-                                           url=git_repo_url))
+                                           url=repo_url))
 
             template = generate_gitignore_template()
             with open('.gitignore', 'x') as fh:
                 fh.write(template)
 
-            url_template = generate_url_template(url=git_repo_url)
+            url_template = generate_url_template(url=repo_url)
             with open("url.sh", 'x') as fh:
                 fh.write(url_template)
-            os.system("chmod +x url.sh")
+            sh.chmod('+x', 'url.sh')
 
             os.system("fastep")
 
@@ -346,11 +453,10 @@ def new(ctx,
             init_template = generate_init_template(package_name=app_module_name)
             with open("__init__.py", 'x') as fh:
                 fh.write(init_template)
-            #os.system("touch __init__.py")
-            os.system("touch py.typed")
+            sh.touch('py.typed')
 
             os.chdir(app_path)
-            os.system("git add --all")
+            sh.git.add('--all')
     else:
         eprint("Not creating new app, {} already exists.".format(app_path))
 
@@ -362,7 +468,7 @@ def new(ctx,
 
         with open(ebuild_name, 'w') as fh:
             fh.write(generate_ebuild_template(description=description,
-                                              homepage=git_repo_url,
+                                              homepage=repo_url,
                                               app_path=app_path,))
         os.system("git add " + ebuild_name)
         os.system("ebuild {} manifest".format(ebuild_name))
@@ -402,18 +508,6 @@ def new(ctx,
 ##sys.excepthook = log_uncaught_exceptions
 #
 #
-## handle stdin or a filename as input
-#if __name__ == '__main__':
-#    import sys
-#    if len(sys.argv[:]) < 2:
-#        path = '/dev/stdin'
-#        main(path)
-#    else:
-#        for path in sys.argv[1:]:
-#            if path.startswith(b'file://'):
-#                main(path)
-#            else:
-#                main(path)
 #
 #import os
 #home = os.path.expanduser("~")
@@ -421,27 +515,6 @@ def new(ctx,
 #os.path.altsep = b'/'
 #program_folder = os.path.dirname(os.path.realpath(__file__))
 #
-#if len(sys.argv[]) < 2:
-#        path = '/dev/stdin'
-#else:
-#        path = sys.argv[1]
-#
-#input_fh = open(path, 'rb')
-#try:
-#    input = sys.argv[1]
-#except:
-#    input = open('/dev/stdin', 'r').read()
-#
-#
-#try:
-#    filedir = os.path.expanduser(sys.argv[1])
-#except IndexError:
-#    print 'Script must be called with one argument.'
-#    sys.exit(1)
-#
-#if (not filedir[-1] == '/'):
-#    filedir += '/'
-#files = os.listdir(filedir)
 #
 #def debug(func):
 #    msg = func.__qualname__
@@ -456,102 +529,6 @@ def new(ctx,
 ##http://liw.fi/cmdtest/
 ##http://liw.fi/cliapp/
 #
-#"""
-#SYNOPSIS
-#
-#    TODO helloworld [-h] [-v,--verbose] [--version]
-#
-#DESCRIPTION
-#
-#    TODO This describes how to use this script.
-#    This docstring will be printed by the script if there is an error or
-#    if the user requests help (-h or --help).
-#
-#EXAMPLES
-#
-#    TODO: Show some examples of how to use this script.
-#
-#EXIT STATUS
-#
-#    TODO: List exit codes
-#
-#AUTHOR
-#
-#    TODO: Name <name@example.org>
-#
-#LICENSE
-#
-#    TODO: This script is not licensed yet.
-#
-#VERSION
-#
-#"""
-#
-##import urllib
-##import urlparse
-##import serial
-##import numpy
-##import scipy
-#
-#import sys
-#import os
-#import traceback
-#import optparse
-#import time
-##from pexpect import run, spawn
-#from os.path import exists
-#from sys import exit
-#
-## Uncomment the following section if you want readline history support.
-##import readline, atexit
-##histfile = os.path.join(os.environ['HOME'], '.TODO_history')
-##try:
-##    readline.read_history_file(histfile)
-##except IOError:
-##    pass
-##atexit.register(readline.write_history_file, histfile)
-#
-#def main ():
-#
-#    global options, args
-#
-#        try:
-#        print "options=",options
-#        print "args=",args
-#
-#        except IndexError:
-#                sys.stderr.write(helpstring)
-#
-#
-#if __name__ == '__main__':
-#    try:
-#            start_time = time.time()
-#            parser = optparse.OptionParser(formatter=optparse.TitledHelpFormatter(), usage=globals()['__doc__'], version='0.1')
-#            parser.add_option('-v', '--verbose', action='store_true', default=False, help='verbose output')
-#            parser.add_option('-q', '--quick', action='store_true', default=False, help='quick compare, not 100%')
-#            (options, args) = parser.parse_args()
-#            if len(args) < 1:
-#                parser.error('missing argument')
-#            if options.verbose: print time.asctime()
-#
-#            exit_code = main()
-#
-#            if exit_code is None:
-#                    exit_code = 0
-#            if options.verbose: print time.asctime()
-#            if options.verbose: print 'TOTAL TIME IN MINUTES:',
-#            if options.verbose: print (time.time() - start_time) / 60.0
-#        print " "
-#            sys.exit(exit_code)
-#        except KeyboardInterrupt, e: # Ctrl-C
-#            raise e
-#        except SystemExit, e: # sys.exit()
-#            raise e
-#        except Exception, e:
-#            print 'ERROR, UNEXPECTED EXCEPTION'
-#            print str(e)
-#            traceback.print_exc()
-#            os._exit(1)
 #
 #
 #def formatExceptionInfo(maxTBlevel=5):
@@ -574,6 +551,7 @@ def new(ctx,
 #    report = "%s %s %s"%(excName, excArgsString, excTbString)
 #    return(report)
 #
+#
 ##http://stackoverflow.com/questions/1549509/remove-duplicates-in-a-list-while-keeping-its-order-python
 #def unique(seq):
 #    seen = set()
@@ -581,7 +559,6 @@ def new(ctx,
 #        if item not in seen:
 #            seen.add(item)
 #            yield item
-#
 #
 #
 #def reverse_sort_list(domains):
@@ -609,10 +586,8 @@ def new(ctx,
 #       print('.'.join(y))
 #
 #
-#
 #def print_hex(text):
 #    print(':'.join(hex(ord(x))[2:] for x in text))
-#
 #
 #
 #def dprint(*args, **kwargs):
@@ -636,5 +611,4 @@ def new(ctx,
 #    ex_type, ex, tb = sys.exc_info()
 #    traceback.print_tb(tb)
 #    del tb
-#
 #
