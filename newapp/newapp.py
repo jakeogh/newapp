@@ -87,7 +87,7 @@ def get_url_for_overlay(overlay, verbose=False):
 
 
 def valid_branch(ctx, param, value):
-    eprint("value:", value)
+    ic(value)
     branch_check_cmd = "git check-ref-format --branch " + value
     if os.system(branch_check_cmd):
         raise click.BadParameter('fatal: "{0}" is not a valid branch name'.format(value))
@@ -355,7 +355,7 @@ def parse_url(repo_url: str, *,
 @click.option('--owner-email', type=str, required=True)
 @click.option('--description', type=str, default="Short explination of what it does _here_")
 @click.option('--local', is_flag=True)
-@click.option('--template', type=str)
+@click.option('--template', 'template_repo_url', type=str)
 @click.option('--hg', is_flag=True)
 @click.pass_context
 def new(ctx,
