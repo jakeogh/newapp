@@ -218,11 +218,12 @@ def rename_repo(*,
     os.chdir(app_path)
     sh.git.mv(old_name, new_name)
     all_paths = list(paths(app_path, verbose=verbose, debug=debug,))
+    exclude_path = app_path / Path('.git')
     for dent in all_paths:
         path = dent.pathlib
         if path.name.startswith('.'):
             continue
-        if path.as_posix().startswith(app_path / Path('.git')):
+        if path.as_posix().startswith(exclude_path.as_posix()):
             continue
 
         if old_name in path.name:
@@ -231,12 +232,14 @@ def rename_repo(*,
             sh.git.mv(path, new_path)
 
     all_files = list(files(app_path, verbose=verbose, debug=debug,))
+    exclude_path = app_path / Path('.git')
     for dent in all_files:
         path = dent.pathlib
         if path.name.startswith('.'):
             continue
-        if path.as_posix().startswith(app_path / Path('.git')):
+        if path.as_posix().startswith(exclude_path.as_posix()):
             continue
+
         assert old_name not in path.name
         modify_file(file_to_modify=path,
                     match=old_name,
