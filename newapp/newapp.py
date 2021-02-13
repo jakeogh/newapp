@@ -344,7 +344,7 @@ def parse_url(repo_url: str, *,
 
 
 @cli.command()
-@click.argument('git_repo_url', type=str, nargs=1)
+@click.argument('repo_url', type=str, nargs=1)
 @click.argument('group', type=str, nargs=1)
 @click.argument('branch', type=str, callback=valid_branch, nargs=1, default="master")
 @click.option('--apps-folder', type=str, required=True)
