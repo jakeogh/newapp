@@ -211,6 +211,10 @@ def cli(ctx,
 #@click.pass_context
 #def some_command(ctx, urls):
 #    pass
+#    if verbose:
+#        ctx.obj['verbose'] = True
+#    verbose = ctx.obj['verbose']
+#
 #    iterator = urls
 #    for index, url in enumerate_input(iterator=iterator,
 #                                      null=ctx.obj['null'],
