@@ -258,6 +258,7 @@ def clone_repo(*,
                debug: bool,):
 
     app_name, app_user = parse_url(repo_url, verbose=verbose, debug=debug,)
+    rename = False
     if template_repo_url:
         template_app_name, template_app_user = parse_url(template_repo_url, verbose=verbose, debug=debug,)
         repo_to_clone_url = template_repo_url
@@ -265,7 +266,6 @@ def clone_repo(*,
             rename = True
     else:
         repo_to_clone_url = repo_url
-        rename = False
 
     if hg:
         clone_cmd = "hg clone"
@@ -538,7 +538,6 @@ def new(ctx,
 #
 ##http://liw.fi/cmdtest/
 ##http://liw.fi/cliapp/
-#
 #
 #
 #def formatExceptionInfo(maxTBlevel=5):
