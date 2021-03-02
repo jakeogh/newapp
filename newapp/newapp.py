@@ -11,12 +11,12 @@ import sh
 from getdents import files
 from getdents import paths
 from icecream import ic
-from kcl.commandops import run_command
 from kcl.configops import click_read_config
 from kcl.fileops import write_line_to_file
 from kcl.printops import eprint
 from kcl.userops import not_root
 from replace_text import modify_file
+from run_command import run_command
 
 from .templates import app
 from .templates import ebuild
@@ -518,6 +518,10 @@ def new(ctx,
 ##sys.excepthook = log_uncaught_exceptions
 #
 #
+##http://liw.fi/cmdtest/
+##http://liw.fi/cliapp/
+#
+#
 #
 #import os
 #home = os.path.expanduser("~")
@@ -534,10 +538,6 @@ def new(ctx,
 #        print(msg)
 #        return func(*args, **kwargs)
 #    return wrapper
-#
-#
-##http://liw.fi/cmdtest/
-##http://liw.fi/cliapp/
 #
 #
 #def formatExceptionInfo(maxTBlevel=5):
@@ -620,4 +620,4 @@ def new(ctx,
 #    ex_type, ex, tb = sys.exc_info()
 #    traceback.print_tb(tb)
 #    del tb
-#
+
