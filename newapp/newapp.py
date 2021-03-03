@@ -474,6 +474,15 @@ def rename(ctx,
     #sh.git.add(old_edit_config)
     del(old_edit_config)
 
+    enable_github_sh = old_app_path / Path('enable_github.sh')
+    replace_text(file_to_modify=old_edit_config,
+                 match=old_app_name,
+                 replacement=new_app_name,
+                 verbose=verbose,
+                 debug=debug,)
+    #sh.git.add(enable_github_sh)
+    del(enable_github_sh)
+
     old_app_py = old_app_path / old_app_module_name / Path(old_app_module_name + '.py')
     replace_text_in_file(path=old_app_py,
                          match_pairs=((old_app_name, new_app_name), (old_app_module_name, new_app_module_name),),
@@ -542,6 +551,7 @@ def rename(ctx,
     del new_ebuild_symlink_name
     del new_ebuild_name
     sh.git.commit('-m', 'rename')
+    sh.git.remote.rm('origin')
     sh.git.push()
 
     # in apps_folder
