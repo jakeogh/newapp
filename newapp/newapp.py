@@ -382,6 +382,15 @@ def replace_text_in_file(*,
                      debug=debug,)
 
 
+def write_url_sh(repo_url, *,
+                 verbose: bool,
+                 debug: bool,):
+    url_template = generate_url_template(url=repo_url)
+    with open("url.sh", 'x') as fh:
+        fh.write(url_template)
+    sh.chmod('+x', 'url.sh')
+
+
 @cli.command()
 @click.argument('old_repo_url', type=str, nargs=1)
 @click.argument('new_repo_url', type=str, nargs=1)
@@ -428,19 +437,26 @@ def rename(ctx,
     del(old_setup_py)
 
     old_readme_md = old_app_path / Path('README.md')
-    replace_text_in_file(path=old_readme_md,
-                         match_pairs=((old_app_name, new_app_name), (old_app_module_name, new_app_module_name),),
-                         verbose=verbose,
-                         debug=debug,)
+    try:
+        replace_text_in_file(path=old_readme_md,
+                             match_pairs=((old_app_name, new_app_name), (old_app_module_name, new_app_module_name),),
+                             verbose=verbose,
+                             debug=debug,)
+    except FileNotFoundError as e:
+        ic(e)
+        sh.touch('README.md')
     sh.git.add(old_readme_md)
     del(old_readme_md)
 
     old_url_sh = old_app_path / Path('url.sh')
-    replace_text(file_to_modify=old_url_sh,
-                 match=old_app_name,
-                 replacement=new_app_name,
-                 verbose=verbose,
-                 debug=debug,)
+    try:
+        replace_text(file_to_modify=old_url_sh,
+                     match=old_app_name,
+                     replacement=new_app_name,
+                     verbose=verbose,
+                    debug=debug,)
+    except Exception as e:
+        write_url_sh(new_repo_url, verbose=verbose, debug=debug,)
     sh.git.add(old_url_sh)
     del(old_url_sh)
 
@@ -599,10 +615,7 @@ def new(ctx,
             with open('.gitignore', 'x') as fh:
                 fh.write(template)
 
-            url_template = generate_url_template(url=repo_url)
-            with open("url.sh", 'x') as fh:
-                fh.write(url_template)
-            sh.chmod('+x', 'url.sh')
+            write_url_sh(repo_url, verbose=verbose, debug=debug,)
 
             os.system("fastep")
 
