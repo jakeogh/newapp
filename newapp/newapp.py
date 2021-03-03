@@ -418,6 +418,7 @@ def rename(ctx,
                   debug=debug,)
     assert old_app_user == new_app_user
 
+    os.chdir(old_app_path)
     old_setup_py = old_app_path / Path('setup.py')
     replace_text_in_file(path=old_setup_py,
                          match_pairs=((old_app_name, new_app_name), (old_app_module_name, new_app_module_name),),
