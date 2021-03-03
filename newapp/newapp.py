@@ -499,9 +499,9 @@ def rename(ctx,
     del old_app_py
     del new_app_py
     sh.git.mv(old_app_module_name, new_app_module_name)
-    sh.git.add(Path(new_app_module_name / Path('__init__py')))
-    sh.git.add(Path(new_app_module_name / Path('py.typed')))
-    sh.git.add(Path(new_app_module_name / Path(new_app_module_name + '.py')))
+    sh.git.add(Path(new_app_module_name) / Path('__init__py'))
+    sh.git.add(Path(new_app_module_name) / Path('py.typed'))
+    sh.git.add(Path(new_app_module_name) / Path(new_app_module_name + '.py'))
     old_ebuild_symlink = old_app_path / Path(old_app_name + '-9999.ebuild')
     if not old_ebuild_symlink.exists():
         old_ebuild_folder = Path(gentoo_overlay_repo) / Path(group) / Path(old_app_name)
