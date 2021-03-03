@@ -403,6 +403,7 @@ def rename(ctx,
     debug = ctx.obj['debug']
     apps_folder = Path(apps_folder)
     ic(apps_folder)
+
     old_app_name, old_app_user, old_app_module_name, old_app_path = \
         parse_url(old_repo_url,
                   apps_folder=apps_folder,
@@ -508,11 +509,6 @@ def rename(ctx,
     # in apps_folder
     os.chdir(apps_folder)
     sh.mv(old_app_path, new_app_path, '-v')
-
-
-
-
-
 
 
 @cli.command()
