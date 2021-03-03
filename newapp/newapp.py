@@ -422,12 +422,16 @@ def rename(ctx,
                          match_pairs=((old_app_name, new_app_name), (old_app_module_name, new_app_module_name),),
                          verbose=verbose,
                          debug=debug,)
+    sh.git.add(old_setup_py)
+    del(old_setup_py)
 
     old_readme_md = old_app_path / Path('README.md')
     replace_text_in_file(path=old_readme_md,
                          match_pairs=((old_app_name, new_app_name), (old_app_module_name, new_app_module_name),),
                          verbose=verbose,
                          debug=debug,)
+    sh.git.add(old_readme_md)
+    del(old_readme_md)
 
     old_url_sh = old_app_path / Path('url.sh')
     replace_text(file_to_modify=old_url_sh,
@@ -435,6 +439,8 @@ def rename(ctx,
                  replacement=new_app_name,
                  verbose=verbose,
                  debug=debug,)
+    sh.git.add(old_url_sh)
+    del(old_url_sh)
 
     old_edit_config = old_app_path / Path('.edit_config')
     replace_text(file_to_modify=old_edit_config,
@@ -442,12 +448,16 @@ def rename(ctx,
                  replacement=new_app_name,
                  verbose=verbose,
                  debug=debug,)
+    sh.git.add(old_edit_config)
+    del(old_edit_config)
 
     old_app_py = old_app_path / old_app_module_name / Path(old_app_module_name + '.py')
     replace_text_in_file(path=old_app_py,
                          match_pairs=((old_app_name, new_app_name), (old_app_module_name, new_app_module_name),),
                          verbose=verbose,
                          debug=debug,)
+    sh.git.add(old_app_py)
+    #del(old_app_py)
 
     old_app_init_py = old_app_path / old_app_module_name / Path('__init__.py')
     replace_text(file_to_modify=old_app_init_py,
@@ -455,11 +465,55 @@ def rename(ctx,
                  replacement=new_app_module_name,
                  verbose=verbose,
                  debug=debug,)
+    sh.git.add(old_app_init_py)
+    del(old_app_init_py)
 
+    os.chdir(old_app_path)
     new_app_py = old_app_path / old_app_module_name / Path(new_app_module_name + '.py')
     sh.git.mv(old_app_py, new_app_py)
+    del(old_app_py)
     del(new_app_py)
-    sh.git.mv(old_app_path, new_app_path)
+    sh.git.mv(old_app_module_name, new_app_module_name)
+    old_ebuild_symlink = old_app_path / Path(old_app_name + '-9999.ebuild')
+    old_ebuild_symlink = old_ebuild_symlink.resolve()
+    os.chdir(old_ebuild_symlink.parent)
+
+    # in ebuild folder
+    old_ebuild_path = Path(old_app_name + '-9999.ebuild').resolve()
+    replace_text(file_to_modify=old_ebuild_path,
+                 match=old_app_module_name,
+                 replacement=new_app_module_name,
+                 verbose=verbose,
+                 debug=debug,)
+    sh.git.add(old_ebuild_path)
+    new_ebuild_name = Path(new_app_name + '-9999.ebuild')
+    sh.git.mv(old_ebuild_path, new_ebuild_name)
+    del(old_ebuild_path)
+    os.chdir('..')
+    sh.git.mv(old_app_name, new_app_name, '-v')
+    new_ebuild_path = Path(new_app_name / new_ebuild_name).resolve()
+    sh.git.commit('-m', 'rename')
+    sh.git.push()
+    os.chdir(old_app_path)
+
+    # in old_app_folder
+    sh.git.rm(old_ebuild_symlink)
+    del(old_ebuild_symlink)
+
+    new_ebuild_symlink_name = new_ebuild_name
+    sh.ln('-s', new_ebuild_path, new_ebuild_symlink_name)
+    del(new_ebuild_symlink_name)
+    del(new_ebuild_name)
+    sh.git.commit('-m', 'rename')
+    sh.git.push()
+
+    # in apps_folder
+    os.chdir(apps_folder)
+    sh.mv(old_app_path, new_app_path, '-v')
+
+
+
+
 
 
 
