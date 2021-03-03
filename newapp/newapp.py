@@ -522,6 +522,7 @@ def rename(ctx,
     os.chdir(old_app_path)
 
     # in old_app_folder
+    print(sh.ls())
     sh.git.rm(old_ebuild_symlink.name)
     del old_ebuild_symlink
 
