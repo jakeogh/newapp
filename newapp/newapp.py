@@ -394,6 +394,7 @@ def write_url_sh(repo_url, *,
 @cli.command()
 @click.argument('old_repo_url', type=str, nargs=1)
 @click.argument('new_repo_url', type=str, nargs=1)
+@click.argument('group', type=str, nargs=1)
 @click.option('--apps-folder', type=str, required=True)
 @click.option('--gentoo-overlay-repo', type=str, required=True)
 @click.option('--github-user', type=str, required=True)
@@ -403,6 +404,7 @@ def write_url_sh(repo_url, *,
 def rename(ctx,
            old_repo_url,
            new_repo_url,
+           group,
            apps_folder,
            gentoo_overlay_repo,
            github_user,
@@ -484,15 +486,20 @@ def rename(ctx,
                  verbose=verbose,
                  debug=debug,)
     sh.git.add(old_app_init_py)
-    del(old_app_init_py)
+    del old_app_init_py
 
     os.chdir(old_app_path)
     new_app_py = old_app_path / old_app_module_name / Path(new_app_module_name + '.py')
     sh.git.mv(old_app_py, new_app_py)
-    del(old_app_py)
-    del(new_app_py)
+    del old_app_py
+    del new_app_py
     sh.git.mv(old_app_module_name, new_app_module_name)
     old_ebuild_symlink = old_app_path / Path(old_app_name + '-9999.ebuild')
+    if not old_ebuild_symlink.exists():
+        old_ebuild_folder = Path(gentoo_overlay_repo) / Path(group) / Path(old_app_name)
+        sh.ln('-s', old_ebuild_folder / old_ebuild_symlink.name, old_ebuild_symlink.name)
+        del old_ebuild_folder
+
     assert old_ebuild_symlink.exists()
     old_ebuild_symlink = old_ebuild_symlink.resolve()
     os.chdir(old_ebuild_symlink.parent)
@@ -507,7 +514,7 @@ def rename(ctx,
     sh.git.add(old_ebuild_path)
     new_ebuild_name = Path(new_app_name + '-9999.ebuild')
     sh.git.mv(old_ebuild_path, new_ebuild_name)
-    del(old_ebuild_path)
+    del old_ebuild_path
     os.chdir('..')
     sh.git.mv(old_app_name, new_app_name, '-v')
     new_ebuild_path = Path(new_app_name / new_ebuild_name).resolve()
@@ -517,12 +524,12 @@ def rename(ctx,
 
     # in old_app_folder
     sh.git.rm(old_ebuild_symlink)
-    del(old_ebuild_symlink)
+    del old_ebuild_symlink
 
     new_ebuild_symlink_name = new_ebuild_name
     sh.ln('-s', new_ebuild_path, new_ebuild_symlink_name)
-    del(new_ebuild_symlink_name)
-    del(new_ebuild_name)
+    del new_ebuild_symlink_name
+    del new_ebuild_name
     sh.git.commit('-m', 'rename')
     sh.git.push()
 
