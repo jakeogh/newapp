@@ -430,6 +430,7 @@ def rename(ctx,
     assert old_app_user == new_app_user
 
     ic(old_app_name, new_app_name)
+    ic(old_app_path, new_app_path)
 
     os.chdir(old_app_path)
     old_setup_py = old_app_path / Path('setup.py')
