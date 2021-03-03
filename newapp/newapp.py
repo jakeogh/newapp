@@ -534,7 +534,7 @@ def rename(ctx,
 
     # in old_app_folder
     print(sh.ls())
-    sh.git.rm(old_ebuild_symlink.name)
+    sh.rm(old_ebuild_symlink.name)
     del old_ebuild_symlink
 
     new_ebuild_symlink_name = new_ebuild_name
