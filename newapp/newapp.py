@@ -501,8 +501,7 @@ def rename(ctx,
         del old_ebuild_folder
 
     assert old_ebuild_symlink.exists()
-    old_ebuild_symlink = old_ebuild_symlink.resolve()
-    os.chdir(old_ebuild_symlink.parent)
+    os.chdir(old_ebuild_symlink.resolve().parent)
 
     # in ebuild folder
     old_ebuild_path = Path(old_app_name + '-9999.ebuild').resolve()
@@ -523,7 +522,7 @@ def rename(ctx,
     os.chdir(old_app_path)
 
     # in old_app_folder
-    sh.git.rm(old_ebuild_symlink)
+    sh.git.rm(old_ebuild_symlink.name)
     del old_ebuild_symlink
 
     new_ebuild_symlink_name = new_ebuild_name
