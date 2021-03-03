@@ -15,7 +15,7 @@ from kcl.configops import click_read_config
 from kcl.fileops import write_line_to_file
 from kcl.printops import eprint
 from kcl.userops import not_root
-from replace_text import modify_file
+from replace_text import replace_text
 from run_command import run_command
 
 from .templates import app
@@ -241,26 +241,27 @@ def rename_repo(*,
             continue
 
         assert old_name not in path.name
-        modify_file(file_to_modify=path,
-                    match=old_name,
-                    replacement=new_name,
-                    verbose=verbose,
-                    debug=debug,)
+        replace_text(file_to_modify=path,
+                     match=old_name,
+                     replacement=new_name,
+                     verbose=verbose,
+                     debug=debug,)
 
 
 def clone_repo(*,
                branch: str,
                repo_url: str,
+               apps_folder: Path,
                template_repo_url: str,
                app_path: Path,
                hg: bool,
                verbose: bool,
                debug: bool,):
 
-    app_name, app_user = parse_url(repo_url, verbose=verbose, debug=debug,)
+    app_name, app_user, _, _ = parse_url(repo_url, apps_folder=apps_folder, verbose=verbose, debug=debug,)
     rename = False
     if template_repo_url:
-        template_app_name, template_app_user = parse_url(template_repo_url, verbose=verbose, debug=debug,)
+        template_app_name, template_app_user, _, _ = parse_url(template_repo_url, apps_folder=apps_folder, verbose=verbose, debug=debug,)
         repo_to_clone_url = template_repo_url
         if template_app_name != app_name:
             rename = True
@@ -307,6 +308,13 @@ def create_repo(*,
     os.system("git init")
 
 
+#def rename_project(ctx, *,
+#                   old_name: str,
+#                   new_name: str,
+#                   verbose: bool,
+#                   debug: bool,):
+
+
 def remote_add_origin(*,
                       app_path: Path,
                       local: bool,
@@ -339,6 +347,7 @@ def remote_add_origin(*,
 
 
 def parse_url(repo_url: str, *,
+              apps_folder: Path,
               verbose: bool,
               debug: bool,):
 
@@ -349,7 +358,109 @@ def parse_url(repo_url: str, *,
     repo_url_path = Path(url_parsed.path)
     app_name = repo_url_path.parts[-1]
     app_user = repo_url_path.parts[-2]
-    return app_name, app_user
+    app_module_name = app_name.replace('-', '_')
+    ic(app_module_name)
+    app_path = apps_folder / Path(app_module_name)
+    ic(app_path)
+    return app_name, app_user, app_module_name, app_path
+
+
+def replace_text_in_file(*,
+                         path: Path,
+                         match_pairs: tuple,
+                         verbose: bool,
+                         debug: bool,):
+    assert isinstance(match_pairs, tuple)
+    for old_match, new_match in match_pairs:
+        ic(old_match, new_match)
+        replace_text(file_to_modify=path,
+                     match=old_match,
+                     replacement=new_match,
+                     verbose=verbose,
+                     debug=debug,)
+
+
+@cli.command()
+@click.argument('old_repo_url', type=str, nargs=1)
+@click.argument('new_repo_url', type=str, nargs=1)
+@click.argument('group', type=str, nargs=1)
+@click.option('--apps-folder', type=str, required=True)
+@click.option('--gentoo-overlay-repo', type=str, required=True)
+@click.option('--github-user', type=str, required=True)
+@click.option('--local', is_flag=True)
+@click.option('--hg', is_flag=True)
+@click.pass_context
+def rename(ctx,
+           old_repo_url,
+           new_repo_url,
+           group,
+           apps_folder,
+           gentoo_overlay_repo,
+           github_user,
+           local,
+           hg,):
+
+    not_root()
+    verbose = ctx.obj['verbose']
+    debug = ctx.obj['debug']
+    apps_folder = Path(apps_folder)
+    ic(apps_folder)
+    old_app_name, old_app_user, old_app_module_name, old_app_path = \
+        parse_url(old_repo_url,
+                  apps_folder=apps_folder,
+                  verbose=verbose,
+                  debug=debug,)
+    new_app_name, new_app_user, new_app_module_name, new_app_path = \
+        parse_url(new_repo_url,
+                  apps_folder=apps_folder,
+                  verbose=verbose,
+                  debug=debug,)
+    assert old_app_user == new_app_user
+
+    old_setup_py = old_app_path / Path('setup.py')
+    replace_text_in_file(path=old_setup_py,
+                         match_pairs=((old_app_name, new_app_name), (old_app_module_name, new_app_module_name),),
+                         verbose=verbose,
+                         debug=debug,)
+
+    old_readme_md = old_app_path / Path('README.md')
+    replace_text_in_file(path=old_readme_md,
+                         match_pairs=((old_app_name, new_app_name), (old_app_module_name, new_app_module_name),),
+                         verbose=verbose,
+                         debug=debug,)
+
+    old_url_sh = old_app_path / Path('url.sh')
+    replace_text(file_to_modify=old_url_sh,
+                 match=old_app_name,
+                 replacement=new_app_name,
+                 verbose=verbose,
+                 debug=debug,)
+
+    old_edit_config = old_app_path / Path('.edit_config')
+    replace_text(file_to_modify=old_edit_config,
+                 match=old_app_name,
+                 replacement=new_app_name,
+                 verbose=verbose,
+                 debug=debug,)
+
+    old_app_py = old_app_path / old_app_module_name / Path(old_app_module_name + '.py')
+    replace_text_in_file(path=old_app_py,
+                         match_pairs=((old_app_name, new_app_name), (old_app_module_name, new_app_module_name),),
+                         verbose=verbose,
+                         debug=debug,)
+
+    old_app_init_py = old_app_path / old_app_module_name / Path('__init__.py')
+    replace_text(file_to_modify=old_app_init_py,
+                 match=old_app_module_name,
+                 replacement=new_app_module_name,
+                 verbose=verbose,
+                 debug=debug,)
+
+    new_app_py = old_app_path / old_app_module_name / Path(new_app_module_name + '.py')
+    sh.git.mv(old_app_py, new_app_py)
+    del(new_app_py)
+    sh.git.mv(old_app_path, new_app_path)
+
 
 
 @cli.command()
@@ -369,7 +480,8 @@ def parse_url(repo_url: str, *,
 @click.pass_context
 def new(ctx,
         repo_url,
-        group, branch,
+        group,
+        branch,
         apps_folder,
         gentoo_overlay_repo,
         github_user,
@@ -384,6 +496,7 @@ def new(ctx,
     not_root()
     verbose = ctx.obj['verbose']
     debug = ctx.obj['debug']
+    apps_folder = Path(apps_folder)
     ic(apps_folder)
 
     assert repo_url.startswith('https://github.com/{}/'.format(github_user))
@@ -394,18 +507,18 @@ def new(ctx,
     assert '/' not in group
     assert ':' not in group
 
-    app_name, app_user = parse_url(repo_url, verbose=verbose, debug=debug,)
+    app_name, app_user, app_module_name, app_path = parse_url(repo_url,
+                                                              apps_folder=apps_folder,
+                                                              verbose=verbose,
+                                                              debug=debug,)
     ic(app_name)
     ic(app_user)
     assert app_user == github_user
-    app_module_name = app_name.replace('-', '_')
-    ic(app_module_name)
-    app_path = Path(apps_folder) / Path(app_module_name)
-    ic(app_path)
 
     if template_repo_url:
         clone_repo(repo_url=repo_url,
                    template_repo_url=template_repo_url,
+                   apps_folder=apps_folder,
                    hg=hg,
                    branch=branch,
                    app_path=app_path,
