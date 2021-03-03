@@ -383,7 +383,6 @@ def replace_text_in_file(*,
 @cli.command()
 @click.argument('old_repo_url', type=str, nargs=1)
 @click.argument('new_repo_url', type=str, nargs=1)
-@click.argument('group', type=str, nargs=1)
 @click.option('--apps-folder', type=str, required=True)
 @click.option('--gentoo-overlay-repo', type=str, required=True)
 @click.option('--github-user', type=str, required=True)
@@ -393,7 +392,6 @@ def replace_text_in_file(*,
 def rename(ctx,
            old_repo_url,
            new_repo_url,
-           group,
            apps_folder,
            gentoo_overlay_repo,
            github_user,
