@@ -466,7 +466,7 @@ def rename(ctx,
                  replacement=new_app_name,
                  verbose=verbose,
                  debug=debug,)
-    sh.git.add(old_edit_config)
+    #sh.git.add(old_edit_config)
     del(old_edit_config)
 
     old_app_py = old_app_path / old_app_module_name / Path(old_app_module_name + '.py')
