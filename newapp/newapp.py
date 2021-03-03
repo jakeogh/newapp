@@ -261,12 +261,12 @@ def clone_repo(*,
                debug: bool,):
 
     app_name, app_user, _, _ = parse_url(repo_url, apps_folder=apps_folder, verbose=verbose, debug=debug,)
-    rename = False
+    rename_cloned_repo = False
     if template_repo_url:
         template_app_name, template_app_user, _, _ = parse_url(template_repo_url, apps_folder=apps_folder, verbose=verbose, debug=debug,)
         repo_to_clone_url = template_repo_url
         if template_app_name != app_name:
-            rename = True
+            rename_cloned_repo = True
     else:
         repo_to_clone_url = repo_url
 
@@ -284,7 +284,7 @@ def clone_repo(*,
         ic(branch_cmd)
         os.system(branch_cmd)
 
-    if not rename:  # when renaming a template repo, dont want to fork if its one of my repos
+    if not rename_cloned_repo:  # when renaming a template repo, dont want to fork if its one of my repos
         git_fork_cmd = "hub fork"
         os.system(git_fork_cmd)
     else:
@@ -493,6 +493,7 @@ def rename(ctx,
     del(new_app_py)
     sh.git.mv(old_app_module_name, new_app_module_name)
     old_ebuild_symlink = old_app_path / Path(old_app_name + '-9999.ebuild')
+    assert old_ebuild_symlink.exists()
     old_ebuild_symlink = old_ebuild_symlink.resolve()
     os.chdir(old_ebuild_symlink.parent)
 
