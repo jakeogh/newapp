@@ -518,7 +518,10 @@ def rename(ctx,
     sh.git.mv(old_ebuild_path, new_ebuild_name)
     del old_ebuild_path
     os.chdir('..')
-    sh.git.mv(old_app_name, new_app_name, '-v')
+    sh.mv(old_app_name, new_app_name, '-v')
+    sh.git.add(Path(new_app_module_name / Path('__init__py')))
+    sh.git.add(Path(new_app_module_name / Path('py.typed')))
+    sh.git.add(Path(new_app_module_name / Path(new_app_module_name + '.py')))
     new_ebuild_path = Path(new_app_name / new_ebuild_name).resolve()
     sh.git.commit('-m', 'rename')
     sh.git.push()
