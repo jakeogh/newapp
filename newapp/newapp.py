@@ -374,7 +374,7 @@ def replace_text_in_file(*,
                          debug: bool,):
     assert isinstance(match_pairs, tuple)
     for old_match, new_match in match_pairs:
-        ic(old_match, new_match)
+        ic(path, old_match, new_match)
         replace_text(file_to_modify=path,
                      match=old_match,
                      replacement=new_match,
@@ -428,6 +428,8 @@ def rename(ctx,
                   verbose=verbose,
                   debug=debug,)
     assert old_app_user == new_app_user
+
+    ic(old_app_name, new_app_name)
 
     os.chdir(old_app_path)
     old_setup_py = old_app_path / Path('setup.py')
