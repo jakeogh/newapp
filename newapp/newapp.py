@@ -409,6 +409,8 @@ def write_url_sh(repo_url, *,
 @click.option('--github-user', type=str, required=True)
 @click.option('--local', is_flag=True)
 @click.option('--hg', is_flag=True)
+@click.option('--verbose', is_flag=True)
+@click.option('--debug', is_flag=True)
 @click.pass_context
 def rename(ctx,
            old_repo_url,
@@ -418,11 +420,13 @@ def rename(ctx,
            gentoo_overlay_repo,
            github_user,
            local,
-           hg,):
+           verbose: bool,
+           debug: bool,
+           hg: bool,):
 
     not_root()
-    verbose = ctx.obj['verbose']
-    debug = ctx.obj['debug']
+    verbose = verbose or ctx.obj['verbose']
+    debug = debug or ctx.obj['debug']
     apps_folder = Path(apps_folder)
     ic(apps_folder)
 
@@ -573,16 +577,20 @@ def rename(ctx,
 @click.option('--gentoo-overlay-repo', type=str, required=True)
 @click.option('--local', is_flag=True)
 @click.option('--github-user', type=str, required=True)
+@click.option('--verbose', is_flag=True)
+@click.option('--debug', is_flag=True)
 @click.pass_context
 def check_all(ctx,
               apps_folder,
               gentoo_overlay_repo,
               github_user,
+              verbose: bool,
+              debug: bool,
               local,):
 
     not_root()
-    verbose = ctx.obj['verbose']
-    debug = ctx.obj['debug']
+    verbose = verbose or ctx.obj['verbose']
+    debug = debug or ctx.obj['debug']
     apps_folder = Path(apps_folder)
     ic(apps_folder)
 
@@ -628,6 +636,8 @@ def check_all(ctx,
 @click.option('--local', is_flag=True)
 @click.option('--template', 'template_repo_url', type=str)
 @click.option('--hg', is_flag=True)
+@click.option('--verbose', is_flag=True)
+@click.option('--debug', is_flag=True)
 @click.pass_context
 def new(ctx,
         repo_url,
@@ -642,11 +652,13 @@ def new(ctx,
         description,
         local,
         template_repo_url,
+        verbose,
+        debug,
         hg,):
 
     not_root()
-    verbose = ctx.obj['verbose']
-    debug = ctx.obj['debug']
+    verbose = verbose or ctx.obj['verbose']
+    debug = debug or ctx.obj['debug']
     apps_folder = Path(apps_folder)
     ic(apps_folder)
 

@@ -208,12 +208,16 @@ def cli(ctx,
 
 #@cli.command()
 #@click.argument("urls", type=str, nargs=-1)
+#@click.option('--verbose', is_flag=True)
+#@click.option('--debug', is_flag=True)
 #@click.pass_context
-#def some_command(ctx, urls):
+#def some_command(ctx,
+#                 urls,
+#                 verbose: bool,
+#                 debug: bool,):
 #    pass
-#    if verbose:
-#        ctx.obj['verbose'] = True
-#    verbose = ctx.obj['verbose']
+#    verbose = verbose or ctx.obj['verbose']
+#    debug = debug or ctx.obj['debug']
 #
 #    iterator = urls
 #    for index, url in enumerate_input(iterator=iterator,
