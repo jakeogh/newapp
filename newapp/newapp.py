@@ -598,7 +598,7 @@ def check_all(ctx,
     for file in files(apps_folder, verbose=verbose, debug=debug,):
         if file.name == b'.edit_config':
             file = Path(file)
-            if verbose:
+            if debug:
                 ic(file)
             edit_configs.append(file)
 
