@@ -50,7 +50,7 @@ CFG, CONFIG_MTIME = click_read_config(click_instance=click,
                                       verbose=False,
                                       debug=False,)
 
-ic(CFG)
+#ic(CFG)
 
 # https://github.com/mitsuhiko/click/issues/441
 CONTEXT_SETTINGS = dict(default_map=CFG)
@@ -586,6 +586,7 @@ def check_all(ctx,
     edit_configs = sorted(edit_configs)
     for edit_config in edit_configs:
         ic(edit_config)
+        os.chdir(edit_config.parent)
 
 
 
@@ -640,6 +641,7 @@ def new(ctx,
     ic(app_name)
     ic(app_user)
     assert app_user == github_user
+    assert '_' not in app_path.name
 
     if template_repo_url:
         clone_repo(repo_url=repo_url,
