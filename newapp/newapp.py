@@ -575,11 +575,18 @@ def check_all(ctx,
     apps_folder = Path(apps_folder)
     ic(apps_folder)
 
+    edit_configs = []
     for file in files(apps_folder, verbose=verbose, debug=debug,):
-        #ic(file)
         if file.name == b'.edit_config':
             file = Path(file)
-            ic(file)
+            if verbose:
+                ic(file)
+            edit_configs.append(file)
+
+    edit_configs = sorted(edit_configs)
+    for edit_config in edit_configs:
+        ic(edit_config)
+
 
 
 @cli.command()
