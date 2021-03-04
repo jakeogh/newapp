@@ -17,6 +17,7 @@ from kcl.printops import eprint
 from kcl.userops import not_root
 from replace_text import replace_text
 from run_command import run_command
+from with_chdir import chdir
 
 from .templates import app
 from .templates import ebuild
