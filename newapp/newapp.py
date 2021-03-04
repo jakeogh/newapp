@@ -353,6 +353,10 @@ def parse_url(repo_url: str, *,
               apps_folder: Path,
               verbose: bool,
               debug: bool,):
+
+    if verbose:
+        ic(repo_url)
+
     if repo_url.startswith('git:github.com:'):
         app_name = repo_url.split(':')[-1].split('.git')[0]
         app_user = repo_url.split(':')[-1].split('/')[0]
