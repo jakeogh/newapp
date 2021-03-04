@@ -587,8 +587,10 @@ def check_all(ctx,
     edit_configs = sorted(edit_configs)
     for edit_config in edit_configs:
         ic(edit_config)
-        os.chdir(edit_config.parent)
-
+        with chdir(edit_config.parent):
+            remote = sh.git.remote('get-url', 'origin')
+            assert remote.startswith('git@github.com:')
+            assert remote.split(':')[-1].split('.git')[0] == edit_config.parent.name
 
 
 @cli.command()
