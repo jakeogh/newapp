@@ -564,10 +564,12 @@ def rename(ctx,
 @click.option('--apps-folder', type=str, required=True)
 @click.option('--gentoo-overlay-repo', type=str, required=True)
 @click.option('--local', is_flag=True)
+@click.option('--github-user', type=str, required=True)
 @click.pass_context
 def check_all(ctx,
               apps_folder,
               gentoo_overlay_repo,
+              github_user,
               local,):
 
     not_root()
@@ -589,9 +591,14 @@ def check_all(ctx,
         ic(edit_config_path)
         with chdir(edit_config_path.parent):
             remote = sh.git.remote('get-url', 'origin')
+            app_name, app_user, app_module_name, app_path = parse_url(remote,
+                                                                      apps_folder=apps_folder,
+                                                                      verbose=verbose,
+                                                                      debug=debug,)
             if not remote.startswith('git@github.com:'):
-                ic('remote does not startwith git@github.com:', remote)
-                raise ValueError(edit_config_path, remote)
+                if app_user == github_user:
+                    ic('remote is to', github_user, 'but does not startwith git@github.com:', remote)
+                    raise ValueError(edit_config_path, remote)
             remote_app_name = remote.split(':')[-1].split('.git')[0]
             if not remote_app_name == edit_config_path.parent.name:
                 ic(remote_app_name, 'is not', edit_config_path.parent.name)
