@@ -576,6 +576,7 @@ def check_all(ctx,
     ic(apps_folder)
 
     for file in files(apps_folder, verbose=verbose, debug=debug,):
+        ic(file)
         if file.name == '.edit_config':
             ic(file)
 
