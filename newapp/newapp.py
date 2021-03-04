@@ -585,12 +585,17 @@ def check_all(ctx,
             edit_configs.append(file)
 
     edit_configs = sorted(edit_configs)
-    for edit_config in edit_configs:
-        ic(edit_config)
-        with chdir(edit_config.parent):
+    for edit_config_path in edit_configs:
+        ic(edit_config_path)
+        with chdir(edit_config_path.parent):
             remote = sh.git.remote('get-url', 'origin')
-            assert remote.startswith('git@github.com:')
-            assert remote.split(':')[-1].split('.git')[0] == edit_config.parent.name
+            if not remote.startswith('git@github.com:'):
+                ic('remote does not startwith git@github.com:', remote)
+                raise ValueError(edit_config_path, remote)
+            remote_app_name = remote.split(':')[-1].split('.git')[0]
+            if not remote_app_name == edit_config_path.parent.name:
+                ic(remote_app_name, 'is not', edit_config_path.parent.name)
+                raise ValueError(edit_config_path, remote)
 
 
 @cli.command()
