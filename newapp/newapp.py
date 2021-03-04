@@ -475,7 +475,7 @@ def rename(ctx,
     del(old_edit_config)
 
     enable_github_sh = old_app_path / Path('enable_github.sh')
-    replace_text(file_to_modify=old_edit_config,
+    replace_text(file_to_modify=enable_github_sh,
                  match=old_app_name,
                  replacement=new_app_name,
                  verbose=verbose,
@@ -567,9 +567,7 @@ def rename(ctx,
 def check_all(ctx,
               apps_folder,
               gentoo_overlay_repo,
-              license,
-              local,
-              hg,):
+              local,):
 
     not_root()
     verbose = ctx.obj['verbose']
