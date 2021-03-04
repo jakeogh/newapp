@@ -560,6 +560,29 @@ def rename(ctx,
 
 
 @cli.command()
+@click.option('--apps-folder', type=str, required=True)
+@click.option('--gentoo-overlay-repo', type=str, required=True)
+@click.option('--local', is_flag=True)
+@click.pass_context
+def check_all(ctx,
+              apps_folder,
+              gentoo_overlay_repo,
+              license,
+              local,
+              hg,):
+
+    not_root()
+    verbose = ctx.obj['verbose']
+    debug = ctx.obj['debug']
+    apps_folder = Path(apps_folder)
+    ic(apps_folder)
+
+    for file in files(apps_folder, verbose=verbose, debug=debug,):
+        if file.name == '.edit_config':
+            ic(file)
+
+
+@cli.command()
 @click.argument('repo_url', type=str, nargs=1)
 @click.argument('group', type=str, nargs=1)
 @click.argument('branch', type=str, callback=valid_branch, nargs=1, default="master")
