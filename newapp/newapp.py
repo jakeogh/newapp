@@ -361,6 +361,7 @@ def parse_url(repo_url: str, *,
         app_name = repo_url.split(':')[-1].split('.git')[0]
         app_user = repo_url.split(':')[-1].split('/')[0]
     else:
+        import IPython; IPython.embed()
         url_parsed = urlparse(repo_url)
         if verbose:
             ic(url_parsed)
