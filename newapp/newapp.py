@@ -353,17 +353,21 @@ def parse_url(repo_url: str, *,
               apps_folder: Path,
               verbose: bool,
               debug: bool,):
+    if repo_url.startswith('git:github.com:'):
+        app_name = repo_url.split(':')[-1].split('.git')[0]
+        app_user = repo_url.split(':')[-1].split('/')[0]
+    else:
+        url_parsed = urlparse(repo_url)
+        if verbose:
+            ic(url_parsed)
 
-    url_parsed = urlparse(repo_url)
-    if verbose:
-        ic(url_parsed)
+        repo_url_path = Path(url_parsed.path)
+        app_name = repo_url_path.parts[-1]
+        app_user = repo_url_path.parts[-2]
 
-    repo_url_path = Path(url_parsed.path)
-    app_name = repo_url_path.parts[-1]
-    app_user = repo_url_path.parts[-2]
     app_module_name = app_name.replace('-', '_')
     ic(app_module_name)
-    app_path = apps_folder / Path(app_module_name)
+    app_path = apps_folder / Path(app_name)
     ic(app_path)
     return app_name, app_user, app_module_name, app_path
 
@@ -599,10 +603,11 @@ def check_all(ctx,
                 if app_user == github_user:
                     ic('remote is to', github_user, 'but does not startwith git@github.com:', remote)
                     raise ValueError(edit_config_path, remote)
-            remote_app_name = remote.split(':')[-1].split('.git')[0]
-            if not remote_app_name == edit_config_path.parent.name:
-                ic(remote_app_name, 'is not', edit_config_path.parent.name)
+            if not app_name == edit_config_path.parent.name:
+                ic(app_name, 'is not', edit_config_path.parent.name)
                 raise ValueError(edit_config_path, remote)
+
+        del app_name, app_user, app_module_name, app_path
 
 
 @cli.command()
