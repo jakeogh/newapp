@@ -607,7 +607,7 @@ def check_all(ctx,
     for edit_config_path in edit_configs:
         ic(edit_config_path)
         with chdir(edit_config_path.parent):
-            remote = str(sh.git.remote('get-url', 'origin'))
+            remote = str(sh.git.remote('get-url', 'origin')).strip()
             app_name, app_user, app_module_name, app_path = parse_url(remote,
                                                                       apps_folder=apps_folder,
                                                                       verbose=verbose,
