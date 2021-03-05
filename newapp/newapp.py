@@ -220,7 +220,8 @@ def rename_repo(*,
                 verbose: bool,
                 debug: bool,):
     os.chdir(app_path)
-    sh.git.mv(old_name, new_name)
+    if Path(old_name).exists():  # not all apps have a dir here
+        sh.git.mv(old_name, new_name)
     all_paths = list(paths(app_path, verbose=verbose, debug=debug,))
     exclude_path = app_path / Path('.git')
     for dent in all_paths:
