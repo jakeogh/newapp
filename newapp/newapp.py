@@ -276,6 +276,8 @@ def rename_repo_on_clone(*,
                      replacement=new_name,
                      verbose=verbose,
                      debug=debug,)
+    sh.git.add('-u')
+    sh.git.commit('-m rename')
 
 
 def clone_repo(*,
