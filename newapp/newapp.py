@@ -147,10 +147,11 @@ def generate_setup_py(*,
 
 
 def generate_ebuild_template(*,
-                             description,
-                             enable_python,
-                             homepage,
-                             app_path):
+                             description: str,
+                             enable_python: bool,
+                             homepage: str,
+                             app_path: Path,):
+    ic(enable_python)
     inherit_python = ''
     rdepend_python = ''
     if enable_python:
