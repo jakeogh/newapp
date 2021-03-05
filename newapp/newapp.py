@@ -21,6 +21,7 @@ from run_command import run_command
 from with_chdir import chdir
 
 from .templates import app
+from .templates import depend_python
 from .templates import ebuild
 from .templates import echo_url
 from .templates import edit_config
@@ -145,8 +146,19 @@ def generate_setup_py(*,
                            description=description)
 
 
-def generate_ebuild_template(description, homepage, app_path):
+def generate_ebuild_template(*,
+                             description,
+                             enable_python,
+                             homepage,
+                             app_path):
+    inherit_python = ''
+    rdepend_python = ''
+    if enable_python:
+        inherit_python = 'inherit distutils-r1'
+        rdepend_python = depend_python
     return ebuild.format(description=description,
+                         inherit_python=inherit_python,
+                         depend_python=rdepend_python,
                          homepage=homepage,
                          app_path=app_path)
 
@@ -760,12 +772,17 @@ def new(ctx,
 
     ebuild_path = Path(gentoo_overlay_repo) / Path(group) / Path(app_name)
     if not ebuild_path.exists():
+        enable_python = False
+        if Path(app_path / Path('setup.py')).exists():
+            enable_python = True
+
         os.makedirs(ebuild_path, exist_ok=False)
         os.chdir(ebuild_path)
         ebuild_name = app_name + "-9999.ebuild"
 
         with open(ebuild_name, 'w') as fh:
             fh.write(generate_ebuild_template(description=description,
+                                              enable_python=enable_python,
                                               homepage=repo_url,
                                               app_path=app_path,))
         os.system("git add " + ebuild_name)
