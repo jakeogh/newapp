@@ -226,16 +226,15 @@ def rename_repo_on_clone(*,
     all_paths = list(paths(app_path, verbose=verbose, debug=debug,))
     exclude_path = app_path / Path('.git')
     for dent in all_paths:
-        if debug:
-            ic(dent)
         path = dent.pathlib
         if path.name.startswith('.'):
             continue
-        ic(path.parent.name)
         if path.parent.name.startswith('.'):
             continue
         if path.as_posix().startswith(exclude_path.as_posix()):
             continue
+        if debug:
+            ic(dent)
 
         if old_name in path.name:
             if path.name == new_name:
