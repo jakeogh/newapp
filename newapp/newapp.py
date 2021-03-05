@@ -219,6 +219,7 @@ def rename_repo_on_clone(*,
                          new_name: str,
                          verbose: bool,
                          debug: bool,):
+    ic(old_name, new_name)
     os.chdir(app_path)
     if Path(old_name).exists():  # not all apps have a dir here
         sh.git.mv(old_name, new_name)
