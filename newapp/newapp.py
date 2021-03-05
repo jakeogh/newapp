@@ -213,18 +213,20 @@ def get_app_template(ctx, package_name):
     print(app_template)
 
 
-def rename_repo(*,
-                app_path: Path,
-                old_name: str,
-                new_name: str,
-                verbose: bool,
-                debug: bool,):
+def rename_repo_on_clone(*,
+                         app_path: Path,
+                         old_name: str,
+                         new_name: str,
+                         verbose: bool,
+                         debug: bool,):
     os.chdir(app_path)
     if Path(old_name).exists():  # not all apps have a dir here
         sh.git.mv(old_name, new_name)
     all_paths = list(paths(app_path, verbose=verbose, debug=debug,))
     exclude_path = app_path / Path('.git')
     for dent in all_paths:
+        if debug:
+            ic(dent)
         path = dent.pathlib
         if path.name.startswith('.'):
             continue
@@ -291,11 +293,11 @@ def clone_repo(*,
         git_fork_cmd = "hub fork"
         os.system(git_fork_cmd)
     else:
-        rename_repo(app_path=app_path,
-                    old_name=template_app_name,
-                    new_name=app_name,
-                    verbose=verbose,
-                    debug=debug,)
+        rename_repo_on_clone(app_path=app_path,
+                             old_name=template_app_name,
+                             new_name=app_name,
+                             verbose=verbose,
+                             debug=debug,)
 
 
 def create_repo(*,
