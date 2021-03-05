@@ -231,6 +231,7 @@ def rename_repo_on_clone(*,
         path = dent.pathlib
         if path.name.startswith('.'):
             continue
+        ic(path.parent.name)
         if path.parent.name.startswith('.'):
             continue
         if path.as_posix().startswith(exclude_path.as_posix()):
