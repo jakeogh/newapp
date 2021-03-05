@@ -15,6 +15,7 @@ from kcl.configops import click_read_config
 from kcl.fileops import write_line_to_file
 from kcl.printops import eprint
 from kcl.userops import not_root
+from licenseguesser import license_list
 from replace_text import replace_text
 from run_command import run_command
 from with_chdir import chdir
@@ -629,7 +630,7 @@ def check_all(ctx,
 @click.option('--apps-folder', type=str, required=True)
 @click.option('--gentoo-overlay-repo', type=str, required=True)
 @click.option('--github-user', type=str, required=True)
-@click.option('--license', type=click.Choice(["ISC"]), default="ISC")
+@click.option('--license', type=click.Choice(license_list(verbose=False, debug=False,)), default="ISC")
 @click.option('--owner', type=str, required=True)
 @click.option('--owner-email', type=str, required=True)
 @click.option('--description', type=str, default="Short explination of what it does _here_")
