@@ -235,7 +235,9 @@ def rename_repo_on_clone(*,
             continue
 
         if old_name in path.name:
+            ic(old_name, path.name)
             new_path_name = path.name.replace(old_name, new_name)
+            ic(new_path_name)
             new_path = path.parent / Path(new_path_name)
             sh.git.mv(path, new_path)
 
