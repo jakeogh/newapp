@@ -257,8 +257,7 @@ def rename_repo_on_clone(*,
         if path.as_posix().startswith(exclude_path.as_posix()):
             continue
 
-        #if path.name != new_name:
-        assert old_name not in path.name
+        #assert old_name not in path.name  # incorrect assumption xtitle -> bspwm-xtitle
         replace_text(file_to_modify=path,
                      match=old_name,
                      replacement=new_name,
