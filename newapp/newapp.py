@@ -235,6 +235,8 @@ def rename_repo_on_clone(*,
             continue
 
         if old_name in path.name:
+            if path.name == new_name:
+                continue
             ic(old_name, path.name)
             new_path_name = path.name.replace(old_name, new_name)
             ic(new_path_name)
