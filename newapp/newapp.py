@@ -233,51 +233,51 @@ def rename_repo_on_clone(*,
                          verbose: bool,
                          debug: bool,):
     ic(old_name, new_name)
-    os.chdir(app_path)
-    if Path(old_name).exists():  # not all apps have a dir here
-        sh.git.mv(old_name, new_name)
-    all_paths = list(paths(app_path, verbose=verbose, debug=debug,))
-    exclude_path = app_path / Path('.git')
-    for dent in all_paths:
-        path = dent.pathlib
-        if path.name.startswith('.'):
-            continue
-        if path.parent.name.startswith('.'):
-            continue
-        if path.as_posix().startswith(exclude_path.as_posix()):
-            continue
-        if debug:
-            ic(dent)
-
-        if old_name in path.name:
-            if path.name == new_name:
+    with chdir(app_path):
+        if Path(old_name).exists():  # not all apps have a dir here
+            sh.git.mv(old_name, new_name)
+        all_paths = list(paths(app_path, verbose=verbose, debug=debug,))
+        exclude_path = app_path / Path('.git')
+        for dent in all_paths:
+            path = dent.pathlib
+            if path.name.startswith('.'):
                 continue
-            ic(old_name, path.name)
-            new_path_name = path.name.replace(old_name, new_name)
-            ic(new_path_name)
-            new_path = path.parent / Path(new_path_name)
-            sh.git.mv(path, new_path)
+            if path.parent.name.startswith('.'):
+                continue
+            if path.as_posix().startswith(exclude_path.as_posix()):
+                continue
+            if debug:
+                ic(dent)
 
-    all_files = list(files(app_path, verbose=verbose, debug=debug,))
-    exclude_path = app_path / Path('.git')
-    for dent in all_files:
-        ic(dent)
-        path = dent.pathlib
-        if path.name.startswith('.'):
-            continue
-        if path.parent.name.startswith('.'):
-            continue
-        if path.as_posix().startswith(exclude_path.as_posix()):
-            continue
+            if old_name in path.name:
+                if path.name == new_name:
+                    continue
+                ic(old_name, path.name)
+                new_path_name = path.name.replace(old_name, new_name)
+                ic(new_path_name)
+                new_path = path.parent / Path(new_path_name)
+                sh.git.mv(path, new_path)
 
-        #assert old_name not in path.name  # incorrect assumption xtitle -> bspwm-xtitle
-        replace_text(file_to_modify=path,
-                     match=old_name,
-                     replacement=new_name,
-                     verbose=verbose,
-                     debug=debug,)
-    sh.git.add('-u')
-    sh.git.commit('-m rename')
+        all_files = list(files(app_path, verbose=verbose, debug=debug,))
+        exclude_path = app_path / Path('.git')
+        for dent in all_files:
+            ic(dent)
+            path = dent.pathlib
+            if path.name.startswith('.'):
+                continue
+            if path.parent.name.startswith('.'):
+                continue
+            if path.as_posix().startswith(exclude_path.as_posix()):
+                continue
+
+            #assert old_name not in path.name  # incorrect assumption xtitle -> bspwm-xtitle
+            replace_text(file_to_modify=path,
+                         match=old_name,
+                         replacement=new_name,
+                         verbose=verbose,
+                         debug=debug,)
+        sh.git.add('-u')
+        sh.git.commit('-m rename')
 
 
 def clone_repo(*,
@@ -335,9 +335,9 @@ def create_repo(*,
     if hg:
         raise NotImplementedError('hg')
     os.makedirs(app_path, exist_ok=False)
-    os.chdir(app_path)
-    os.makedirs(app_module_name, exist_ok=False)
-    os.system("git init")
+    with chdir(app_path):
+        os.makedirs(app_module_name, exist_ok=False)
+        os.system("git init")
 
 
 def remote_add_origin(*,
@@ -354,8 +354,8 @@ def remote_add_origin(*,
     repo_config_command = "git remote add origin git@github.com:jakeogh/{}.git".format(app_name)
     ic(repo_config_command)
     if not local:
-        os.chdir(app_path)
-        os.system(repo_config_command)
+        with chdir(app_path):
+            os.system(repo_config_command)
     else:
         ic('local == True, skipping:', repo_config_command)
 
@@ -467,91 +467,90 @@ def rename(ctx,
     ic(old_app_name, new_app_name)
     ic(old_app_path, new_app_path)
 
-    os.chdir(old_app_path)
-    old_setup_py = old_app_path / Path('setup.py')
-    replace_text_in_file(path=old_setup_py,
-                         match_pairs=((old_app_name, new_app_name), (old_app_module_name, new_app_module_name),),
-                         verbose=verbose,
-                         debug=debug,)
-    sh.git.add(old_setup_py)
-    del(old_setup_py)
-
-    old_readme_md = old_app_path / Path('README.md')
-    try:
-        replace_text_in_file(path=old_readme_md,
+    with chdir(old_app_path):
+        old_setup_py = old_app_path / Path('setup.py')
+        replace_text_in_file(path=old_setup_py,
                              match_pairs=((old_app_name, new_app_name), (old_app_module_name, new_app_module_name),),
                              verbose=verbose,
                              debug=debug,)
-    except FileNotFoundError as e:
-        ic(e)
-        sh.touch('README.md')
-    sh.git.add(old_readme_md)
-    del(old_readme_md)
+        sh.git.add(old_setup_py)
+        del(old_setup_py)
 
-    old_url_sh = old_app_path / Path('url.sh')
-    try:
-        replace_text(file_to_modify=old_url_sh,
+        old_readme_md = old_app_path / Path('README.md')
+        try:
+            replace_text_in_file(path=old_readme_md,
+                                 match_pairs=((old_app_name, new_app_name), (old_app_module_name, new_app_module_name),),
+                                 verbose=verbose,
+                                 debug=debug,)
+        except FileNotFoundError as e:
+            ic(e)
+            sh.touch('README.md')
+        sh.git.add(old_readme_md)
+        del(old_readme_md)
+
+        old_url_sh = old_app_path / Path('url.sh')
+        try:
+            replace_text(file_to_modify=old_url_sh,
+                         match=old_app_name,
+                         replacement=new_app_name,
+                         verbose=verbose,
+                        debug=debug,)
+        except Exception as e:
+            write_url_sh(new_repo_url, verbose=verbose, debug=debug,)
+        sh.git.add(old_url_sh)
+        del(old_url_sh)
+
+        old_edit_config = old_app_path / Path('.edit_config')
+        replace_text(file_to_modify=old_edit_config,
                      match=old_app_name,
                      replacement=new_app_name,
                      verbose=verbose,
-                    debug=debug,)
-    except Exception as e:
-        write_url_sh(new_repo_url, verbose=verbose, debug=debug,)
-    sh.git.add(old_url_sh)
-    del(old_url_sh)
+                     debug=debug,)
+        #sh.git.add(old_edit_config)
+        del(old_edit_config)
 
-    old_edit_config = old_app_path / Path('.edit_config')
-    replace_text(file_to_modify=old_edit_config,
-                 match=old_app_name,
-                 replacement=new_app_name,
-                 verbose=verbose,
-                 debug=debug,)
-    #sh.git.add(old_edit_config)
-    del(old_edit_config)
+        enable_github_sh = old_app_path / Path('enable_github.sh')
+        replace_text(file_to_modify=enable_github_sh,
+                     match=old_app_name,
+                     replacement=new_app_name,
+                     verbose=verbose,
+                     debug=debug,)
+        #sh.git.add(enable_github_sh)
+        del(enable_github_sh)
 
-    enable_github_sh = old_app_path / Path('enable_github.sh')
-    replace_text(file_to_modify=enable_github_sh,
-                 match=old_app_name,
-                 replacement=new_app_name,
-                 verbose=verbose,
-                 debug=debug,)
-    #sh.git.add(enable_github_sh)
-    del(enable_github_sh)
+        old_app_py = old_app_path / old_app_module_name / Path(old_app_module_name + '.py')
+        replace_text_in_file(path=old_app_py,
+                             match_pairs=((old_app_name, new_app_name), (old_app_module_name, new_app_module_name),),
+                             verbose=verbose,
+                             debug=debug,)
+        sh.git.add(old_app_py)
+        #del(old_app_py)
 
-    old_app_py = old_app_path / old_app_module_name / Path(old_app_module_name + '.py')
-    replace_text_in_file(path=old_app_py,
-                         match_pairs=((old_app_name, new_app_name), (old_app_module_name, new_app_module_name),),
-                         verbose=verbose,
-                         debug=debug,)
-    sh.git.add(old_app_py)
-    #del(old_app_py)
+        old_app_init_py = old_app_path / old_app_module_name / Path('__init__.py')
+        replace_text(file_to_modify=old_app_init_py,
+                     match=old_app_module_name,
+                     replacement=new_app_module_name,
+                     verbose=verbose,
+                     debug=debug,)
+        sh.git.add(old_app_init_py)
+        del old_app_init_py
 
-    old_app_init_py = old_app_path / old_app_module_name / Path('__init__.py')
-    replace_text(file_to_modify=old_app_init_py,
-                 match=old_app_module_name,
-                 replacement=new_app_module_name,
-                 verbose=verbose,
-                 debug=debug,)
-    sh.git.add(old_app_init_py)
-    del old_app_init_py
+        # in old_app_path
+        new_app_py = old_app_path / old_app_module_name / Path(new_app_module_name + '.py')
+        sh.git.mv(old_app_py, new_app_py)
+        del old_app_py
+        del new_app_py
+        sh.git.mv(old_app_module_name, new_app_module_name)
+        #print(sh.ls())
+        sh.git.add(Path(new_app_module_name) / Path('__init__.py'))
+        sh.git.add(Path(new_app_module_name) / Path('py.typed'))
+        sh.git.add(Path(new_app_module_name) / Path(new_app_module_name + '.py'))
+        old_ebuild_symlink = old_app_path / Path(old_app_name + '-9999.ebuild')
+        if not old_ebuild_symlink.exists():
+            old_ebuild_folder = Path(gentoo_overlay_repo) / Path(group) / Path(old_app_name)
+            sh.ln('-s', old_ebuild_folder / old_ebuild_symlink.name, old_ebuild_symlink.name)
+            del old_ebuild_folder
 
-    os.chdir(old_app_path)
-
-    # in old_app_path
-    new_app_py = old_app_path / old_app_module_name / Path(new_app_module_name + '.py')
-    sh.git.mv(old_app_py, new_app_py)
-    del old_app_py
-    del new_app_py
-    sh.git.mv(old_app_module_name, new_app_module_name)
-    #print(sh.ls())
-    sh.git.add(Path(new_app_module_name) / Path('__init__.py'))
-    sh.git.add(Path(new_app_module_name) / Path('py.typed'))
-    sh.git.add(Path(new_app_module_name) / Path(new_app_module_name + '.py'))
-    old_ebuild_symlink = old_app_path / Path(old_app_name + '-9999.ebuild')
-    if not old_ebuild_symlink.exists():
-        old_ebuild_folder = Path(gentoo_overlay_repo) / Path(group) / Path(old_app_name)
-        sh.ln('-s', old_ebuild_folder / old_ebuild_symlink.name, old_ebuild_symlink.name)
-        del old_ebuild_folder
 
     assert old_ebuild_symlink.exists()
     os.chdir(old_ebuild_symlink.resolve().parent)
@@ -574,24 +573,22 @@ def rename(ctx,
     new_ebuild_path = Path(new_app_name / new_ebuild_name).resolve()
     sh.git.commit('-m', 'rename', _ok_code=[0, 1])
     sh.git.push()
-    os.chdir(old_app_path)
 
-    # in old_app_folder
-    print(sh.ls())
-    sh.rm(old_ebuild_symlink.name)
-    del old_ebuild_symlink
+    with chdir(old_app_path):
+        print(sh.ls())
+        sh.rm(old_ebuild_symlink.name)
+        del old_ebuild_symlink
 
-    new_ebuild_symlink_name = new_ebuild_name
-    sh.ln('-s', new_ebuild_path, new_ebuild_symlink_name)
-    del new_ebuild_symlink_name
-    del new_ebuild_name
-    sh.git.commit('-m', 'rename')
-    sh.git.remote.rm('origin')
-    sh.git.push()
+        new_ebuild_symlink_name = new_ebuild_name
+        sh.ln('-s', new_ebuild_path, new_ebuild_symlink_name)
+        del new_ebuild_symlink_name
+        del new_ebuild_name
+        sh.git.commit('-m', 'rename')
+        sh.git.remote.rm('origin')
+        sh.git.push()
 
-    # in apps_folder
-    os.chdir(apps_folder)
-    sh.mv(old_app_path, new_app_path, '-v')
+    with chdir(apps_folder):
+        sh.mv(old_app_path, new_app_path, '-v')
 
 
 @cli.command()
@@ -718,53 +715,53 @@ def new(ctx,
                     verbose=verbose,
                     debug=debug,)
 
-        os.chdir(app_path)
-
         if not template_repo_url:
-            with open("setup.py", 'x') as fh:
-                fh.write(generate_setup_py(package_name=app_module_name,
-                                           command=app_name,
-                                           owner=owner,
-                                           owner_email=owner_email,
-                                           description=description,
-                                           license=license,
-                                           url=repo_url))
+            with chdir(app_path):
+                with open("setup.py", 'x') as fh:
+                    fh.write(generate_setup_py(package_name=app_module_name,
+                                               command=app_name,
+                                               owner=owner,
+                                               owner_email=owner_email,
+                                               description=description,
+                                               license=license,
+                                               url=repo_url))
 
-            template = generate_gitignore_template()
-            with open('.gitignore', 'x') as fh:
-                fh.write(template)
+                template = generate_gitignore_template()
+                with open('.gitignore', 'x') as fh:
+                    fh.write(template)
 
-            write_url_sh(repo_url, verbose=verbose, debug=debug,)
+                write_url_sh(repo_url, verbose=verbose, debug=debug,)
 
-            os.system("fastep")
+                os.system("fastep")
 
-            os.chdir(app_module_name)
-            app_template = generate_app_template(package_name=app_module_name)
-            with open(app_module_name + '.py', 'x') as fh:
-                fh.write(app_template)
+            with chdir(app_module_name):
+                app_template = generate_app_template(package_name=app_module_name)
+                with open(app_module_name + '.py', 'x') as fh:
+                    fh.write(app_template)
 
-            init_template = generate_init_template(package_name=app_module_name)
-            with open("__init__.py", 'x') as fh:
-                fh.write(init_template)
-            sh.touch('py.typed')
+                init_template = generate_init_template(package_name=app_module_name)
+                with open("__init__.py", 'x') as fh:
+                    fh.write(init_template)
+                sh.touch('py.typed')
 
-            os.chdir(app_path)
-            sh.git.add('--all')
+            with chdir(app_path):
+                sh.git.add('--all')
+
+        with chdir(app_path):
+            with open(".edit_config", 'x') as fh:
+                fh.write(generate_edit_config(package_name=app_name,
+                                              package_group=group,
+                                              local=local))
+
+            remote_add_origin(hg=hg,
+                              app_path=app_path,
+                              local=local,
+                              app_name=app_name,
+                              verbose=verbose,
+                              debug=debug,)
     else:
         eprint("Not creating new app, {} already exists.".format(app_path))
 
-    os.chdir(app_path)
-    with open(".edit_config", 'x') as fh:
-        fh.write(generate_edit_config(package_name=app_name,
-                                      package_group=group,
-                                      local=local))
-
-    remote_add_origin(hg=hg,
-                      app_path=app_path,
-                      local=local,
-                      app_name=app_name,
-                      verbose=verbose,
-                      debug=debug,)
 
     ebuild_path = Path(gentoo_overlay_repo) / Path(group) / Path(app_name)
     if not ebuild_path.exists():
@@ -773,29 +770,28 @@ def new(ctx,
             enable_python = True
 
         os.makedirs(ebuild_path, exist_ok=False)
-        os.chdir(ebuild_path)
         ebuild_name = app_name + "-9999.ebuild"
-
-        with open(ebuild_name, 'w') as fh:
-            fh.write(generate_ebuild_template(description=description,
-                                              enable_python=enable_python,
-                                              homepage=repo_url,
-                                              app_path=app_path,))
-        sh.git.add(ebuild_name)
-        sh.ebuild(ebuild_name,  'manifest')
-        sh.git.add('*')
-        os.system("git commit -m 'newapp {}'".format(app_name))
-        os.system("git push")
-        os.system("sudo emaint sync -A")
-        accept_keyword = "={}/{}-9999 **\n".format(group, app_name)
-        accept_keywords = Path("/etc/portage/package.accept_keywords")
-        write_line_to_file(file_to_write=accept_keywords,
-                           line=accept_keyword,
-                           unique=True,
-                           make_new=False,
-                           verbose=verbose,
-                           debug=debug,)
-        sh.ln('-s', ebuild_path / ebuild_name, app_path / ebuild_name)
+        with chdir(ebuild_path):
+            with open(ebuild_name, 'w') as fh:
+                fh.write(generate_ebuild_template(description=description,
+                                                  enable_python=enable_python,
+                                                  homepage=repo_url,
+                                                  app_path=app_path,))
+            sh.git.add(ebuild_name)
+            sh.ebuild(ebuild_name,  'manifest')
+            sh.git.add('*')
+            os.system("git commit -m 'newapp {}'".format(app_name))
+            os.system("git push")
+            os.system("sudo emaint sync -A")
+            accept_keyword = "={}/{}-9999 **\n".format(group, app_name)
+            accept_keywords = Path("/etc/portage/package.accept_keywords")
+            write_line_to_file(file_to_write=accept_keywords,
+                               line=accept_keyword,
+                               unique=True,
+                               make_new=False,
+                               verbose=verbose,
+                               debug=debug,)
+            sh.ln('-s', ebuild_path / ebuild_name, app_path / ebuild_name)
     else:
         eprint("Not creating new ebuild, {} already exists.".format(ebuild_path))
 
@@ -807,29 +803,8 @@ def new(ctx,
     os.system("edit " + main_py_path.as_posix())
 
 
-#
-##from pudb.remote import set_trace
-##set_trace(term_size=(80, 24))
-#
-#
-##def log_uncaught_exceptions(ex_cls, ex, tb):
-##   cprint(''.join(traceback.format_tb(tb)))
-##   cprint('{0}: {1}'.format(ex_cls, ex))
-##
-##sys.excepthook = log_uncaught_exceptions
-#
-#
 ##http://liw.fi/cmdtest/
 ##http://liw.fi/cliapp/
-#
-#
-#
-#import os
-#home = os.path.expanduser("~")
-#os.path.sep = b'/'
-#os.path.altsep = b'/'
-#program_folder = os.path.dirname(os.path.realpath(__file__))
-#
 #
 #def debug(func):
 #    msg = func.__qualname__
@@ -912,9 +887,6 @@ def new(ctx,
 #
 #log_level=log_levels['DEBUG']
 #log_level=log_levels['INFO:']
-#
-## pylint: disable=invalid-name
-## pylint: enable=invalid-name
 #
 #
 #def print_traceback():

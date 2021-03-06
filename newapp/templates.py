@@ -81,7 +81,14 @@ except ImportError:
 
 
 # import pdb; pdb.set_trace()
+# #set_trace(term_size=(80, 24))
 # from pudb import set_trace; set_trace(paused=False)
+
+##def log_uncaught_exceptions(ex_cls, ex, tb):
+##   eprint(''.join(traceback.format_tb(tb)))
+##   eprint('{0}: {1}'.format(ex_cls, ex))
+##
+##sys.excepthook = log_uncaught_exceptions
 
 global APP_NAME
 APP_NAME = '{package_name}'
