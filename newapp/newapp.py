@@ -340,13 +340,6 @@ def create_repo(*,
     os.system("git init")
 
 
-#def rename_project(ctx, *,
-#                   old_name: str,
-#                   new_name: str,
-#                   verbose: bool,
-#                   debug: bool,):
-
-
 def remote_add_origin(*,
                       app_path: Path,
                       local: bool,
@@ -788,9 +781,9 @@ def new(ctx,
                                               enable_python=enable_python,
                                               homepage=repo_url,
                                               app_path=app_path,))
-        os.system("git add " + ebuild_name)
-        os.system("ebuild {} manifest".format(ebuild_name))
-        os.system("git add *")
+        sh.git.add(ebuild_name)
+        sh.ebuild(ebuild_name,  'manifest')
+        sh.git.add('*')
         os.system("git commit -m 'newapp {}'".format(app_name))
         os.system("git push")
         os.system("sudo emaint sync -A")
