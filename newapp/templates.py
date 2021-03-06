@@ -238,13 +238,13 @@ def cli(ctx,
 
 depend_python = '''
 RDEPEND="
-	dev-python/click[${{PYTHON_USEDEP}}]
-	dev-python/icecream[${{PYTHON_USEDEP}}]
-	dev-python/colorama[${{PYTHON_USEDEP}}]
-	dev-python/click-command-tree[${{PYTHON_USEDEP}}]
+	dev-python/click[${PYTHON_USEDEP}]
+	dev-python/icecream[${PYTHON_USEDEP}]
+	dev-python/colorama[${PYTHON_USEDEP}]
+	dev-python/click-command-tree[${PYTHON_USEDEP}]
 "
 
-DEPEND="${{RDEPEND}}"
+DEPEND="${RDEPEND}"
 '''
 
 ebuild = '''# Copyright 1999-2021 Gentoo Authors
