@@ -64,6 +64,7 @@ from typing import Sequence
 from typing import Generator
 from typing import Iterable
 from typing import ByteString
+from typing import Optional
 
 # click-command-tree
 #from click_plugins import with_plugins
