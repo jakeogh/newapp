@@ -125,7 +125,8 @@ def cli(ctx,
         head: int,
         tail: int,
         progress: bool,
-        printn: bool,):
+        printn: bool,
+        ):
 
     null = not printn
     end = '{newline}'
@@ -214,7 +215,8 @@ def cli(ctx,
 #def some_command(ctx,
 #                 urls,
 #                 verbose: bool,
-#                 debug: bool,):
+#                 debug: bool,
+#                 ):
 #    pass
 #    verbose = verbose or ctx.obj['verbose']
 #    debug = debug or ctx.obj['debug']
