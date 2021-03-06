@@ -62,6 +62,8 @@ from kcl.userops import not_root
 from typing import List
 from typing import Sequence
 from typing import Generator
+from typing import Iterable
+from typing import ByteString
 
 # click-command-tree
 #from click_plugins import with_plugins
