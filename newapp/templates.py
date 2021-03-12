@@ -89,7 +89,7 @@ except ImportError:
 
 ##def log_uncaught_exceptions(ex_cls, ex, tb):
 ##   eprint(''.join(traceback.format_tb(tb)))
-##   eprint('{0}: {1}'.format(ex_cls, ex))
+##   eprint('{{0}}: {{1}}'.format(ex_cls, ex))
 ##
 ##sys.excepthook = log_uncaught_exceptions
 
