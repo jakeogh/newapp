@@ -105,9 +105,9 @@ APP_NAME = '{package_name}'
                                 dir_okay=True,
                                 file_okay=False,
                                 path_type=str,
-                                allow_dash=False),
+                                allow_dash=False,),
                 nargs=1,
-                required=True)
+                required=True,)
 @click.option('--add', is_flag=True)
 @click.option('--verbose', is_flag=True)
 @click.option('--debug', is_flag=True)
@@ -243,7 +243,6 @@ def cli(ctx,
 #
 #        if ctx.obj['verbose']:
 #            ic(index, url)
-
 
 
 '''
