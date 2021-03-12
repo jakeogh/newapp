@@ -734,7 +734,7 @@ def new(ctx,
 
                 os.system("fastep")
 
-            with chdir(app_module_name):
+            with chdir(app_path / app_module_name):
                 app_template = generate_app_template(package_name=app_module_name)
                 with open(app_module_name + '.py', 'x') as fh:
                     fh.write(app_template)
