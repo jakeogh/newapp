@@ -49,6 +49,8 @@ import os
 import sys
 import click
 from pathlib import Path
+from with_sshfs import sshfs
+from with_chdir import chdir
 from retry_on_exception import retry_on_exception
 from enumerate_input import enumerate_input
 #from collections import defaultdict
