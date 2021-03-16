@@ -236,6 +236,9 @@ def rename_repo_on_clone(*,
                          verbose: bool,
                          debug: bool,):
     ic(old_name, new_name)
+    old_module_name = old_name.replace('-', '_')
+    new_module_name = old_name.replace('-', '_')
+
     with chdir(app_path):
         if Path(old_name).exists():  # not all apps have a dir here
             sh.git.mv(old_name, new_name)
@@ -299,11 +302,15 @@ def rename_repo_on_clone(*,
                 continue
 
             #assert old_name not in path.name  # incorrect assumption xtitle -> bspwm-xtitle
-            replace_text(file_to_modify=path,
-                         match=old_name,
-                         replacement=new_name,
-                         verbose=verbose,
-                         debug=debug,)
+            #replace_text(file_to_modify=path,
+            #             match=old_name,
+            #             replacement=new_name,
+            #             verbose=verbose,
+            #             debug=debug,)
+            replace_text_in_file(path=path,
+                                 match_pairs=((old_name, new_name), (old_module_name, new_module_name),),
+                                 verbose=verbose,
+                                 debug=debug,)
         sh.git.add('-u')
         sh.git.commit('-m rename')
 
