@@ -230,6 +230,8 @@ def rename_repo_on_clone(*,
                          app_path: Path,
                          old_name: str,
                          new_name: str,
+                         app_group: str,
+                         local: bool,
                          verbose: bool,
                          debug: bool,):
     ic(old_name, new_name)
@@ -238,6 +240,11 @@ def rename_repo_on_clone(*,
             sh.git.mv(old_name, new_name)
         if Path(old_name.replace('-', '_')).exists():  # not all apps have a dir here
             sh.git.mv(old_name.replace('-', '_'), new_name)
+
+        with open(".edit_config", 'x') as fh:
+            fh.write(generate_edit_config(package_name=new_name,
+                                          package_group=app_group,
+                                          local=local))
 
         all_paths = list(paths(app_path, verbose=verbose, debug=debug,))
         exclude_path = app_path / Path('.git')
@@ -298,7 +305,9 @@ def clone_repo(*,
                apps_folder: Path,
                template_repo_url: str,
                app_path: Path,
+               app_group: str,
                hg: bool,
+               local: bool,
                verbose: bool,
                debug: bool,):
 
@@ -331,6 +340,8 @@ def clone_repo(*,
         os.system(git_fork_cmd)
     else:
         rename_repo_on_clone(app_path=app_path,
+                             app_group=app_group,
+                             local=local,
                              old_name=template_app_name,
                              new_name=app_name,
                              verbose=verbose,
@@ -717,6 +728,8 @@ def new(ctx,
                    hg=hg,
                    branch=branch,
                    app_path=app_path,
+                   app_group=group,
+                   local=local,
                    verbose=verbose,
                    debug=debug,)
 
