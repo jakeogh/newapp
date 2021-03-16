@@ -261,6 +261,15 @@ def rename_repo_on_clone(*,
                 new_path = path.parent / Path(new_path_name)
                 sh.git.mv(path, new_path)
 
+            if old_name.replace('-', '_') in path.name:
+                if path.name == new_name:
+                    continue
+                ic(old_name.replace('-', '_'), path.name)
+                new_path_name = path.name.replace(old_name.replace('-', '_'), new_name)
+                ic(new_path_name)
+                new_path = path.parent / Path(new_path_name)
+                sh.git.mv(path, new_path)
+
         all_files = list(files(app_path, verbose=verbose, debug=debug,))
         exclude_path = app_path / Path('.git')
         for dent in all_files:
