@@ -231,6 +231,7 @@ def rename_repo_on_clone(*,
                          old_name: str,
                          new_name: str,
                          app_group: str,
+                         hg: bool,
                          local: bool,
                          verbose: bool,
                          debug: bool,):
@@ -245,6 +246,14 @@ def rename_repo_on_clone(*,
             fh.write(generate_edit_config(package_name=new_name,
                                           package_group=app_group,
                                           local=local))
+
+        # enable_github.sh needs to be created if this is a remote template
+        remote_add_origin(hg=hg,
+                          app_path=app_path,
+                          local=local,
+                          app_name=new_name,
+                          verbose=verbose,
+                          debug=debug,)
 
         all_paths = list(paths(app_path, verbose=verbose, debug=debug,))
         exclude_path = app_path / Path('.git')
@@ -342,6 +351,7 @@ def clone_repo(*,
         rename_repo_on_clone(app_path=app_path,
                              app_group=app_group,
                              local=local,
+                             hg=hg,
                              old_name=template_app_name,
                              new_name=app_name,
                              verbose=verbose,
