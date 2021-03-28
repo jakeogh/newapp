@@ -56,8 +56,10 @@ from enumerate_input import enumerate_input
 #from collections import defaultdict
 #from prettyprinter import cpprint, install_extras
 #install_extras(['attrs'])
-from kcl.configops import click_read_config
-from kcl.configops import click_write_config_entry
+
+#from kcl.configops import click_read_config
+#from kcl.configops import click_write_config_entry
+
 from kcl.userops import not_root
 #from kcl.pathops import path_is_block_special
 #from getdents import files
@@ -110,7 +112,7 @@ APP_NAME = '{package_name}'
                                 allow_dash=False,),
                 nargs=1,
                 required=True,)
-@click.option('--add', is_flag=True)
+#@click.option('--add', is_flag=True)
 @click.option('--verbose', is_flag=True)
 @click.option('--debug', is_flag=True)
 @click.option('--simulate', is_flag=True)
@@ -127,7 +129,6 @@ APP_NAME = '{package_name}'
 def cli(ctx,
         paths,
         sysskel,
-        add,
         verbose: bool,
         debug: bool,
         simulate: bool,
@@ -163,27 +164,27 @@ def cli(ctx,
     ctx.obj['head'] = head
     ctx.obj['tail'] = tail
 
-    global APP_NAME
-    config, config_mtime = click_read_config(click_instance=click,
-                                             app_name=APP_NAME,
-                                             verbose=verbose,
-                                             debug=debug,)
-    if verbose:
-        ic(config, config_mtime)
+    #global APP_NAME
+    #config, config_mtime = click_read_config(click_instance=click,
+    #                                         app_name=APP_NAME,
+    #                                         verbose=verbose,
+    #                                         debug=debug,)
+    #if verbose:
+    #    ic(config, config_mtime)
 
-    if add:
-        section = "test_section"
-        key = "test_key"
-        value = "test_value"
-        config, config_mtime = click_write_config_entry(click_instance=click,
-                                                        app_name=APP_NAME,
-                                                        section=section,
-                                                        key=key,
-                                                        value=value,
-                                                        verbose=verbose,
-                                                        debug=debug,)
-        if verbose:
-            ic(config)
+    #if add:
+    #    section = "test_section"
+    #    key = "test_key"
+    #    value = "test_value"
+    #    config, config_mtime = click_write_config_entry(click_instance=click,
+    #                                                    app_name=APP_NAME,
+    #                                                    section=section,
+    #                                                    key=key,
+    #                                                    value=value,
+    #                                                    verbose=verbose,
+    #                                                    debug=debug,)
+    #    if verbose:
+    #        ic(config)
 
     iterator = paths
 
