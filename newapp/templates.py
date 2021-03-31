@@ -101,6 +101,7 @@ except ImportError:
 #@click.group()
 #@click.option('--verbose', is_flag=True)
 #@click.option('--debug', is_flag=True)
+#@click.pass_context
 #def cli(ctx,
 #        verbose: bool,
 #        debug: bool,
