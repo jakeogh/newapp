@@ -86,7 +86,6 @@ except ImportError:
     ic = eprint
 
 
-
 # import pdb; pdb.set_trace()
 # #set_trace(term_size=(80, 24))
 # from pudb import set_trace; set_trace(paused=False)
@@ -97,8 +96,19 @@ except ImportError:
 ##
 ##sys.excepthook = log_uncaught_exceptions
 
-global APP_NAME
-APP_NAME = '{package_name}'
+
+#@with_plugins(iter_entry_points('click_command_tree'))
+#@click.group()
+#@click.option('--verbose', is_flag=True)
+#@click.option('--debug', is_flag=True)
+#def cli(ctx,
+#        verbose: bool,
+#        debug: bool,
+#        ):
+#
+#    ctx.ensure_object(dict)
+#    ctx.obj['verbose'] = verbose
+#    ctx.obj['debug'] = debug
 
 
 # DONT CHANGE FUNC NAME
@@ -122,9 +132,7 @@ APP_NAME = '{package_name}'
 @click.option('--head', type=int, default=False)
 @click.option('--tail', type=int, default=False)
 @click.option("--printn", is_flag=True)
-@click.option("--progress", is_flag=True)
-#@with_plugins(iter_entry_points('click_command_tree'))
-#@click.group()
+#@click.option("--progress", is_flag=True)
 @click.pass_context
 def cli(ctx,
         paths,
@@ -137,7 +145,6 @@ def cli(ctx,
         skip: int,
         head: int,
         tail: int,
-        progress: bool,
         printn: bool,
         ):
 
@@ -150,12 +157,17 @@ def cli(ctx,
         assert not ipython
 
     #progress = False
-    if (verbose or debug):
-        progress = False
+    #if (verbose or debug):
+    #    progress = False
 
     ctx.ensure_object(dict)
-    ctx.obj['verbose'] = verbose
-    ctx.obj['debug'] = debug
+    if verbose:
+        ctx.obj['verbose'] = verbose
+    verbose = ctx.obj['verbose']
+    if debug:
+        ctx.obj['debug'] = debug
+    debug = ctx.obj['debug']
+
     ctx.obj['end'] = end
     ctx.obj['null'] = null
     ctx.obj['progress'] = progress
