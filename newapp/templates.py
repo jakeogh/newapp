@@ -49,8 +49,8 @@ import os
 import sys
 import click
 from pathlib import Path
-from with_sshfs import sshfs
-from with_chdir import chdir
+#from with_sshfs import sshfs
+#from with_chdir import chdir
 from retry_on_exception import retry_on_exception
 from enumerate_input import enumerate_input
 #from collections import defaultdict
@@ -60,7 +60,7 @@ from enumerate_input import enumerate_input
 #from kcl.configops import click_read_config
 #from kcl.configops import click_write_config_entry
 
-from kcl.userops import not_root
+#from kcl.userops import not_root
 #from kcl.pathops import path_is_block_special
 #from getdents import files
 from typing import List
@@ -170,7 +170,7 @@ def cli(ctx,
 
     ctx.obj['end'] = end
     ctx.obj['null'] = null
-    ctx.obj['progress'] = progress
+    #ctx.obj['progress'] = progress
     ctx.obj['count'] = count
     ctx.obj['skip'] = skip
     ctx.obj['head'] = head
@@ -202,7 +202,7 @@ def cli(ctx,
 
     for index, path in enumerate_input(iterator=iterator,
                                        null=null,
-                                       progress=progress,
+                                       progress=False,
                                        skip=skip,
                                        head=head,
                                        tail=tail,
@@ -210,15 +210,15 @@ def cli(ctx,
                                        verbose=verbose,):
         path = Path(path)
 
-        if verbose or simulate:
+        if verbose:  # or simulate:
             ic(index, path)
         #if count:
         #    if count > (index + 1):
         #        ic(count)
         #        sys.exit(0)
 
-        if simulate:
-            continue
+        #if simulate:
+        #    continue
 
         with open(path, 'rb') as fh:
             path_bytes_data = fh.read()
