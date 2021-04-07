@@ -693,7 +693,7 @@ def check_all(ctx,
 @click.option('--owner-email', type=str, required=True)
 @click.option('--description', type=str, default="Short explination of what it does _here_")
 @click.option('--local', is_flag=True)
-@click.option('--template', 'template_repo_url', type=str)
+#@click.option('--template', 'template_repo_url', type=str)
 @click.option('--hg', is_flag=True)
 @click.option('--verbose', is_flag=True)
 @click.option('--debug', is_flag=True)
@@ -710,10 +710,10 @@ def new(ctx,
         owner_email,
         description,
         local,
-        template_repo_url,
         verbose,
         debug,
-        hg,):
+        hg,
+        ):
 
     not_root()
     verbose = verbose or ctx.obj['verbose']
@@ -721,13 +721,22 @@ def new(ctx,
     apps_folder = Path(apps_folder)
     ic(apps_folder)
 
-    assert repo_url.startswith('https://github.com/{}/'.format(github_user))
-
     if repo_url.endswith('.git'):
         repo_url = repo_url[:-4]
 
     assert '/' not in group
     assert ':' not in group
+
+    if not repo_url.startswith('https://github.com/{}/'.format(github_user)):
+        template_repo_url = repo_url
+        _app_name, _app_user, _app_module_name, _app_path = parse_url(repo_url,
+                                                                      apps_folder=apps_folder,
+                                                                      verbose=verbose,
+                                                                      debug=debug,)
+        repo_url = 'https://github.com/{github_user}/{app_name}'.format(github_user=github_user, app_name=_app_name)
+        del _app_name, _app_user, _app_module_name, _app_path
+    else:
+        template_repo_url = None
 
     app_name, app_user, app_module_name, app_path = parse_url(repo_url,
                                                               apps_folder=apps_folder,
