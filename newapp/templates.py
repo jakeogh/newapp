@@ -24,10 +24,10 @@ dont_unmerge=""
 zig_app= '''
 const std = @import("std");
 
-pub fn main() !void {
+pub fn main() !void {{
     const stdout = std.io.getStdOut().writer();
-    try stdout.print("Hello{null}, {s}!{newline}", .{"world"});
-}
+    try stdout.print("Hello{null}, {{s}}!{newline}", .{"world"});
+}}
 '''
 
 
