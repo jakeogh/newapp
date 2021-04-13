@@ -170,7 +170,7 @@ def generate_gitignore_template():
     return gitignore.format()
 
 
-def generate_app_template(package_name: str,
+def generate_app_template(package_name: str, *,
                           language: str,
                           verbose: bool,
                           debug: bool,
@@ -196,7 +196,10 @@ def generate_init_template(package_name):
 @cli.command()
 @click.pass_context
 def get_pylint_config(ctx):
-    app_template = generate_app_template('TEMP')
+    app_template = generate_app_template('TEMP',
+                                         language='python',
+                                         verbose=ctx.obj['verbose'],
+                                         debug=ctx.obj['debug'],)
     for line in app_template.splitlines():
         if line.startswith('# pylint: '):
             print(line)
@@ -234,8 +237,33 @@ def nineify(ctx, app):
 @cli.command()
 @click.argument("package-name", type=str, default="TESTPACKAGE")
 @click.pass_context
-def get_app_template(ctx, package_name):
-    app_template = generate_app_template(package_name)
+def get_python_app_template(ctx, package_name):
+    app_template = generate_app_template(package_name,
+                                         language='python',
+                                         verbose=ctx.obj['verbose'],
+                                         debug=ctx.obj['debug'],)
+    print(app_template)
+
+
+@cli.command()
+@click.argument("package-name", type=str, default="TESTPACKAGE")
+@click.pass_context
+def get_bash_app_template(ctx, package_name):
+    app_template = generate_app_template(package_name,
+                                         language='bash',
+                                         verbose=ctx.obj['verbose'],
+                                         debug=ctx.obj['debug'],)
+    print(app_template)
+
+
+@cli.command()
+@click.argument("package-name", type=str, default="TESTPACKAGE")
+@click.pass_context
+def get_zig_app_template(ctx, package_name):
+    app_template = generate_app_template(package_name,
+                                         language='zig',
+                                         verbose=ctx.obj['verbose'],
+                                         debug=ctx.obj['debug'],)
     print(app_template)
 
 
@@ -813,7 +841,10 @@ def new(ctx,
                     os.system("fastep")
 
             with chdir(app_path / app_module_name):
-                app_template = generate_app_template(package_name=app_module_name, language=language)
+                app_template = generate_app_template(package_name=app_module_name,
+                                                     language=language,
+                                                     verbose=ctx.obj['verbose'],
+                                                     debug=ctx.obj['debug'],)
                 with open(app_module_name + ext, 'x') as fh:
                     fh.write(app_template)
 
