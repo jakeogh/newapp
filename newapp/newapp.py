@@ -795,7 +795,7 @@ def new(ctx,
     elif language == 'bash':
         ext = '.sh'
     elif language == 'zig':
-        ext = '.zip'
+        ext = '.zig'
         assert group == 'dev-zig'
     else:
         raise ValueError('unsupported language: ' + language)
