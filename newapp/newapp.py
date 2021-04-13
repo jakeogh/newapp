@@ -20,14 +20,16 @@ from replace_text import replace_text
 from run_command import run_command
 from with_chdir import chdir
 
-from .templates import app
+from .templates import bash_app
 from .templates import depend_python
 from .templates import ebuild
 from .templates import echo_url
 from .templates import edit_config
 from .templates import gitignore
 from .templates import init
+from .templates import python_app
 from .templates import setup_py
+from .templates import zig_app
 
 # pylint: disable=C0111  # docstrings are always outdated and wrong
 # pylint: disable=W0511  # todo is encouraged
@@ -168,8 +170,19 @@ def generate_gitignore_template():
     return gitignore.format()
 
 
-def generate_app_template(package_name):
-    return app.format(package_name=package_name, newline="\\n", null="\\x00")
+def generate_app_template(package_name: str,
+                          language: str,
+                          verbose: bool,
+                          debug: bool,
+                          ):
+
+    if language == 'python':
+        return python_app.format(package_name=package_name, newline="\\n", null="\\x00")
+    if language == 'bash':
+        return bash_app.format(package_name=package_name, newline="\\n", null="\\x00")
+    if language == 'zig':
+        return zig_app.format(package_name=package_name, newline="\\n", null="\\x00")
+    raise ValueError(language)
 
 
 def generate_url_template(url):
@@ -682,6 +695,7 @@ def check_all(ctx,
 
 
 @cli.command()
+@click.argument('language', type=click.Choice(['python', 'bash', 'zig']), nargs=1)
 @click.argument('repo_url', type=str, nargs=1)
 @click.argument('group', type=str, nargs=1)
 @click.argument('branch', type=str, callback=valid_branch, nargs=1, default="master")
@@ -699,6 +713,7 @@ def check_all(ctx,
 @click.option('--debug', is_flag=True)
 @click.pass_context
 def new(ctx,
+        language,
         repo_url,
         group,
         branch,
@@ -747,6 +762,16 @@ def new(ctx,
     assert app_user == github_user
     assert '_' not in app_path.name
 
+    if language == 'python':
+        ext = '.py'
+    elif language == 'bash':
+        ext = '.sh'
+    elif language == 'zig':
+        ext = '.zip'
+        assert group == 'dev-zig'
+    else:
+        raise ValueError('unsupported language: ' + language)
+
     if template_repo_url:
         clone_repo(repo_url=repo_url,
                    template_repo_url=template_repo_url,
@@ -768,14 +793,15 @@ def new(ctx,
 
         if not template_repo_url:
             with chdir(app_path):
-                with open("setup.py", 'x') as fh:
-                    fh.write(generate_setup_py(package_name=app_module_name,
-                                               command=app_name,
-                                               owner=owner,
-                                               owner_email=owner_email,
-                                               description=description,
-                                               license=license,
-                                               url=repo_url))
+                if language == 'python':
+                    with open("setup.py", 'x') as fh:
+                        fh.write(generate_setup_py(package_name=app_module_name,
+                                                   command=app_name,
+                                                   owner=owner,
+                                                   owner_email=owner_email,
+                                                   description=description,
+                                                   license=license,
+                                                   url=repo_url))
 
                 template = generate_gitignore_template()
                 with open('.gitignore', 'x') as fh:
@@ -783,17 +809,19 @@ def new(ctx,
 
                 write_url_sh(repo_url, verbose=verbose, debug=debug,)
 
-                os.system("fastep")
+                if language == 'python':
+                    os.system("fastep")
 
             with chdir(app_path / app_module_name):
-                app_template = generate_app_template(package_name=app_module_name)
-                with open(app_module_name + '.py', 'x') as fh:
+                app_template = generate_app_template(package_name=app_module_name, language=language)
+                with open(app_module_name + ext, 'x') as fh:
                     fh.write(app_template)
 
-                init_template = generate_init_template(package_name=app_module_name)
-                with open("__init__.py", 'x') as fh:
-                    fh.write(init_template)
-                sh.touch('py.typed')
+                if language == 'python':
+                    init_template = generate_init_template(package_name=app_module_name)
+                    with open("__init__.py", 'x') as fh:
+                        fh.write(init_template)
+                    sh.touch('py.typed')
 
             with chdir(app_path):
                 sh.git.add('--all')
@@ -849,7 +877,7 @@ def new(ctx,
     ic(app_path)
     ic(app_module_name)
 
-    main_py_path = app_path / Path(app_module_name) / Path(app_module_name + ".py")
+    main_py_path = app_path / Path(app_module_name) / Path(app_module_name + ext)
     ic(main_py_path)
     os.system("edit " + main_py_path.as_posix())
 

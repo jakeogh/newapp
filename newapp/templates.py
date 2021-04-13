@@ -21,8 +21,23 @@ pre_lint_command=""
 dont_unmerge=""
 '''
 
+zig_app= '''
+const std = @import("std");
 
-app = '''#!/usr/bin/env python3
+pub fn main() !void {
+    const stdout = std.io.getStdOut().writer();
+    try stdout.print("Hello{null}, {s}!{newline}", .{"world"});
+}
+'''
+
+
+bash_app = '''#!/usr/bin/env bash
+echo '{newline}' '{null}'
+exit 1
+'''
+
+
+python_app = '''#!/usr/bin/env python3
 # -*- coding: utf8 -*-
 
 # pylint: disable=C0111  # docstrings are always outdated and wrong
