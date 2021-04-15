@@ -78,6 +78,9 @@ from enumerate_input import enumerate_input
 #from kcl.userops import not_root
 #from kcl.pathops import path_is_block_special
 #from getdents import files
+#from prettytable import PrettyTable
+#output_table = PrettyTable()
+
 from typing import List
 from typing import Sequence
 from typing import Generator
