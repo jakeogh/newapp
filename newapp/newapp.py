@@ -723,7 +723,7 @@ def check_all(ctx,
 
 
 @cli.command()
-@click.argument('language', type=click.Choice(['python', 'bash', 'zig']), nargs=1)
+@click.argument('language', type=click.Choice(['python', 'bash', 'zig', 'c']), nargs=1)
 @click.argument('repo_url', type=str, nargs=1)
 @click.argument('group', type=str, nargs=1)
 @click.argument('branch', type=str, callback=valid_branch, nargs=1, default="master")
@@ -797,6 +797,8 @@ def new(ctx,
     elif language == 'zig':
         ext = '.zig'
         assert group == 'dev-zig'
+    elif language == 'c':
+        ext = '.c'
     else:
         raise ValueError('unsupported language: ' + language)
 
