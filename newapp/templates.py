@@ -261,9 +261,12 @@ def cli(ctx,
 #                 verbose: bool,
 #                 debug: bool,
 #                 ):
-#    pass
-#    verbose = verbose or ctx.obj['verbose']
-#    debug = debug or ctx.obj['debug']
+#    if verbose:
+#        ctx.obj['verbose'] = verbose
+#    verbose = ctx.obj['verbose']
+#    if debug:
+#        ctx.obj['debug'] = debug
+#    debug = ctx.obj['debug']
 #
 #    iterator = urls
 #    for index, url in enumerate_input(iterator=iterator,
@@ -300,6 +303,7 @@ PYTHON_COMPAT=( python3_{{8..9}} )
 
 inherit git-r3
 {inherit_python}
+#inherit xdg
 
 DESCRIPTION="{description}"
 HOMEPAGE="{homepage}"
@@ -312,6 +316,10 @@ KEYWORDS=""
 
 {depend_python}
 
+#src_prepare() {
+#	default
+#	xdg_src_prepare
+#}
 '''
 
 gitignore = '''.git
