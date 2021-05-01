@@ -316,10 +316,10 @@ KEYWORDS=""
 
 {depend_python}
 
-#src_prepare() {
+#src_prepare() {{
 #	default
 #	xdg_src_prepare
-#}
+#}}
 '''
 
 gitignore = '''.git
