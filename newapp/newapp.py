@@ -564,10 +564,7 @@ def rename(ctx,
     ic(old_app_name, new_app_name)
     ic(old_app_path, new_app_path)
 
-    categories = portage_categories()
-    assert len(categories) > 10
-    ic(categories)
-    assert group in categories
+    assert group in portage_categories()
 
     with chdir(old_app_path):
         old_setup_py = old_app_path / Path('setup.py')
@@ -790,6 +787,7 @@ def new(ctx,
 
     assert '/' not in group
     assert ':' not in group
+    assert group in portage_categories()
 
     if not repo_url.startswith('https://github.com/{}/'.format(github_user)):
         template_repo_url = repo_url
