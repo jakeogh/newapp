@@ -63,6 +63,16 @@ CONTEXT_SETTINGS = dict(default_map=CFG)
     #     terminal_width=shutil.get_terminal_size((80, 20)).columns)
 
 
+def portage_categories():
+    categories_path = Path(str(sh.portageq('get_repo_path', '/', 'gentoo').strip())) / Path('profiles') / Path('categories')
+    with open(categories_path, 'r') as fh:
+        lines = fh.readlines()
+    categories = [c.strip() for c in lines]
+    del lines
+    del categories_path
+    return categories
+
+
 @click.group(context_settings=CONTEXT_SETTINGS, no_args_is_help=True)
 @click.option('--verbose', is_flag=True)
 @click.option('--debug', is_flag=True)
@@ -366,7 +376,8 @@ def clone_repo(*,
                hg: bool,
                local: bool,
                verbose: bool,
-               debug: bool,):
+               debug: bool,
+               ):
 
     app_name, app_user, _, _ = parse_url(repo_url, apps_folder=apps_folder, verbose=verbose, debug=debug,)
     rename_cloned_repo = False
@@ -411,7 +422,8 @@ def create_repo(*,
                 app_module_name: str,
                 hg: bool,
                 verbose: bool,
-                debug: bool,):
+                debug: bool,
+                ):
 
     if hg:
         raise NotImplementedError('hg')
@@ -427,7 +439,8 @@ def remote_add_origin(*,
                       app_name: str,
                       hg: bool,
                       verbose: bool,
-                      debug: bool,):
+                      debug: bool,
+                      ):
 
     if hg:
         raise NotImplementedError('hg')
@@ -455,7 +468,8 @@ def remote_add_origin(*,
 def parse_url(repo_url: str, *,
               apps_folder: Path,
               verbose: bool,
-              debug: bool,):
+              debug: bool,
+              ):
 
     if verbose:
         ic(repo_url)
@@ -483,7 +497,8 @@ def replace_text_in_file(*,
                          path: Path,
                          match_pairs: tuple,
                          verbose: bool,
-                         debug: bool,):
+                         debug: bool,
+                         ):
     assert isinstance(match_pairs, tuple)
     for old_match, new_match in match_pairs:
         ic(path, old_match, new_match)
@@ -496,7 +511,8 @@ def replace_text_in_file(*,
 
 def write_url_sh(repo_url, *,
                  verbose: bool,
-                 debug: bool,):
+                 debug: bool,
+                 ):
     url_template = generate_url_template(url=repo_url)
     with open("url.sh", 'x') as fh:
         fh.write(url_template)
@@ -547,6 +563,8 @@ def rename(ctx,
 
     ic(old_app_name, new_app_name)
     ic(old_app_path, new_app_path)
+
+    assert group in portage_categories()
 
     with chdir(old_app_path):
         old_setup_py = old_app_path / Path('setup.py')
