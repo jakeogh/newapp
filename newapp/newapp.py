@@ -564,7 +564,10 @@ def rename(ctx,
     ic(old_app_name, new_app_name)
     ic(old_app_path, new_app_path)
 
-    assert group in portage_categories()
+    categories = portage_categories()
+    assert len(categories) > 10
+    ic(categories)
+    assert group in categories
 
     with chdir(old_app_path):
         old_setup_py = old_app_path / Path('setup.py')
