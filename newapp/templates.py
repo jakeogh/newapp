@@ -115,6 +115,14 @@ except ImportError:
 ##sys.excepthook = log_uncaught_exceptions
 
 
+def validate_slice(slice_syntax):
+    assert isinstance(slice_syntax, str)
+    for c in slice_syntax:
+        if c not in ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-', '[', ']', ':']:
+            raise ValueError(slice_syntax)
+    return slice_syntax
+
+
 #@with_plugins(iter_entry_points('click_command_tree'))
 #@click.group()
 #@click.option('--verbose', is_flag=True)
@@ -141,6 +149,7 @@ except ImportError:
                                 allow_dash=False,),
                 nargs=1,
                 required=True,)
+@click.argument("slice_syntax", type=validate_slice, nargs=1)
 #@click.option('--add', is_flag=True)
 @click.option('--verbose', is_flag=True)
 @click.option('--debug', is_flag=True)
