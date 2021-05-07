@@ -13,7 +13,6 @@ from getdents import paths
 from icecream import ic
 from kcl.configops import click_read_config
 from kcl.fileops import write_line_to_file
-from kcl.printops import eprint
 from kcl.userops import not_root
 from licenseguesser import license_list
 from replace_text import replace_text
@@ -61,6 +60,18 @@ CFG, CONFIG_MTIME = click_read_config(click_instance=click,
 CONTEXT_SETTINGS = dict(default_map=CFG)
     #dict(help_option_names=['--help'],
     #     terminal_width=shutil.get_terminal_size((80, 20)).columns)
+
+
+def eprint(*args, **kwargs):
+    if 'file' in kwargs.keys():
+        kwargs.pop('file')
+    print(*args, file=sys.stderr, **kwargs)
+
+
+try:
+    from icecream import ic  # https://github.com/gruns/icecream
+except ImportError:
+    ic = eprint
 
 
 def portage_categories():
