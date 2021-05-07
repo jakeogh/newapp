@@ -738,7 +738,9 @@ def list_all(ctx,
                                      verbose=verbose,
                                      debug=debug,)
     for config in edit_configs:
-        ic(config)
+        if verbose:
+            ic(config)
+        print(config.parent.name)
 
 
 @cli.command()
