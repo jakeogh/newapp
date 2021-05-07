@@ -54,7 +54,6 @@ CFG, CONFIG_MTIME = click_read_config(click_instance=click,
                                       verbose=False,
                                       debug=False,)
 
-#ic(CFG)
 
 # https://github.com/mitsuhiko/click/issues/441
 CONTEXT_SETTINGS = dict(default_map=CFG)
@@ -73,6 +72,7 @@ try:
 except ImportError:
     ic = eprint
 
+ic(CFG)
 
 def portage_categories():
     categories_path = Path(str(sh.portageq('get_repo_path', '/', 'gentoo').strip())) / Path('profiles') / Path('categories')
