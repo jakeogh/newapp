@@ -718,10 +718,8 @@ def find_edit_configs(*,
     return edit_configs
 
 
-@cli.command('list')
+@cli.command()
 @click.option('--apps-folder', type=str, required=True)
-@click.option('--gentoo-overlay-repo', type=str, required=True)
-@click.option('--local', is_flag=True)
 @click.option('--verbose', is_flag=True)
 @click.option('--debug', is_flag=True)
 @click.pass_context
