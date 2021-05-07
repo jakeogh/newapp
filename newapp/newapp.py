@@ -731,6 +731,11 @@ def list_all(ctx,
              debug: bool,
              ):
 
+    verbose = verbose or ctx.obj['verbose']
+    debug = debug or ctx.obj['debug']
+    apps_folder = Path(apps_folder)
+    ic(apps_folder)
+
     edit_configs = find_edit_configs(apps_folder=apps_folder,
                                      verbose=verbose,
                                      debug=debug,)
