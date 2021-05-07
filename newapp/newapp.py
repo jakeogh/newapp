@@ -72,7 +72,7 @@ try:
 except ImportError:
     ic = eprint
 
-ic(CFG)
+#ic(CFG)
 
 def portage_categories():
     categories_path = Path(str(sh.portageq('get_repo_path', '/', 'gentoo').strip())) / Path('profiles') / Path('categories')
@@ -718,7 +718,7 @@ def find_edit_configs(*,
     return edit_configs
 
 
-@cli.command()
+@cli.command('list')
 @click.option('--apps-folder', type=str, required=True)
 @click.option('--verbose', is_flag=True)
 @click.option('--debug', is_flag=True)
