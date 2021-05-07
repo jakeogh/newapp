@@ -3,6 +3,7 @@
 
 import os
 import shutil
+import sys
 from pathlib import Path
 from urllib.parse import urlparse
 
@@ -10,7 +11,6 @@ import click
 import sh
 from getdents import files
 from getdents import paths
-from icecream import ic
 from kcl.configops import click_read_config
 from kcl.fileops import write_line_to_file
 from kcl.userops import not_root
