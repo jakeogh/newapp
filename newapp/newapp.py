@@ -701,28 +701,11 @@ def rename(ctx,
         sh.mv(old_app_path, new_app_path, '-v')
 
 
-@cli.command()
-@click.option('--apps-folder', type=str, required=True)
-@click.option('--gentoo-overlay-repo', type=str, required=True)
-@click.option('--local', is_flag=True)
-@click.option('--github-user', type=str, required=True)
-@click.option('--verbose', is_flag=True)
-@click.option('--debug', is_flag=True)
-@click.pass_context
-def check_all(ctx,
-              apps_folder,
-              gentoo_overlay_repo,
-              github_user,
-              verbose: bool,
-              debug: bool,
-              local,):
-
-    not_root()
-    verbose = verbose or ctx.obj['verbose']
-    debug = debug or ctx.obj['debug']
-    apps_folder = Path(apps_folder)
-    ic(apps_folder)
-
+def find_edit_configs(*,
+                      apps_folder: Path,
+                      verbose: bool,
+                      debug: bool,
+                      ):
     edit_configs = []
     for file in files(apps_folder, verbose=verbose, debug=debug,):
         if file.name == b'.edit_config':
@@ -732,6 +715,56 @@ def check_all(ctx,
             edit_configs.append(file)
 
     edit_configs = sorted(edit_configs)
+    return edit_configs
+
+
+@cli.command('list')
+@click.option('--apps-folder', type=str, required=True)
+@click.option('--gentoo-overlay-repo', type=str, required=True)
+@click.option('--local', is_flag=True)
+@click.option('--verbose', is_flag=True)
+@click.option('--debug', is_flag=True)
+@click.pass_context
+def list_all(ctx,
+             apps_folder: str,
+             verbose: bool,
+             debug: bool,
+             ):
+
+    edit_configs = find_edit_configs(apps_folder=apps_folder,
+                                     verbose=verbose,
+                                     debug=debug,)
+    for config in edit_configs:
+        ic(config)
+
+
+@cli.command()
+@click.option('--apps-folder', type=str, required=True)
+@click.option('--gentoo-overlay-repo', type=str, required=True)
+@click.option('--local', is_flag=True)
+@click.option('--github-user', type=str, required=True)
+@click.option('--verbose', is_flag=True)
+@click.option('--debug', is_flag=True)
+@click.pass_context
+def check_all(ctx,
+              apps_folder: str,
+              gentoo_overlay_repo: str,
+              github_user: str,
+              verbose: bool,
+              debug: bool,
+              local: bool,
+              ):
+
+    not_root()
+    verbose = verbose or ctx.obj['verbose']
+    debug = debug or ctx.obj['debug']
+    apps_folder = Path(apps_folder)
+    ic(apps_folder)
+
+    edit_configs = find_edit_configs(apps_folder=apps_folder,
+                                     verbose=verbose,
+                                     debug=debug,)
+
     for edit_config_path in edit_configs:
         ic(edit_config_path)
         with chdir(edit_config_path.parent):
