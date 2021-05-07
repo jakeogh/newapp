@@ -57,6 +57,21 @@ python_app = '''#!/usr/bin/env python3
 # pylint: disable=W0201  # attribute defined outside __init__
 # pylint: disable=R0916  # Too many boolean expressions in if statement
 
+# code style:
+#   no guessing on spelling: never tmp_X always temporary_X
+#   no guessing on case: vars, functions and methods are _always_ lower case. classes are ThisClass()
+#   del vars explicitely ASAP
+#   rely on the compiler, code verbosity and explicitness can only be overruled by benchamrks (are really compiler bugs)
+#   no tabs. code must display the same independent of viewer
+#   no recursion, recursion is undecidiable, randomly bounded, and hard to reason about
+#   each elementis the same, no special cases for the first or last elemetnt:
+#       [1, 2, 3,] not [1, 2, 3]
+#       def this(*.
+#                a: bool,
+#                b: bool,
+#               ):
+#
+
 
 # TODO:
 #   https://github.com/kvesteri/validators
