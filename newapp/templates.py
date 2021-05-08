@@ -153,6 +153,16 @@ def validate_slice(slice_syntax):
 #    ctx.obj['debug'] = debug
 
 
+def nl_iff_tty(ipython):
+    end = '{newline}'
+    if null:
+        end = '{null}'
+    if sys.stdout.isatty():
+        end = '{newline}'
+        assert not ipython
+    return end
+
+
 # DONT CHANGE FUNC NAME
 @click.command()
 @click.argument("paths", type=str, nargs=-1)
@@ -192,12 +202,7 @@ def cli(ctx,
         ):
 
     null = not printn
-    end = '{newline}'
-    if null:
-        end = '{null}'
-    if sys.stdout.isatty():
-        end = '{newline}'
-        assert not ipython
+    end = nl_iff_tty(ipython)
 
     #progress = False
     #if (verbose or debug):
