@@ -190,7 +190,8 @@ def nl_iff_tty(*, printn, ipython):
 @click.pass_context
 def cli(ctx,
         paths,
-        sysskel,
+        sysskel: str,
+        slice_syntax: str,
         verbose: bool,
         debug: bool,
         simulate: bool,
