@@ -153,7 +153,8 @@ def validate_slice(slice_syntax):
 #    ctx.obj['debug'] = debug
 
 
-def nl_iff_tty(ipython):
+def nl_iff_tty(*, printn, ipython):
+    null = not printn
     end = '{newline}'
     if null:
         end = '{null}'
@@ -202,7 +203,7 @@ def cli(ctx,
         ):
 
     null = not printn
-    end = nl_iff_tty(ipython)
+    end = nl_iff_tty(printn=printn, ipython=ipython)
 
     #progress = False
     #if (verbose or debug):
