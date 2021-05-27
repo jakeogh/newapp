@@ -71,6 +71,9 @@ python_app = '''#!/usr/bin/env python3
 #                b: bool,
 #               ):
 #
+#   expicit loop control is better than while (condition):
+#       while True:
+#           # continue/break explicit logic
 
 
 # TODO:
