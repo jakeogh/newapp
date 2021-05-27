@@ -78,6 +78,8 @@ python_app = '''#!/usr/bin/env python3
 import os
 import sys
 import click
+from signal import signal, SIGPIPE, SIG_DFL
+signal(SIGPIPE,SIG_DFL)
 from pathlib import Path
 #from with_sshfs import sshfs
 #from with_chdir import chdir
@@ -130,6 +132,8 @@ except ImportError:
 ##sys.excepthook = log_uncaught_exceptions
 
 
+
+
 def validate_slice(slice_syntax):
     assert isinstance(slice_syntax, str)
     for c in slice_syntax:
@@ -162,6 +166,25 @@ def nl_iff_tty(*, printn, ipython):
         end = '{newline}'
         assert not ipython
     return end
+
+
+def nevd(*, ctx,
+         printn: bool,
+         ipython: bool,
+         verbose: bool,
+         debug: bool,
+         ):
+
+    null = not printn
+    end = nl_iff_tty(printn=printn, ipython=False)
+    if verbose:
+        ctx.obj['verbose'] = verbose
+    verbose = ctx.obj['verbose']
+    if debug:
+        ctx.obj['debug'] = debug
+    debug = ctx.obj['debug']
+
+    return null, end, verbose, debug
 
 
 # DONT CHANGE FUNC NAME
@@ -203,23 +226,28 @@ def cli(ctx,
         printn: bool,
         ):
 
+    ctx.ensure_object(dict)
     null = not printn
     end = nl_iff_tty(printn=printn, ipython=ipython)
+    null, end, verbose, debug = nevd(ctx=ctx,
+                                     printn=printn,
+                                     ipython=False,
+                                     verbose=verbose,
+                                     debug=debug,)
 
     #progress = False
     #if (verbose or debug):
     #    progress = False
 
-    ctx.ensure_object(dict)
-    if verbose:
-        ctx.obj['verbose'] = verbose
-    verbose = ctx.obj['verbose']
-    if debug:
-        ctx.obj['debug'] = debug
-    debug = ctx.obj['debug']
+    #if verbose:
+    #    ctx.obj['verbose'] = verbose
+    #verbose = ctx.obj['verbose']
+    #if debug:
+    #    ctx.obj['debug'] = debug
+    #debug = ctx.obj['debug']
 
-    ctx.obj['end'] = end
-    ctx.obj['null'] = null
+    #ctx.obj['end'] = end
+    #ctx.obj['null'] = null
     #ctx.obj['progress'] = progress
     ctx.obj['count'] = count
     ctx.obj['skip'] = skip
