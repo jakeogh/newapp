@@ -493,6 +493,7 @@ def parse_url(repo_url: str, *,
         app_name = repo_url_path.parts[-1]
         app_user = repo_url_path.parts[-2]
 
+    app_name = app_name.replace('_', '-')
     app_module_name = app_name.replace('-', '_')
     ic(app_module_name)
     app_path = apps_folder / Path(app_name)
