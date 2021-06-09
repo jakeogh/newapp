@@ -81,11 +81,14 @@ python_app = '''#!/usr/bin/env python3
 import os
 import sys
 import click
+import time
 from signal import signal, SIGPIPE, SIG_DFL
 signal(SIGPIPE,SIG_DFL)
 from pathlib import Path
 #from with_sshfs import sshfs
 #from with_chdir import chdir
+from asserttool import nl_iff_tty
+from asserttool import nevd
 from retry_on_exception import retry_on_exception
 from enumerate_input import enumerate_input
 #from collections import defaultdict
@@ -134,7 +137,9 @@ except ImportError:
 ##
 ##sys.excepthook = log_uncaught_exceptions
 
-
+def get_timestamp():
+    timestamp = str("%.22f" % time.time())
+    return timestamp
 
 
 def validate_slice(slice_syntax):
@@ -160,34 +165,34 @@ def validate_slice(slice_syntax):
 #    ctx.obj['debug'] = debug
 
 
-def nl_iff_tty(*, printn, ipython):
-    null = not printn
-    end = '{newline}'
-    if null:
-        end = '{null}'
-    if sys.stdout.isatty():
-        end = '{newline}'
-        assert not ipython
-    return end
-
-
-def nevd(*, ctx,
-         printn: bool,
-         ipython: bool,
-         verbose: bool,
-         debug: bool,
-         ):
-
-    null = not printn
-    end = nl_iff_tty(printn=printn, ipython=False)
-    if verbose:
-        ctx.obj['verbose'] = verbose
-    verbose = ctx.obj['verbose']
-    if debug:
-        ctx.obj['debug'] = debug
-    debug = ctx.obj['debug']
-
-    return null, end, verbose, debug
+#def nl_iff_tty(*, printn, ipython):
+#    null = not printn
+#    end = '{newline}'
+#    if null:
+#        end = '{null}'
+#    if sys.stdout.isatty():
+#        end = '{newline}'
+#        assert not ipython
+#    return end
+#
+#
+#def nevd(*, ctx,
+#         printn: bool,
+#         ipython: bool,
+#         verbose: bool,
+#         debug: bool,
+#         ):
+#
+#    null = not printn
+#    end = nl_iff_tty(printn=printn, ipython=False)
+#    if verbose:
+#        ctx.obj['verbose'] = verbose
+#    verbose = ctx.obj['verbose']
+#    if debug:
+#        ctx.obj['debug'] = debug
+#    debug = ctx.obj['debug']
+#
+#    return null, end, verbose, debug
 
 
 # DONT CHANGE FUNC NAME
@@ -230,8 +235,6 @@ def cli(ctx,
         ):
 
     ctx.ensure_object(dict)
-    null = not printn
-    end = nl_iff_tty(printn=printn, ipython=ipython)
     null, end, verbose, debug = nevd(ctx=ctx,
                                      printn=printn,
                                      ipython=False,
@@ -361,7 +364,7 @@ ebuild = '''# Copyright 1999-2021 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
-PYTHON_COMPAT=( python3_{{8..9}} )
+PYTHON_COMPAT=( python3_{{8..10}} )
 
 inherit git-r3
 {inherit_python}
