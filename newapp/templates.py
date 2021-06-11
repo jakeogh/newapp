@@ -105,6 +105,7 @@ from enumerate_input import enumerate_input
 #output_table = PrettyTable()
 
 from typing import List
+from typing import Tuple
 from typing import Sequence
 from typing import Generator
 from typing import Iterable
@@ -123,8 +124,10 @@ def eprint(*args, **kwargs):
 
 try:
     from icecream import ic  # https://github.com/gruns/icecream
+    from icecream import icr # https://github.com/jakeogh/icecream
 except ImportError:
     ic = eprint
+    icr = eprint
 
 
 # import pdb; pdb.set_trace()
