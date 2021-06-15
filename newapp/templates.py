@@ -99,7 +99,7 @@ from enumerate_input import enumerate_input
 #from kcl.configops import click_write_config_entry
 
 #from kcl.userops import not_root
-#from kcl.pathops import path_is_block_special
+#from pathtool import path_is_block_special
 #from getdents import files
 #from prettytable import PrettyTable
 #output_table = PrettyTable()

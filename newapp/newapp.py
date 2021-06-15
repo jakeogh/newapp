@@ -12,9 +12,9 @@ import sh
 from getdents import files
 from getdents import paths
 from kcl.configops import click_read_config
-from kcl.fileops import write_line_to_file
 from kcl.userops import not_root
 from licenseguesser import license_list
+from pathtool import write_line_to_file
 from replace_text import replace_text
 from run_command import run_command
 from with_chdir import chdir
@@ -364,7 +364,7 @@ def rename_repo_on_clone(*,
                 continue
 
             #assert old_name not in path.name  # incorrect assumption xtitle -> bspwm-xtitle
-            #replace_text(file_to_modify=path,
+            #replace_text(path=path,
             #             match=old_name,
             #             replacement=new_name,
             #             verbose=verbose,
@@ -510,9 +510,10 @@ def replace_text_in_file(*,
     assert isinstance(match_pairs, tuple)
     for old_match, new_match in match_pairs:
         ic(path, old_match, new_match)
-        replace_text(file_to_modify=path,
+        replace_text(path=path,
                      match=old_match,
                      replacement=new_match,
+                     temp_file=None,
                      verbose=verbose,
                      debug=debug,)
 
@@ -597,9 +598,10 @@ def rename(ctx,
 
         old_url_sh = old_app_path / Path('url.sh')
         try:
-            replace_text(file_to_modify=old_url_sh,
+            replace_text(path=old_url_sh,
                          match=old_app_name,
                          replacement=new_app_name,
+                         temp_file=None,
                          verbose=verbose,
                         debug=debug,)
         except Exception as e:
@@ -608,18 +610,20 @@ def rename(ctx,
         del(old_url_sh)
 
         old_edit_config = old_app_path / Path('.edit_config')
-        replace_text(file_to_modify=old_edit_config,
+        replace_text(path=old_edit_config,
                      match=old_app_name,
                      replacement=new_app_name,
+                     temp_file=None,
                      verbose=verbose,
                      debug=debug,)
         #sh.git.add(old_edit_config)
         del(old_edit_config)
 
         enable_github_sh = old_app_path / Path('enable_github.sh')
-        replace_text(file_to_modify=enable_github_sh,
+        replace_text(path=enable_github_sh,
                      match=old_app_name,
                      replacement=new_app_name,
+                     temp_file=None,
                      verbose=verbose,
                      debug=debug,)
         #sh.git.add(enable_github_sh)
@@ -634,9 +638,10 @@ def rename(ctx,
         #del(old_app_py)
 
         old_app_init_py = old_app_path / old_app_module_name / Path('__init__.py')
-        replace_text(file_to_modify=old_app_init_py,
+        replace_text(path=old_app_init_py,
                      match=old_app_module_name,
                      replacement=new_app_module_name,
+                     temp_file=None,
                      verbose=verbose,
                      debug=debug,)
         sh.git.add(old_app_init_py)
@@ -664,9 +669,10 @@ def rename(ctx,
 
     # in ebuild folder
     old_ebuild_path = Path(old_app_name + '-9999.ebuild').resolve()
-    replace_text(file_to_modify=old_ebuild_path,
+    replace_text(path=old_ebuild_path,
                  match=old_app_module_name,
                  replacement=new_app_module_name,
+                 temp_file=None,
                  verbose=verbose,
                  debug=debug,)
     sh.git.add(old_ebuild_path)
