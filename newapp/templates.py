@@ -40,6 +40,7 @@ exit 1
 python_app = '''#!/usr/bin/env python3
 # -*- coding: utf8 -*-
 
+# flake8: noqa           # flake8 wont add per file settings, should be forked
 # pylint: disable=C0111  # docstrings are always outdated and wrong
 # pylint: disable=W0511  # todo is encouraged
 # pylint: disable=C0301  # line too long
@@ -88,7 +89,6 @@ signal(SIGPIPE,SIG_DFL)
 from pathlib import Path
 #from with_sshfs import sshfs
 #from with_chdir import chdir
-from asserttool import nl_iff_tty
 from asserttool import nevd
 from retry_on_exception import retry_on_exception
 from enumerate_input import enumerate_input
@@ -260,6 +260,7 @@ def cli(ctx,
 
     iterator = paths
 
+    index = 0
     for index, path in enumerate_input(iterator=iterator,
                                        null=null,
                                        progress=False,
