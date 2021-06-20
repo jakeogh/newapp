@@ -169,34 +169,6 @@ def validate_slice(slice_syntax):
 #    ctx.obj['debug'] = debug
 
 
-#def nl_iff_tty(*, printn, ipython):
-#    null = not printn
-#    end = '{newline}'
-#    if null:
-#        end = '{null}'
-#    if sys.stdout.isatty():
-#        end = '{newline}'
-#        assert not ipython
-#    return end
-#
-#
-#def nevd(*, ctx,
-#         printn: bool,
-#         ipython: bool,
-#         verbose: bool,
-#         debug: bool,
-#         ):
-#
-#    null = not printn
-#    end = nl_iff_tty(printn=printn, ipython=False)
-#    if verbose:
-#        ctx.obj['verbose'] = verbose
-#    verbose = ctx.obj['verbose']
-#    if debug:
-#        ctx.obj['debug'] = debug
-#    debug = ctx.obj['debug']
-#
-#    return null, end, verbose, debug
 
 
 # DONT CHANGE FUNC NAME
