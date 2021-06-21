@@ -193,16 +193,25 @@ def generate_gitignore_template():
 
 def generate_app_template(package_name: str, *,
                           language: str,
+                          append: str,
                           verbose: bool,
                           debug: bool,
                           ):
 
+    result = None
     if language == 'python':
-        return python_app.format(package_name=package_name, newline="\\n", null="\\x00")
+        result = python_app.format(package_name=package_name, newline="\\n", null="\\x00")
     if language == 'bash':
-        return bash_app.format(package_name=package_name, newline="\\n", null="\\x00")
+        result = bash_app.format(package_name=package_name, newline="\\n", null="\\x00")
     if language == 'zig':
-        return zig_app.format(package_name=package_name, newline="\\n", null="\\x00")
+        result = zig_app.format(package_name=package_name, newline="\\n", null="\\x00")
+
+    if result:
+        if append:
+            with open(append, 'r') as fh:
+                result += fh.read()
+        return result
+
     raise ValueError(language)
 
 
@@ -219,6 +228,7 @@ def generate_init_template(package_name):
 def get_pylint_config(ctx):
     app_template = generate_app_template('TEMP',
                                          language='python',
+                                         append=None,
                                          verbose=ctx.obj['verbose'],
                                          debug=ctx.obj['debug'],)
     for line in app_template.splitlines():
@@ -263,6 +273,7 @@ def nineify(ctx, app):
 def get_python_app_template(ctx, package_name):
     app_template = generate_app_template(package_name,
                                          language='python',
+                                         append=None,
                                          verbose=ctx.obj['verbose'],
                                          debug=ctx.obj['debug'],)
     print(app_template)
@@ -274,6 +285,7 @@ def get_python_app_template(ctx, package_name):
 def get_bash_app_template(ctx, package_name):
     app_template = generate_app_template(package_name,
                                          language='bash',
+                                         append=None,
                                          verbose=ctx.obj['verbose'],
                                          debug=ctx.obj['debug'],)
     print(app_template)
@@ -285,6 +297,7 @@ def get_bash_app_template(ctx, package_name):
 def get_zig_app_template(ctx, package_name):
     app_template = generate_app_template(package_name,
                                          language='zig',
+                                         append=None,
                                          verbose=ctx.obj['verbose'],
                                          debug=ctx.obj['debug'],)
     print(app_template)
@@ -800,6 +813,13 @@ def check_all(ctx,
 @click.argument('repo_url', type=str, nargs=1)
 @click.argument('group', type=str, nargs=1)
 @click.argument('branch', type=str, callback=valid_branch, nargs=1, default="master")
+@click.option("--append",
+              type=click.Path(exists=True,
+                              dir_okay=False,
+                              file_okay=True,
+                              path_type=str,
+                              allow_dash=False,),
+              required=False,)
 @click.option('--apps-folder', type=str, required=True)
 @click.option('--gentoo-overlay-repo', type=str, required=True)
 @click.option('--github-user', type=str, required=True)
@@ -818,17 +838,18 @@ def new(ctx,
         repo_url,
         group,
         branch,
-        apps_folder,
-        gentoo_overlay_repo,
-        github_user,
-        license,
-        owner,
-        owner_email,
-        description,
-        local,
-        verbose,
-        debug,
-        hg,
+        append: str,
+        apps_folder: str,
+        gentoo_overlay_repo: str,
+        github_user: str,
+        license: str,
+        owner: str,
+        owner_email: str,
+        description: str,
+        local: bool,
+        verbose: bool,
+        debug: bool,
+        hg: bool,
         ):
 
     not_root()
@@ -919,6 +940,7 @@ def new(ctx,
             with chdir(app_path / app_module_name):
                 app_template = generate_app_template(package_name=app_module_name,
                                                      language=language,
+                                                     append=append,
                                                      verbose=ctx.obj['verbose'],
                                                      debug=ctx.obj['debug'],)
                 with open(app_module_name + ext, 'x') as fh:

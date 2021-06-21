@@ -221,13 +221,6 @@ def cli(ctx,
     #if (verbose or debug):
     #    progress = False
 
-    #if verbose:
-    #    ctx.obj['verbose'] = verbose
-    #verbose = ctx.obj['verbose']
-    #if debug:
-    #    ctx.obj['debug'] = debug
-    #debug = ctx.obj['debug']
-
     #ctx.obj['end'] = end
     #ctx.obj['null'] = null
     #ctx.obj['progress'] = progress
