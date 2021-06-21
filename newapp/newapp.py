@@ -222,6 +222,8 @@ def get_pylint_config(ctx):
                                          verbose=ctx.obj['verbose'],
                                          debug=ctx.obj['debug'],)
     for line in app_template.splitlines():
+        if line.startswith('# flake8: '):
+            print(line)
         if line.startswith('# pylint: '):
             print(line)
 
