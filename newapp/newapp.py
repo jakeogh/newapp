@@ -927,14 +927,15 @@ def new(ctx,
         if not template_repo_url:
             with chdir(app_path):
                 if language == 'python':
-                    with open("setup.py", 'x') as fh:
-                        fh.write(generate_setup_py(package_name=app_module_name,
-                                                   command=app_name,
-                                                   owner=owner,
-                                                   owner_email=owner_email,
-                                                   description=description,
-                                                   license=license,
-                                                   url=repo_url))
+                    if ((not use_existing_repo) and (not Path('setup.py').exists())):
+                        with open("setup.py", 'x') as fh:
+                            fh.write(generate_setup_py(package_name=app_module_name,
+                                                       command=app_name,
+                                                       owner=owner,
+                                                       owner_email=owner_email,
+                                                       description=description,
+                                                       license=license,
+                                                       url=repo_url,))
 
                 template = generate_gitignore_template()
                 if use_existing_repo:
