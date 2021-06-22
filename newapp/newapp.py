@@ -808,6 +808,29 @@ def check_all(ctx,
         del app_name, app_user, app_module_name, app_path
 
 
+def write_setup_py(*,
+                   use_existing_repo: bool,
+                   app_module_name: str,
+                   app_name: str,
+                   owner: str,
+                   owner_email: str,
+                   description: str,
+                   license: str,
+                   repo_url: str,):
+
+    if use_existing_repo:
+        if Path('setup.py').exists():
+            return
+
+    with open("setup.py", 'x') as fh:
+        fh.write(generate_setup_py(package_name=app_module_name,
+                                   command=app_name,
+                                   owner=owner,
+                                   owner_email=owner_email,
+                                   description=description,
+                                   license=license,
+                                   url=repo_url,))
+
 @cli.command()
 @click.argument('language', type=click.Choice(['python', 'bash', 'zig', 'c']), nargs=1)
 @click.argument('repo_url', type=str, nargs=1)
@@ -927,15 +950,14 @@ def new(ctx,
         if not template_repo_url:
             with chdir(app_path):
                 if language == 'python':
-                    if ((not use_existing_repo) and (not Path('setup.py').exists())):
-                        with open("setup.py", 'x') as fh:
-                            fh.write(generate_setup_py(package_name=app_module_name,
-                                                       command=app_name,
-                                                       owner=owner,
-                                                       owner_email=owner_email,
-                                                       description=description,
-                                                       license=license,
-                                                       url=repo_url,))
+                    write_setup_py(use_existing_repo=use_existing_repo,
+                                   app_module_name=app_module_name,
+                                   app_name=app_name,
+                                   owner=owner,
+                                   owner_email=owner_email,
+                                   description=description,
+                                   license=license,
+                                   repo_url=repo_url,)
 
                 template = generate_gitignore_template()
                 if use_existing_repo:
@@ -945,7 +967,8 @@ def new(ctx,
                     with open('.gitignore', 'x') as fh:
                         fh.write(template)
 
-                write_url_sh(repo_url, verbose=verbose, debug=debug,)
+                if not not Path('url.sh').exists():
+                    write_url_sh(repo_url, verbose=verbose, debug=debug,)
 
                 if language == 'python':
                     os.system("fastep")
