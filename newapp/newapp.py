@@ -967,7 +967,7 @@ def new(ctx,
                     with open('.gitignore', 'x') as fh:
                         fh.write(template)
 
-                if not not Path('url.sh').exists():
+                if not Path('url.sh').exists():
                     write_url_sh(repo_url, verbose=verbose, debug=debug,)
 
                 if language == 'python':
