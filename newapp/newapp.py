@@ -830,6 +830,7 @@ def check_all(ctx,
 @click.option('--local', is_flag=True)
 #@click.option('--template', 'template_repo_url', type=str)
 @click.option('--hg', is_flag=True)
+@click.option('--use-existing-repo', is_flag=True)
 @click.option('--verbose', is_flag=True)
 @click.option('--debug', is_flag=True)
 @click.pass_context
@@ -847,6 +848,7 @@ def new(ctx,
         owner_email: str,
         description: str,
         local: bool,
+        use_existing_repo: bool,
         verbose: bool,
         debug: bool,
         hg: bool,
@@ -929,8 +931,12 @@ def new(ctx,
                                                    url=repo_url))
 
                 template = generate_gitignore_template()
-                with open('.gitignore', 'x') as fh:
-                    fh.write(template)
+                if use_existing_repo:
+                    with open('.gitignore', 'a') as fh:
+                        fh.write(template)
+                else:
+                    with open('.gitignore', 'x') as fh:
+                        fh.write(template)
 
                 write_url_sh(repo_url, verbose=verbose, debug=debug,)
 
