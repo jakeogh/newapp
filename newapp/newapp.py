@@ -911,7 +911,7 @@ def new(ctx,
                    verbose=verbose,
                    debug=debug,)
 
-    if not app_path.exists():
+    if ((not app_path.exists()) or use_existing_repo):
         create_repo(hg=hg,
                     app_path=app_path,
                     app_module_name=app_module_name,
