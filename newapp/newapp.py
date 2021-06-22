@@ -921,6 +921,8 @@ def new(ctx,
         else:
             assert app_path.is_dir()
             assert Path(app_path / Path('.git')).exists()
+            with chdir(app_path):
+                os.makedirs(app_module_name, exist_ok=True)
 
         if not template_repo_url:
             with chdir(app_path):
