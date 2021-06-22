@@ -912,11 +912,15 @@ def new(ctx,
                    debug=debug,)
 
     if ((not app_path.exists()) or use_existing_repo):
-        create_repo(hg=hg,
-                    app_path=app_path,
-                    app_module_name=app_module_name,
-                    verbose=verbose,
-                    debug=debug,)
+        if not use_existing_repo:
+            create_repo(hg=hg,
+                        app_path=app_path,
+                        app_module_name=app_module_name,
+                        verbose=verbose,
+                        debug=debug,)
+        else:
+            assert app_path.is_dir()
+            assert Path(app_path / Path('.git')).exists()
 
         if not template_repo_url:
             with chdir(app_path):
