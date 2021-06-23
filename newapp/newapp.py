@@ -882,6 +882,8 @@ def new(ctx,
     debug = debug or ctx.obj['debug']
     apps_folder = Path(apps_folder)
     ic(apps_folder)
+    if append:
+        append = Path(append).resolve()
 
     if repo_url.endswith('.git'):
         repo_url = repo_url[:-4]
