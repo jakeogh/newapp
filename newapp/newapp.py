@@ -9,10 +9,10 @@ from urllib.parse import urlparse
 
 import click
 import sh
+from asserttool import not_root
 from getdents import files
 from getdents import paths
 from kcl.configops import click_read_config
-from kcl.userops import not_root
 from licenseguesser import license_list
 from pathtool import write_line_to_file
 from replace_text import replace_text
