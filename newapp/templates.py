@@ -324,7 +324,7 @@ depend_python = '''
 RDEPEND="
 	dev-python/click[${PYTHON_USEDEP}]
 	dev-python/icecream[${PYTHON_USEDEP}]
-	dev-python/colorama[${PYTHON_USEDEP}]
+	dev-python/sh[${PYTHON_USEDEP}]
 "
 	#dev-python/click-command-tree[${PYTHON_USEDEP}]
 
