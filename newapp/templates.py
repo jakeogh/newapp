@@ -85,6 +85,7 @@ import os
 import sys
 import click
 import time
+import sh
 from signal import signal, SIGPIPE, SIG_DFL
 signal(SIGPIPE,SIG_DFL)
 from pathlib import Path
