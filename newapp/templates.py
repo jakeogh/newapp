@@ -100,8 +100,9 @@ from enumerate_input import enumerate_input
 #from kcl.configops import click_read_config
 #from kcl.configops import click_write_config_entry
 
-#from kcl.userops import not_root
+#from asserttool import not_root
 #from pathtool import path_is_block_special
+#from pathtool import write_line_to_file
 #from getdents import files
 #from prettytable import PrettyTable
 #output_table = PrettyTable()
