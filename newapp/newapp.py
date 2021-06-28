@@ -89,6 +89,7 @@ def replace_text(path: Path,
                          end=b'\00',        # unused
                          read_mode='r',
                          write_mode='w',
+                         stdout=False,
                          verbose=verbose,
                          debug=debug,)
 
