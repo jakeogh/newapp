@@ -15,7 +15,7 @@ from getdents import paths
 from kcl.configops import click_read_config
 from licenseguesser import license_list
 from pathtool import write_line_to_file
-from replace_text import replace_text
+from replace_text import replace_text_in_file
 from run_command import run_command
 from with_chdir import chdir
 
@@ -30,6 +30,7 @@ from .templates import python_app
 from .templates import setup_py
 from .templates import zig_app
 
+# flake8: noqa
 # pylint: disable=C0111  # docstrings are always outdated and wrong
 # pylint: disable=W0511  # todo is encouraged
 # pylint: disable=C0301  # line too long
@@ -73,6 +74,41 @@ except ImportError:
     ic = eprint
 
 #ic(CFG)
+
+
+def replace_text(path: Path,
+                 match,
+                 replacement,
+                 verbose: bool,
+                 debug: bool,
+                 ) -> None:
+
+    replace_text_in_file(path=path,
+                         match=match,
+                         replacement=replacement,
+                         end=b'\00',        # unused
+                         read_mode='r',
+                         write_mode='w',
+                         verbose=verbose,
+                         debug=debug,)
+
+
+
+def replace_match_pairs_in_file(*,
+                                path: Path,
+                                match_pairs: tuple,
+                                verbose: bool,
+                                debug: bool,
+                                ):
+    assert isinstance(match_pairs, tuple)
+    for old_match, new_match in match_pairs:
+        ic(path, old_match, new_match)
+        replace_text(path=path,
+                     match=old_match,
+                     replacement=new_match,
+                     verbose=verbose,
+                     debug=debug,)
+
 
 def portage_categories():
     categories_path = Path(str(sh.portageq('get_repo_path', '/', 'gentoo').strip())) / Path('profiles') / Path('categories')
@@ -378,13 +414,7 @@ def rename_repo_on_clone(*,
             if path.as_posix().startswith(exclude_path.as_posix()):
                 continue
 
-            #assert old_name not in path.name  # incorrect assumption xtitle -> bspwm-xtitle
-            #replace_text(path=path,
-            #             match=old_name,
-            #             replacement=new_name,
-            #             verbose=verbose,
-            #             debug=debug,)
-            replace_text_in_file(path=path,
+            replace_match_pairs_in_file(path=path,
                                  match_pairs=((old_name, new_name), (old_module_name, new_module_name),),
                                  verbose=verbose,
                                  debug=debug,)
@@ -517,23 +547,6 @@ def parse_url(repo_url: str, *,
     return app_name, app_user, app_module_name, app_path
 
 
-def replace_text_in_file(*,
-                         path: Path,
-                         match_pairs: tuple,
-                         verbose: bool,
-                         debug: bool,
-                         ):
-    assert isinstance(match_pairs, tuple)
-    for old_match, new_match in match_pairs:
-        ic(path, old_match, new_match)
-        replace_text(path=path,
-                     match=old_match,
-                     replacement=new_match,
-                     temp_file=None,
-                     verbose=verbose,
-                     debug=debug,)
-
-
 def write_url_sh(repo_url, *,
                  verbose: bool,
                  debug: bool,
@@ -593,19 +606,19 @@ def rename(ctx,
 
     with chdir(old_app_path):
         old_setup_py = old_app_path / Path('setup.py')
-        replace_text_in_file(path=old_setup_py,
-                             match_pairs=((old_app_name, new_app_name), (old_app_module_name, new_app_module_name),),
-                             verbose=verbose,
-                             debug=debug,)
+        replace_match_pairs_in_file(path=old_setup_py,
+                                    match_pairs=((old_app_name, new_app_name), (old_app_module_name, new_app_module_name),),
+                                    verbose=verbose,
+                                    debug=debug,)
         sh.git.add(old_setup_py)
         del(old_setup_py)
 
         old_readme_md = old_app_path / Path('README.md')
         try:
-            replace_text_in_file(path=old_readme_md,
-                                 match_pairs=((old_app_name, new_app_name), (old_app_module_name, new_app_module_name),),
-                                 verbose=verbose,
-                                 debug=debug,)
+            replace_match_pairs_in_file(path=old_readme_md,
+                                        match_pairs=((old_app_name, new_app_name), (old_app_module_name, new_app_module_name),),
+                                        verbose=verbose,
+                                        debug=debug,)
         except FileNotFoundError as e:
             ic(e)
             sh.touch('README.md')
@@ -617,7 +630,6 @@ def rename(ctx,
             replace_text(path=old_url_sh,
                          match=old_app_name,
                          replacement=new_app_name,
-                         temp_file=None,
                          verbose=verbose,
                         debug=debug,)
         except Exception as e:
@@ -629,7 +641,6 @@ def rename(ctx,
         replace_text(path=old_edit_config,
                      match=old_app_name,
                      replacement=new_app_name,
-                     temp_file=None,
                      verbose=verbose,
                      debug=debug,)
         #sh.git.add(old_edit_config)
@@ -639,17 +650,16 @@ def rename(ctx,
         replace_text(path=enable_github_sh,
                      match=old_app_name,
                      replacement=new_app_name,
-                     temp_file=None,
                      verbose=verbose,
                      debug=debug,)
         #sh.git.add(enable_github_sh)
         del(enable_github_sh)
 
         old_app_py = old_app_path / old_app_module_name / Path(old_app_module_name + '.py')
-        replace_text_in_file(path=old_app_py,
-                             match_pairs=((old_app_name, new_app_name), (old_app_module_name, new_app_module_name),),
-                             verbose=verbose,
-                             debug=debug,)
+        replace_match_pairs_in_file(path=old_app_py,
+                                    match_pairs=((old_app_name, new_app_name), (old_app_module_name, new_app_module_name),),
+                                    verbose=verbose,
+                                    debug=debug,)
         sh.git.add(old_app_py)
         #del(old_app_py)
 
@@ -657,7 +667,6 @@ def rename(ctx,
         replace_text(path=old_app_init_py,
                      match=old_app_module_name,
                      replacement=new_app_module_name,
-                     temp_file=None,
                      verbose=verbose,
                      debug=debug,)
         sh.git.add(old_app_init_py)
@@ -688,7 +697,6 @@ def rename(ctx,
     replace_text(path=old_ebuild_path,
                  match=old_app_module_name,
                  replacement=new_app_module_name,
-                 temp_file=None,
                  verbose=verbose,
                  debug=debug,)
     sh.git.add(old_ebuild_path)
