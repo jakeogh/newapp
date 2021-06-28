@@ -87,8 +87,8 @@ def replace_text(path: Path,
         ic(match, replacement)
 
     replace_text_in_file(path=path,
-                         match=match.decode('utf8'),
-                         replacement=replacement.decode('utf8'),
+                         match=match.encode('utf8'),
+                         replacement=replacement.encode('utf8'),
                          end=b'\00',        # unused
                          read_mode='rb',
                          write_mode='wb',
