@@ -83,6 +83,9 @@ def replace_text(path: Path,
                  debug: bool,
                  ) -> None:
 
+    if verbose:
+        ic(match, replacement)
+
     replace_text_in_file(path=path,
                          match=match,
                          replacement=replacement,
@@ -131,7 +134,10 @@ def cli(ctx, verbose, debug):
     ctx.obj['debug'] = debug
 
 
-def get_url_for_overlay(overlay, verbose=False):
+def get_url_for_overlay(overlay: str,
+                        verbose: bool,
+                        debug: bool,
+                        ) -> str:
     command = ["eselect", "repository", "list"]
     command_output = run_command(command, str_output=True)
     command_output = command_output.split('\n')
@@ -150,6 +156,8 @@ def get_url_for_overlay(overlay, verbose=False):
         repo_url = repo_url.split("(")[-1].split(")")[0]
         if repo_name == overlay:
             return repo_url
+
+    raise ValueError('unknown repo {}'.format(overlay))
 
 
 def valid_branch(ctx, param, value):
@@ -279,7 +287,9 @@ def get_pylint_config(ctx):
 @click.argument('overlay_name', type=str, nargs=1)
 @click.pass_context
 def get_overlay_url(ctx, overlay_name):
-    url = get_url_for_overlay(overlay_name, verbose=ctx.obj['verbose'])
+    url = get_url_for_overlay(overlay_name,
+                              verbose=ctx.obj['verbose'],
+                              debug=ctx.obj['debug'],)
     print(url)
 
 
