@@ -77,8 +77,8 @@ except ImportError:
 
 
 def replace_text(path: Path,
-                 match,
-                 replacement,
+                 match: str,
+                 replacement: str,
                  verbose: bool,
                  debug: bool,
                  ) -> None:
@@ -87,11 +87,11 @@ def replace_text(path: Path,
         ic(match, replacement)
 
     replace_text_in_file(path=path,
-                         match=match,
-                         replacement=replacement,
+                         match=match.decode('utf8'),
+                         replacement=replacement.decode('utf8'),
                          end=b'\00',        # unused
-                         read_mode='r',
-                         write_mode='w',
+                         read_mode='rb',
+                         write_mode='wb',
                          stdout=False,
                          verbose=verbose,
                          debug=debug,)
