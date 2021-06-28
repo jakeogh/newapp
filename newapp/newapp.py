@@ -90,6 +90,7 @@ def replace_text(path: Path,
                          match=match.encode('utf8'),
                          replacement=replacement.encode('utf8'),
                          end=b'\00',        # unused
+                         output_fh=None,
                          read_mode='rb',
                          write_mode='wb',
                          stdout=False,
