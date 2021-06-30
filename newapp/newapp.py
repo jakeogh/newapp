@@ -819,6 +819,7 @@ def list_all(ctx,
         if ls_remote:
             project_dir = config.parent
             return_code = None
+            ic(project_dir)
             with chdir(project_dir):
                 try:
                     sh.git('ls-remote')
