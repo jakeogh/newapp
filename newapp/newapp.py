@@ -819,11 +819,12 @@ def list_all(ctx,
         if ls_remote:
             project_dir = config.parent
             return_code = None
-            ic(project_dir)
+            if verbose:
+                ic(project_dir)
             with chdir(project_dir):
                 try:
                     sh.git('ls-remote')
-                    return_cose = 0
+                    return_code = 0
                 except sh.ErrorReturnCode_128:
                     return_code = 128
 
