@@ -820,7 +820,7 @@ def list_all(ctx,
             project_dir = config.parent
             with chdir(project_dir):
                 #try:
-                sh.git.ls_remote()
+                sh.git('ls-remote')
                 #except
         print(config.parent.name)
 
