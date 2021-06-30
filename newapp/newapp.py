@@ -94,6 +94,7 @@ def replace_text(path: Path,
                          read_mode='rb',
                          write_mode='wb',
                          stdout=False,
+                         remove_match=False,
                          verbose=verbose,
                          debug=debug,)
 
@@ -169,6 +170,23 @@ def valid_branch(ctx, param, value):
     return value
 
 
+def find_edit_configs(*,
+                      apps_folder: Path,
+                      verbose: bool,
+                      debug: bool,
+                      ):
+    edit_configs = []
+    for file in files(apps_folder, verbose=verbose, debug=debug,):
+        if file.name == b'.edit_config':
+            file = Path(file)
+            if debug:
+                ic(file)
+            edit_configs.append(file)
+
+    edit_configs = sorted(edit_configs)
+    return edit_configs
+
+
 def generate_edit_config(*,
                          package_name,
                          package_group,
@@ -219,7 +237,8 @@ def generate_ebuild_template(*,
                              description: str,
                              enable_python: bool,
                              homepage: str,
-                             app_path: Path,):
+                             app_path: Path,
+                             ):
     ic(enable_python)
     inherit_python = ''
     rdepend_python = ''
@@ -287,7 +306,9 @@ def get_pylint_config(ctx):
 @cli.command()
 @click.argument('overlay_name', type=str, nargs=1)
 @click.pass_context
-def get_overlay_url(ctx, overlay_name):
+def get_overlay_url(ctx,
+                    overlay_name,
+                    ):
     url = get_url_for_overlay(overlay_name,
                               verbose=ctx.obj['verbose'],
                               debug=ctx.obj['debug'],)
@@ -318,7 +339,9 @@ def nineify(ctx, app):
 @cli.command()
 @click.argument("package-name", type=str, default="TESTPACKAGE")
 @click.pass_context
-def get_python_app_template(ctx, package_name):
+def get_python_app_template(ctx,
+                            package_name: str,
+                            ):
     app_template = generate_app_template(package_name,
                                          language='python',
                                          append=None,
@@ -330,7 +353,9 @@ def get_python_app_template(ctx, package_name):
 @cli.command()
 @click.argument("package-name", type=str, default="TESTPACKAGE")
 @click.pass_context
-def get_bash_app_template(ctx, package_name):
+def get_bash_app_template(ctx,
+                          package_name: str,
+                          ):
     app_template = generate_app_template(package_name,
                                          language='bash',
                                          append=None,
@@ -342,7 +367,9 @@ def get_bash_app_template(ctx, package_name):
 @cli.command()
 @click.argument("package-name", type=str, default="TESTPACKAGE")
 @click.pass_context
-def get_zig_app_template(ctx, package_name):
+def get_zig_app_template(ctx,
+                         package_name: str,
+                         ):
     app_template = generate_app_template(package_name,
                                          language='zig',
                                          append=None,
@@ -359,7 +386,8 @@ def rename_repo_on_clone(*,
                          hg: bool,
                          local: bool,
                          verbose: bool,
-                         debug: bool,):
+                         debug: bool,
+                         ):
     ic(old_name, new_name)
     old_module_name = old_name.replace('-', '_')
     new_module_name = old_name.replace('-', '_')
@@ -569,6 +597,30 @@ def write_url_sh(repo_url, *,
     sh.chmod('+x', 'url.sh')
 
 
+def write_setup_py(*,
+                   use_existing_repo: bool,
+                   app_module_name: str,
+                   app_name: str,
+                   owner: str,
+                   owner_email: str,
+                   description: str,
+                   license: str,
+                   repo_url: str,):
+
+    if use_existing_repo:
+        if Path('setup.py').exists():
+            return
+
+    with open("setup.py", 'x') as fh:
+        fh.write(generate_setup_py(package_name=app_module_name,
+                                   command=app_name,
+                                   owner=owner,
+                                   owner_email=owner_email,
+                                   description=description,
+                                   license=license,
+                                   url=repo_url,))
+
+
 @cli.command()
 @click.argument('old_repo_url', type=str, nargs=1)
 @click.argument('new_repo_url', type=str, nargs=1)
@@ -740,30 +792,15 @@ def rename(ctx,
         sh.mv(old_app_path, new_app_path, '-v')
 
 
-def find_edit_configs(*,
-                      apps_folder: Path,
-                      verbose: bool,
-                      debug: bool,
-                      ):
-    edit_configs = []
-    for file in files(apps_folder, verbose=verbose, debug=debug,):
-        if file.name == b'.edit_config':
-            file = Path(file)
-            if debug:
-                ic(file)
-            edit_configs.append(file)
-
-    edit_configs = sorted(edit_configs)
-    return edit_configs
-
-
 @cli.command('list')
 @click.option('--apps-folder', type=str, required=True)
+@click.option('--ls-rempte', is_flag=True)
 @click.option('--verbose', is_flag=True)
 @click.option('--debug', is_flag=True)
 @click.pass_context
 def list_all(ctx,
              apps_folder: str,
+             ls_remote: bool,
              verbose: bool,
              debug: bool,
              ):
@@ -779,7 +816,14 @@ def list_all(ctx,
     for config in edit_configs:
         if verbose:
             ic(config)
+        if ls_remote:
+            project_dir = config.parent
+            with chdir(project_dir):
+                #try:
+                sh.git.ls_remote()
+                #except
         print(config.parent.name)
+
 
 
 @cli.command()
@@ -828,29 +872,6 @@ def check_all(ctx,
         del app_name, app_user, app_module_name, app_path
 
 
-def write_setup_py(*,
-                   use_existing_repo: bool,
-                   app_module_name: str,
-                   app_name: str,
-                   owner: str,
-                   owner_email: str,
-                   description: str,
-                   license: str,
-                   repo_url: str,):
-
-    if use_existing_repo:
-        if Path('setup.py').exists():
-            return
-
-    with open("setup.py", 'x') as fh:
-        fh.write(generate_setup_py(package_name=app_module_name,
-                                   command=app_name,
-                                   owner=owner,
-                                   owner_email=owner_email,
-                                   description=description,
-                                   license=license,
-                                   url=repo_url,))
-
 @cli.command()
 @click.argument('language', type=click.Choice(['python', 'bash', 'zig', 'c']), nargs=1)
 @click.argument('repo_url', type=str, nargs=1)
@@ -878,10 +899,10 @@ def write_setup_py(*,
 @click.option('--debug', is_flag=True)
 @click.pass_context
 def new(ctx,
-        language,
-        repo_url,
-        group,
-        branch,
+        language: str,
+        repo_url: str,
+        group: str,
+        branch: str,
         append: str,
         apps_folder: str,
         gentoo_overlay_repo: str,
