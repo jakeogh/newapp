@@ -794,7 +794,7 @@ def rename(ctx,
 
 @cli.command('list')
 @click.option('--apps-folder', type=str, required=True)
-@click.option('--ls-rempte', is_flag=True)
+@click.option('--ls-remote', is_flag=True)
 @click.option('--verbose', is_flag=True)
 @click.option('--debug', is_flag=True)
 @click.pass_context
