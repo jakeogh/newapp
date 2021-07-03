@@ -87,7 +87,7 @@ import click
 import time
 import sh
 from signal import signal, SIGPIPE, SIG_DFL
-signal(SIGPIPE,SIG_DFL)
+signal(SIGPIPE, SIG_DFL)
 from pathlib import Path
 #from with_sshfs import sshfs
 #from with_chdir import chdir
