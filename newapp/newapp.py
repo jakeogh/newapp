@@ -785,7 +785,7 @@ def rename(ctx,
         del new_ebuild_symlink_name
         del new_ebuild_name
         sh.git.commit('-m', 'rename')
-        sh.git.remote.rm('origin')
+        sh.git.remote.rm('origin', _ok_code=[0, 2])
         sh.git.push(_ok_code=[0, 128])
 
     with chdir(apps_folder):
