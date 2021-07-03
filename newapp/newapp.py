@@ -791,6 +791,11 @@ def rename(ctx,
     with chdir(apps_folder):
         sh.mv(old_app_path, new_app_path, '-v')
 
+    replace_text(path=Path('/etc/portage/package.accept_keywords'),
+                 match=old_app_module_name,
+                 replacement=new_app_module_name,
+                 verbose=verbose,
+                 debug=debug,)
 
 @cli.command('list')
 @click.option('--apps-folder', type=str, required=True)
