@@ -92,6 +92,7 @@ from pathlib import Path
 #from with_sshfs import sshfs
 #from with_chdir import chdir
 from asserttool import nevd
+from asserttool import validate_slice
 from retry_on_exception import retry_on_exception
 from enumerate_input import enumerate_input
 #from collections import defaultdict
@@ -147,14 +148,6 @@ except ImportError:
 def get_timestamp():
     timestamp = str("%.22f" % time.time())
     return timestamp
-
-
-def validate_slice(slice_syntax):
-    assert isinstance(slice_syntax, str)
-    for c in slice_syntax:
-        if c not in ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-', '[', ']', ':']:
-            raise ValueError(slice_syntax)
-    return slice_syntax
 
 
 #@with_plugins(iter_entry_points('click_command_tree'))
