@@ -766,6 +766,8 @@ def rename(ctx,
     sh.git.add(old_ebuild_path)
     new_ebuild_name = Path(new_app_name + '-9999.ebuild')
     sh.git.mv(old_ebuild_path, new_ebuild_name)
+    sh.git.add(new_ebuild_name)
+    sh.git.commit('rename')
     del old_ebuild_path
     os.chdir('..')
 
@@ -792,10 +794,11 @@ def rename(ctx,
         sh.mv(old_app_path, new_app_path, '-v')
 
     replace_text(path=Path('/etc/portage/package.accept_keywords'),
-                 match=old_app_module_name,
-                 replacement=new_app_module_name,
+                 match='/' + old_app_module_name + '-',
+                 replacement='/' + new_app_module_name + '-',
                  verbose=verbose,
                  debug=debug,)
+
 
 @cli.command('list')
 @click.option('--apps-folder', type=str, required=True)
