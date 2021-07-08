@@ -98,9 +98,10 @@ from enumerate_input import enumerate_input
 #from collections import defaultdict
 #from prettyprinter import cpprint, install_extras
 #install_extras(['attrs'])
+from asserttool import eprint, ic
 
-#from kcl.configops import click_read_config
-#from kcl.configops import click_write_config_entry
+#from configtool import click_read_config
+#from configtool import click_write_config_entry
 
 #from asserttool import not_root
 #from pathtool import path_is_block_special
@@ -120,19 +121,6 @@ from typing import Optional
 # click-command-tree
 #from click_plugins import with_plugins
 #from pkg_resources import iter_entry_points
-
-def eprint(*args, **kwargs):
-    if 'file' in kwargs.keys():
-        kwargs.pop('file')
-    print(*args, file=sys.stderr, **kwargs)
-
-
-try:
-    from icecream import ic  # https://github.com/gruns/icecream
-    from icecream import icr # https://github.com/jakeogh/icecream
-except ImportError:
-    ic = eprint
-    icr = eprint
 
 
 # import pdb; pdb.set_trace()
