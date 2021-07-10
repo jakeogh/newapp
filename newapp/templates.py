@@ -99,7 +99,7 @@ from enumerate_input import enumerate_input
 #from prettyprinter import cpprint, install_extras
 #install_extras(['attrs'])
 from asserttool import eprint, ic
-
+from timetool import get_timestamp
 #from configtool import click_read_config
 #from configtool import click_write_config_entry
 
@@ -122,7 +122,6 @@ from typing import Optional
 #from click_plugins import with_plugins
 #from pkg_resources import iter_entry_points
 
-
 # import pdb; pdb.set_trace()
 # #set_trace(term_size=(80, 24))
 # from pudb import set_trace; set_trace(paused=False)
@@ -132,10 +131,6 @@ from typing import Optional
 ##   eprint('{{0}}: {{1}}'.format(ex_cls, ex))
 ##
 ##sys.excepthook = log_uncaught_exceptions
-
-def get_timestamp():
-    timestamp = str("%.22f" % time.time())
-    return timestamp
 
 
 #@with_plugins(iter_entry_points('click_command_tree'))
@@ -153,9 +148,7 @@ def get_timestamp():
 #    ctx.obj['debug'] = debug
 
 
-
-
-# DONT CHANGE FUNC NAME
+# update setup.py if changing function name
 @click.command()
 @click.argument("paths", type=str, nargs=-1)
 @click.argument("sysskel",
@@ -163,7 +156,8 @@ def get_timestamp():
                                 dir_okay=True,
                                 file_okay=False,
                                 path_type=str,
-                                allow_dash=False,),
+                                allow_dash=False,
+                                return_type=Path,),
                 nargs=1,
                 required=True,)
 @click.argument("slice_syntax", type=validate_slice, nargs=1)
@@ -176,12 +170,11 @@ def get_timestamp():
 @click.option('--skip', type=int, default=False)
 @click.option('--head', type=int, default=False)
 @click.option('--tail', type=int, default=False)
-@click.option("--printn", is_flag=True)
 #@click.option("--progress", is_flag=True)
 @click.pass_context
 def cli(ctx,
-        paths,
-        sysskel: str,
+        paths: tuple[str],
+        sysskel: Path,
         slice_syntax: str,
         verbose: bool,
         debug: bool,
@@ -191,12 +184,11 @@ def cli(ctx,
         skip: int,
         head: int,
         tail: int,
-        printn: bool,
         ):
 
     ctx.ensure_object(dict)
     null, end, verbose, debug = nevd(ctx=ctx,
-                                     printn=printn,
+                                     printn=False,
                                      ipython=False,
                                      verbose=verbose,
                                      debug=debug,)
