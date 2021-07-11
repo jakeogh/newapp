@@ -93,13 +93,13 @@ from pathlib import Path
 #from with_chdir import chdir
 from asserttool import nevd
 from asserttool import validate_slice
+from asserttool import eprint, ic
 from retry_on_exception import retry_on_exception
 from enumerate_input import enumerate_input
 #from collections import defaultdict
 #from prettyprinter import cpprint, install_extras
 #install_extras(['attrs'])
-from asserttool import eprint, ic
-from timetool import get_timestamp
+#from timetool import get_timestamp
 #from configtool import click_read_config
 #from configtool import click_write_config_entry
 
