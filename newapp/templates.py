@@ -157,7 +157,7 @@ from typing import Optional
                                 file_okay=False,
                                 path_type=str,
                                 allow_dash=False,
-                                return_type=Path,),
+                                path_type=Path,),
                 nargs=1,
                 required=True,)
 @click.argument("slice_syntax", type=validate_slice, nargs=1)
