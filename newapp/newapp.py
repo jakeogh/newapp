@@ -763,7 +763,7 @@ def rename(ctx,
         old_ebuild_symlink = old_app_path / Path(old_app_name + '-9999.ebuild')
         if not old_ebuild_symlink.exists():
             old_ebuild_folder = Path(gentoo_overlay_repo) / Path(group) / Path(old_app_name)
-            sh.ln('-s', old_ebuild_folder / old_ebuild_symlink.name, old_ebuild_symlink.name)
+            sh.ln('-s', old_ebuild_folder / old_ebuild_symlink.name, old_ebuild_symlink.name, _ok_code=[0, 1])
             del old_ebuild_folder
 
 
