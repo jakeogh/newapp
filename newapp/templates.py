@@ -155,7 +155,6 @@ from typing import Optional
                 type=click.Path(exists=False,
                                 dir_okay=True,
                                 file_okay=False,
-                                path_type=str,
                                 allow_dash=False,
                                 path_type=Path,),
                 nargs=1,
@@ -186,7 +185,6 @@ def cli(ctx,
         tail: int,
         ):
 
-    ctx.ensure_object(dict)
     null, end, verbose, debug = nevd(ctx=ctx,
                                      printn=False,
                                      ipython=False,
