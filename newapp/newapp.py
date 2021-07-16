@@ -101,6 +101,8 @@ def replace_match_pairs_in_file(*,
                                 ):
     assert isinstance(match_pairs, tuple)
     for old_match, new_match in match_pairs:
+        if old_match == new_match:
+            continue
         ic(path, old_match, new_match)
         replace_text(path=path,
                      match=old_match,
@@ -746,7 +748,8 @@ def rename(ctx,
 
         # in old_app_path
         new_app_py = old_app_path / old_app_module_name / Path(new_app_module_name + '.py')
-        sh.git.mv(old_app_py, new_app_py)
+        if new_app_py.as_posix() != old_app_py.as_posix():
+            sh.git.mv(old_app_py, new_app_py)
         del old_app_py
         del new_app_py
         sh.git.mv(old_app_module_name, new_app_module_name)
