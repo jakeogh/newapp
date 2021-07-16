@@ -791,18 +791,18 @@ def rename(ctx,
             sh.git.commit('-m', 'rename', _ok_code=[0, 1])
             sh.git.push()
 
-    with chdir(old_app_path):
-        print(sh.ls())
-        sh.rm(old_ebuild_symlink.name)
-        del old_ebuild_symlink
+        with chdir(old_app_path):
+            print(sh.ls())
+            sh.rm(old_ebuild_symlink.name)
+            del old_ebuild_symlink
 
-        new_ebuild_symlink_name = new_ebuild_name
-        sh.ln('-s', new_ebuild_path, new_ebuild_symlink_name)
-        del new_ebuild_symlink_name
-        del new_ebuild_name
-        sh.git.commit('-m', 'rename')
-        sh.git.remote.rm('origin', _ok_code=[0, 2])
-        sh.git.push(_ok_code=[0, 128])
+            new_ebuild_symlink_name = new_ebuild_name
+            sh.ln('-s', new_ebuild_path, new_ebuild_symlink_name)
+            del new_ebuild_symlink_name
+            del new_ebuild_name
+            sh.git.commit('-m', 'rename')
+            sh.git.remote.rm('origin', _ok_code=[0, 2])
+            sh.git.push(_ok_code=[0, 128])
 
     with chdir(apps_folder):
         sh.mv(old_app_path, new_app_path, '-v')
