@@ -143,9 +143,11 @@ from typing import Optional
 #        debug: bool,
 #        ):
 #
-#    ctx.ensure_object(dict)
-#    ctx.obj['verbose'] = verbose
-#    ctx.obj['debug'] = debug
+#    null, end, verbose, debug = nevd(ctx=ctx,
+#                                     printn=False,
+#                                     ipython=False,
+#                                     verbose=verbose,
+#                                     debug=debug,)
 
 
 # update setup.py if changing function name
