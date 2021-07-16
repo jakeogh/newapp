@@ -753,7 +753,7 @@ def rename(ctx,
         del old_app_py
         del new_app_py
 
-        if new_app_module_name.as_posix() != old_app_module_name.as_posix():
+        if new_app_module_name != old_app_module_name:
             sh.git.mv(old_app_module_name, new_app_module_name)
 
         #print(sh.ls())
