@@ -752,7 +752,10 @@ def rename(ctx,
             sh.git.mv(old_app_py, new_app_py)
         del old_app_py
         del new_app_py
-        sh.git.mv(old_app_module_name, new_app_module_name)
+
+        if new_app_module_name.as_posix() != old_app_module_name.as_posix():
+            sh.git.mv(old_app_module_name, new_app_module_name)
+
         #print(sh.ls())
         sh.git.add(Path(new_app_module_name) / Path('__init__.py'))
         sh.git.add(Path(new_app_module_name) / Path('py.typed'))
