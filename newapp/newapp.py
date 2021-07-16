@@ -767,29 +767,29 @@ def rename(ctx,
             del old_ebuild_folder
 
 
-    assert old_ebuild_symlink.exists()
-    os.chdir(old_ebuild_symlink.resolve().parent)
+    old_ebuild_dir = old_ebuild_symlink.resolve().parent
+    if old_ebuild_symlink.exists():
+        with chdir(old_ebuild_dir):
+            # in ebuild folder
+            old_ebuild_path = Path(old_app_name + '-9999.ebuild').resolve()
+            replace_text(path=old_ebuild_path,
+                         match=old_app_module_name,
+                         replacement=new_app_module_name,
+                         verbose=verbose,
+                         debug=debug,)
+            sh.git.add(old_ebuild_path)
+            new_ebuild_name = Path(new_app_name + '-9999.ebuild')
+            sh.git.mv(old_ebuild_path, new_ebuild_name)
+            sh.git.add(new_ebuild_name)
+            sh.git.commit('-m', 'rename')
+            del old_ebuild_path
 
-    # in ebuild folder
-    old_ebuild_path = Path(old_app_name + '-9999.ebuild').resolve()
-    replace_text(path=old_ebuild_path,
-                 match=old_app_module_name,
-                 replacement=new_app_module_name,
-                 verbose=verbose,
-                 debug=debug,)
-    sh.git.add(old_ebuild_path)
-    new_ebuild_name = Path(new_app_name + '-9999.ebuild')
-    sh.git.mv(old_ebuild_path, new_ebuild_name)
-    sh.git.add(new_ebuild_name)
-    sh.git.commit('-m', 'rename')
-    del old_ebuild_path
-    os.chdir('..')
-
-    # in ebuild parent folder
-    sh.mv(old_app_name, new_app_name, '-v')
-    new_ebuild_path = Path(new_app_name / new_ebuild_name).resolve()
-    sh.git.commit('-m', 'rename', _ok_code=[0, 1])
-    sh.git.push()
+        with chdir(old_ebuild_dir.parent):
+            # in ebuild parent folder
+            sh.mv(old_app_name, new_app_name, '-v')
+            new_ebuild_path = Path(new_app_name / new_ebuild_name).resolve()
+            sh.git.commit('-m', 'rename', _ok_code=[0, 1])
+            sh.git.push()
 
     with chdir(old_app_path):
         print(sh.ls())
