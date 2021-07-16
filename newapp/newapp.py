@@ -417,51 +417,6 @@ def nineify(ctx, app):
     except FileExistsError as e:
         ic(e)
 
-
-@cli.command()
-@click.argument("package-name", type=str, default="TESTPACKAGE")
-@click.pass_context
-def get_python_app_template(ctx,
-                            package_name: str,
-                            ):
-    app_template = generate_app_template(package_name,
-                                         language='python',
-                                         append=None,
-                                         verbose=ctx.obj['verbose'],
-                                         debug=ctx.obj['debug'],)
-    print(app_template)
-
-
-@cli.command()
-@click.argument("package-name", type=str, default="TESTPACKAGE")
-@click.pass_context
-def get_bash_app_template(ctx,
-                          package_name: str,
-                          ):
-
-    app_template = generate_app_template(package_name,
-                                         language='bash',
-                                         append=None,
-                                         verbose=ctx.obj['verbose'],
-                                         debug=ctx.obj['debug'],)
-    print(app_template)
-
-
-@cli.command()
-@click.argument("package-name", type=str, default="TESTPACKAGE")
-@click.pass_context
-def get_zig_app_template(ctx,
-                         package_name: str,
-                         ):
-
-    app_template = generate_app_template(package_name,
-                                         language='zig',
-                                         append=None,
-                                         verbose=ctx.obj['verbose'],
-                                         debug=ctx.obj['debug'],)
-    print(app_template)
-
-
 def clone_repo(*,
                branch: str,
                repo_url: str,
@@ -623,6 +578,50 @@ def write_setup_py(*,
                                    description=description,
                                    license=license,
                                    url=repo_url,))
+
+
+@cli.command()
+@click.argument("package-name", type=str, default="TESTPACKAGE")
+@click.pass_context
+def template_python(ctx,
+                    package_name: str,
+                    ):
+    app_template = generate_app_template(package_name,
+                                         language='python',
+                                         append=None,
+                                         verbose=ctx.obj['verbose'],
+                                         debug=ctx.obj['debug'],)
+    print(app_template)
+
+
+@cli.command()
+@click.argument("package-name", type=str, default="TESTPACKAGE")
+@click.pass_context
+def template_bash(ctx,
+                  package_name: str,
+                  ):
+
+    app_template = generate_app_template(package_name,
+                                         language='bash',
+                                         append=None,
+                                         verbose=ctx.obj['verbose'],
+                                         debug=ctx.obj['debug'],)
+    print(app_template)
+
+
+@cli.command()
+@click.argument("package-name", type=str, default="TESTPACKAGE")
+@click.pass_context
+def template_zig(ctx,
+                 package_name: str,
+                 ):
+
+    app_template = generate_app_template(package_name,
+                                         language='zig',
+                                         append=None,
+                                         verbose=ctx.obj['verbose'],
+                                         debug=ctx.obj['debug'],)
+    print(app_template)
 
 
 @cli.command()
