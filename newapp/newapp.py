@@ -781,7 +781,7 @@ def rename(ctx,
     new_ebuild_name = Path(new_app_name + '-9999.ebuild')
     sh.git.mv(old_ebuild_path, new_ebuild_name)
     sh.git.add(new_ebuild_name)
-    sh.git.commit('rename')
+    sh.git.commit('-m', 'rename')
     del old_ebuild_path
     os.chdir('..')
 
