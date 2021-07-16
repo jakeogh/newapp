@@ -1,14 +1,38 @@
 #!/usr/bin/env python3
 # -*- coding: utf8 -*-
 
+# flake8: noqa
+# pylint: disable=C0111  # docstrings are always outdated and wrong
+# pylint: disable=W0511  # todo is encouraged
+# pylint: disable=C0301  # line too long
+# pylint: disable=R0902  # too many instance attributes
+# pylint: disable=C0302  # too many lines in module
+# pylint: disable=C0103  # single letter var names, func name too descriptive
+# pylint: disable=R0911  # too many return statements
+# pylint: disable=R0912  # too many branches
+# pylint: disable=R0915  # too many statements
+# pylint: disable=R0913  # too many arguments
+# pylint: disable=R1702  # too many nested blocks
+# pylint: disable=R0914  # too many local variables
+# pylint: disable=R0903  # too few public methods
+# pylint: disable=E1101  # no member for base
+# pylint: disable=W0201  # attribute defined outside __init__
+# pylint: disable=R0916  # Too many boolean expressions in if statement
+# pylint: disable=C0305  # Trailing newlines
+
+
 import os
 import shutil
 import sys
 from pathlib import Path
+from typing import Optional
 from urllib.parse import urlparse
 
 import click
 import sh
+from asserttool import eprint
+from asserttool import ic
+from asserttool import nevd
 from asserttool import not_root
 from configtool import click_read_config
 from getdents import files
@@ -30,26 +54,6 @@ from .templates import python_app
 from .templates import setup_py
 from .templates import zig_app
 
-# flake8: noqa
-# pylint: disable=C0111  # docstrings are always outdated and wrong
-# pylint: disable=W0511  # todo is encouraged
-# pylint: disable=C0301  # line too long
-# pylint: disable=R0902  # too many instance attributes
-# pylint: disable=C0302  # too many lines in module
-# pylint: disable=C0103  # single letter var names, func name too descriptive
-# pylint: disable=R0911  # too many return statements
-# pylint: disable=R0912  # too many branches
-# pylint: disable=R0915  # too many statements
-# pylint: disable=R0913  # too many arguments
-# pylint: disable=R1702  # too many nested blocks
-# pylint: disable=R0914  # too many local variables
-# pylint: disable=R0903  # too few public methods
-# pylint: disable=E1101  # no member for base
-# pylint: disable=W0201  # attribute defined outside __init__
-# pylint: disable=R0916  # Too many boolean expressions in if statement
-# pylint: disable=C0305  # Trailing newlines
-
-
 CFG, CONFIG_MTIME = click_read_config(click_instance=click,
                                       app_name='newapp',
                                       verbose=False,
@@ -61,17 +65,6 @@ CONTEXT_SETTINGS = dict(default_map=CFG)
     #dict(help_option_names=['--help'],
     #     terminal_width=shutil.get_terminal_size((80, 20)).columns)
 
-
-def eprint(*args, **kwargs):
-    if 'file' in kwargs.keys():
-        kwargs.pop('file')
-    print(*args, file=sys.stderr, **kwargs)
-
-
-try:
-    from icecream import ic  # https://github.com/gruns/icecream
-except ImportError:
-    ic = eprint
 
 #ic(CFG)
 
@@ -126,16 +119,6 @@ def portage_categories():
     return categories
 
 
-@click.group(context_settings=CONTEXT_SETTINGS, no_args_is_help=True)
-@click.option('--verbose', is_flag=True)
-@click.option('--debug', is_flag=True)
-@click.pass_context
-def cli(ctx, verbose, debug):
-    ctx.ensure_object(dict)
-    ctx.obj['verbose'] = verbose
-    ctx.obj['debug'] = debug
-
-
 def get_url_for_overlay(overlay: str,
                         verbose: bool,
                         debug: bool,
@@ -175,22 +158,24 @@ def find_edit_configs(*,
                       verbose: bool,
                       debug: bool,
                       ):
+
     edit_configs = []
-    for file in files(apps_folder, verbose=verbose, debug=debug,):
-        if file.name == b'.edit_config':
-            file = Path(file)
+    for path in files(apps_folder, verbose=verbose, debug=debug,):
+        if path.name == b'.edit_config':
+            path = Path(path)  # Dent -> Path
             if debug:
-                ic(file)
-            edit_configs.append(file)
+                ic(path)
+            edit_configs.append(path)
 
     edit_configs = sorted(edit_configs)
     return edit_configs
 
 
 def generate_edit_config(*,
-                         package_name,
-                         package_group,
-                         local,):
+                         package_name: str,
+                         package_group: str,
+                         local: bool,
+                         ):
 
     if local:
         remote = "#"
@@ -208,13 +193,14 @@ def generate_edit_config(*,
 
 
 def generate_setup_py(*,
-                      url,
-                      package_name,
-                      command,
-                      license,
-                      owner,
-                      owner_email,
-                      description,):
+                      url: str,
+                      package_name: str,
+                      command: str,
+                      license: str,
+                      owner: str,
+                      owner_email: str,
+                      description: str,
+                      ):
 
     ic(url,
        package_name,
@@ -230,7 +216,7 @@ def generate_setup_py(*,
                            license=license,
                            owner=owner,
                            owner_email=owner_email,
-                           description=description)
+                           description=description,)
 
 
 def generate_ebuild_template(*,
@@ -258,10 +244,10 @@ def generate_gitignore_template():
 
 def generate_app_template(package_name: str, *,
                           language: str,
-                          append: str,
+                          append: Optional[Path],
                           verbose: bool,
                           debug: bool,
-                          ):
+                          ) -> str:
 
     result = None
     if language == 'python':
@@ -286,96 +272,6 @@ def generate_url_template(url):
 
 def generate_init_template(package_name):
     return init.format(package_name=package_name)
-
-
-@cli.command()
-@click.pass_context
-def get_pylint_config(ctx):
-    app_template = generate_app_template('TEMP',
-                                         language='python',
-                                         append=None,
-                                         verbose=ctx.obj['verbose'],
-                                         debug=ctx.obj['debug'],)
-    for line in app_template.splitlines():
-        if line.startswith('# flake8: '):
-            print(line)
-        if line.startswith('# pylint: '):
-            print(line)
-
-
-@cli.command()
-@click.argument('overlay_name', type=str, nargs=1)
-@click.pass_context
-def get_overlay_url(ctx,
-                    overlay_name,
-                    ):
-    url = get_url_for_overlay(overlay_name,
-                              verbose=ctx.obj['verbose'],
-                              debug=ctx.obj['debug'],)
-    print(url)
-
-
-@cli.command()
-@click.argument("app", type=str)
-@click.pass_context
-def nineify(ctx, app):
-    not_root()
-    assert '/' in app
-    group, name = app.split('/')
-    ic(group)
-    ic(name)
-    relative_destination = Path(group) / Path(name)
-    template_path = Path("/var/db/repos/gentoo") / relative_destination
-    ic(template_path)
-    local_overlay = Path("/home/cfg/_myapps/jakeogh")
-    destination = local_overlay / relative_destination
-    ic(template_path, destination)
-    try:
-        shutil.copytree(template_path, destination)
-    except FileExistsError as e:
-        ic(e)
-
-
-@cli.command()
-@click.argument("package-name", type=str, default="TESTPACKAGE")
-@click.pass_context
-def get_python_app_template(ctx,
-                            package_name: str,
-                            ):
-    app_template = generate_app_template(package_name,
-                                         language='python',
-                                         append=None,
-                                         verbose=ctx.obj['verbose'],
-                                         debug=ctx.obj['debug'],)
-    print(app_template)
-
-
-@cli.command()
-@click.argument("package-name", type=str, default="TESTPACKAGE")
-@click.pass_context
-def get_bash_app_template(ctx,
-                          package_name: str,
-                          ):
-    app_template = generate_app_template(package_name,
-                                         language='bash',
-                                         append=None,
-                                         verbose=ctx.obj['verbose'],
-                                         debug=ctx.obj['debug'],)
-    print(app_template)
-
-
-@cli.command()
-@click.argument("package-name", type=str, default="TESTPACKAGE")
-@click.pass_context
-def get_zig_app_template(ctx,
-                         package_name: str,
-                         ):
-    app_template = generate_app_template(package_name,
-                                         language='zig',
-                                         append=None,
-                                         verbose=ctx.obj['verbose'],
-                                         debug=ctx.obj['debug'],)
-    print(app_template)
 
 
 def rename_repo_on_clone(*,
@@ -460,6 +356,108 @@ def rename_repo_on_clone(*,
                                  debug=debug,)
         sh.git.add('-u')
         sh.git.commit('-m rename')
+
+
+@click.group(context_settings=CONTEXT_SETTINGS, no_args_is_help=True)
+@click.option('--verbose', is_flag=True)
+@click.option('--debug', is_flag=True)
+@click.pass_context
+def cli(ctx, verbose, debug):
+    ctx.ensure_object(dict)
+    ctx.obj['verbose'] = verbose
+    ctx.obj['debug'] = debug
+
+
+@cli.command()
+@click.pass_context
+def get_pylint_config(ctx):
+    app_template = generate_app_template('TEMP',
+                                         language='python',
+                                         append=None,
+                                         verbose=ctx.obj['verbose'],
+                                         debug=ctx.obj['debug'],)
+    for line in app_template.splitlines():
+        if line.startswith('# flake8: '):
+            print(line)
+        if line.startswith('# pylint: '):
+            print(line)
+
+
+@cli.command()
+@click.argument('overlay_name', type=str, nargs=1)
+@click.pass_context
+def get_overlay_url(ctx,
+                    overlay_name,
+                    ):
+    url = get_url_for_overlay(overlay_name,
+                              verbose=ctx.obj['verbose'],
+                              debug=ctx.obj['debug'],)
+    print(url)
+
+
+@cli.command()
+@click.argument("app", type=str)
+@click.pass_context
+def nineify(ctx, app):
+    not_root()
+    assert '/' in app
+    group, name = app.split('/')
+    ic(group)
+    ic(name)
+    relative_destination = Path(group) / Path(name)
+    template_path = Path("/var/db/repos/gentoo") / relative_destination
+    ic(template_path)
+    local_overlay = Path("/home/cfg/_myapps/jakeogh")
+    destination = local_overlay / relative_destination
+    ic(template_path, destination)
+    try:
+        shutil.copytree(template_path, destination)
+    except FileExistsError as e:
+        ic(e)
+
+
+@cli.command()
+@click.argument("package-name", type=str, default="TESTPACKAGE")
+@click.pass_context
+def get_python_app_template(ctx,
+                            package_name: str,
+                            ):
+    app_template = generate_app_template(package_name,
+                                         language='python',
+                                         append=None,
+                                         verbose=ctx.obj['verbose'],
+                                         debug=ctx.obj['debug'],)
+    print(app_template)
+
+
+@cli.command()
+@click.argument("package-name", type=str, default="TESTPACKAGE")
+@click.pass_context
+def get_bash_app_template(ctx,
+                          package_name: str,
+                          ):
+
+    app_template = generate_app_template(package_name,
+                                         language='bash',
+                                         append=None,
+                                         verbose=ctx.obj['verbose'],
+                                         debug=ctx.obj['debug'],)
+    print(app_template)
+
+
+@cli.command()
+@click.argument("package-name", type=str, default="TESTPACKAGE")
+@click.pass_context
+def get_zig_app_template(ctx,
+                         package_name: str,
+                         ):
+
+    app_template = generate_app_template(package_name,
+                                         language='zig',
+                                         append=None,
+                                         verbose=ctx.obj['verbose'],
+                                         debug=ctx.obj['debug'],)
+    print(app_template)
 
 
 def clone_repo(*,
@@ -557,10 +555,12 @@ def remote_add_origin(*,
         fh.write(enable_github)
 
 
-def parse_url(repo_url: str, *,
+def parse_url(repo_url: str,
+              *,
               apps_folder: Path,
               verbose: bool,
               debug: bool,
+              keep_underscore: bool = False,    # for rename
               ):
 
     if verbose:
@@ -579,7 +579,8 @@ def parse_url(repo_url: str, *,
         app_user = repo_url_path.parts[-2]
 
     app_name = app_name.lower()
-    app_name = app_name.replace('_', '-')
+    if not keep_underscore:
+        app_name = app_name.replace('_', '-')
     app_module_name = app_name.replace('-', '_')
     ic(app_module_name)
     app_path = apps_folder / Path(app_name)
@@ -605,7 +606,8 @@ def write_setup_py(*,
                    owner_email: str,
                    description: str,
                    license: str,
-                   repo_url: str,):
+                   repo_url: str,
+                   ):
 
     if use_existing_repo:
         if Path('setup.py').exists():
@@ -643,17 +645,23 @@ def rename(ctx,
            local,
            verbose: bool,
            debug: bool,
-           hg: bool,):
+           hg: bool,
+           ):
 
     not_root()
-    verbose = verbose or ctx.obj['verbose']
-    debug = debug or ctx.obj['debug']
+    null, end, verbose, debug = nevd(ctx=ctx,
+                                     printn=False,
+                                     ipython=False,
+                                     verbose=verbose,
+                                     debug=debug,)
+
     apps_folder = Path(apps_folder)
     ic(apps_folder)
 
     old_app_name, old_app_user, old_app_module_name, old_app_path = \
         parse_url(old_repo_url,
                   apps_folder=apps_folder,
+                  keep_underscore=True,
                   verbose=verbose,
                   debug=debug,)
     new_app_name, new_app_user, new_app_module_name, new_app_path = \
@@ -675,7 +683,7 @@ def rename(ctx,
                                     verbose=verbose,
                                     debug=debug,)
         sh.git.add(old_setup_py)
-        del(old_setup_py)
+        del old_setup_py
 
         old_readme_md = old_app_path / Path('README.md')
         try:
@@ -687,7 +695,7 @@ def rename(ctx,
             ic(e)
             sh.touch('README.md')
         sh.git.add(old_readme_md)
-        del(old_readme_md)
+        del old_readme_md
 
         old_url_sh = old_app_path / Path('url.sh')
         try:
@@ -699,7 +707,7 @@ def rename(ctx,
         except Exception as e:
             write_url_sh(new_repo_url, verbose=verbose, debug=debug,)
         sh.git.add(old_url_sh)
-        del(old_url_sh)
+        del old_url_sh
 
         old_edit_config = old_app_path / Path('.edit_config')
         replace_text(path=old_edit_config,
@@ -708,7 +716,7 @@ def rename(ctx,
                      verbose=verbose,
                      debug=debug,)
         #sh.git.add(old_edit_config)
-        del(old_edit_config)
+        del old_edit_config
 
         enable_github_sh = old_app_path / Path('enable_github.sh')
         replace_text(path=enable_github_sh,
@@ -717,7 +725,7 @@ def rename(ctx,
                      verbose=verbose,
                      debug=debug,)
         #sh.git.add(enable_github_sh)
-        del(enable_github_sh)
+        del enable_github_sh
 
         old_app_py = old_app_path / old_app_module_name / Path(old_app_module_name + '.py')
         replace_match_pairs_in_file(path=old_app_py,
@@ -725,7 +733,7 @@ def rename(ctx,
                                     verbose=verbose,
                                     debug=debug,)
         sh.git.add(old_app_py)
-        #del(old_app_py)
+        #del old_app_py
 
         old_app_init_py = old_app_path / old_app_module_name / Path('__init__.py')
         replace_text(path=old_app_init_py,
@@ -801,20 +809,30 @@ def rename(ctx,
 
 
 @cli.command('list')
-@click.option('--apps-folder', type=str, required=True)
+@click.option('--apps-folder',
+              type=click.Path(exists=True,
+                              dir_okay=True,
+                              file_okay=False,
+                              allow_dash=False,
+                              path_type=Path,),
+              required=True,)
 @click.option('--ls-remote', is_flag=True)
 @click.option('--verbose', is_flag=True)
 @click.option('--debug', is_flag=True)
 @click.pass_context
 def list_all(ctx,
-             apps_folder: str,
+             apps_folder: Path,
              ls_remote: bool,
              verbose: bool,
              debug: bool,
              ):
 
-    verbose = verbose or ctx.obj['verbose']
-    debug = debug or ctx.obj['debug']
+    null, end, verbose, debug = nevd(ctx=ctx,
+                                     printn=False,
+                                     ipython=False,
+                                     verbose=verbose,
+                                     debug=debug,)
+
     apps_folder = Path(apps_folder)
     ic(apps_folder)
 
@@ -842,7 +860,13 @@ def list_all(ctx,
 
 
 @cli.command()
-@click.option('--apps-folder', type=str, required=True)
+@click.option('--apps-folder',
+              type=click.Path(exists=True,
+                              dir_okay=True,
+                              file_okay=False,
+                              allow_dash=False,
+                              path_type=Path,),
+              required=True,)
 @click.option('--gentoo-overlay-repo', type=str, required=True)
 @click.option('--local', is_flag=True)
 @click.option('--github-user', type=str, required=True)
@@ -850,7 +874,7 @@ def list_all(ctx,
 @click.option('--debug', is_flag=True)
 @click.pass_context
 def check_all(ctx,
-              apps_folder: str,
+              apps_folder: Path,
               gentoo_overlay_repo: str,
               github_user: str,
               verbose: bool,
@@ -859,9 +883,11 @@ def check_all(ctx,
               ):
 
     not_root()
-    verbose = verbose or ctx.obj['verbose']
-    debug = debug or ctx.obj['debug']
-    apps_folder = Path(apps_folder)
+    null, end, verbose, debug = nevd(ctx=ctx,
+                                     printn=False,
+                                     ipython=False,
+                                     verbose=verbose,
+                                     debug=debug,)
     ic(apps_folder)
 
     edit_configs = find_edit_configs(apps_folder=apps_folder,
@@ -896,8 +922,8 @@ def check_all(ctx,
               type=click.Path(exists=True,
                               dir_okay=False,
                               file_okay=True,
-                              path_type=str,
-                              allow_dash=False,),
+                              allow_dash=False,
+                              path_type=Path,),
               required=False,)
 @click.option('--apps-folder', type=str, required=True)
 @click.option('--gentoo-overlay-repo', type=str, required=True)
@@ -918,7 +944,7 @@ def new(ctx,
         repo_url: str,
         group: str,
         branch: str,
-        append: str,
+        append: Optional[Path],
         apps_folder: str,
         gentoo_overlay_repo: str,
         github_user: str,
@@ -934,8 +960,12 @@ def new(ctx,
         ):
 
     not_root()
-    verbose = verbose or ctx.obj['verbose']
-    debug = debug or ctx.obj['debug']
+    null, end, verbose, debug = nevd(ctx=ctx,
+                                 printn=False,
+                                 ipython=False,
+                                 verbose=verbose,
+                                 debug=debug,)
+
     apps_folder = Path(apps_folder)
     ic(apps_folder)
     if append:
@@ -948,6 +978,7 @@ def new(ctx,
     assert ':' not in group
     assert group in portage_categories()
 
+    template_repo_url: Optional[str] = None
     if not repo_url.startswith('https://github.com/{}/'.format(github_user)):
         template_repo_url = repo_url
         _app_name, _app_user, _app_module_name, _app_path = parse_url(repo_url,
