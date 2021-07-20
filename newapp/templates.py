@@ -62,6 +62,7 @@ python_app = '''#!/usr/bin/env python3
 
 # code style:
 #   no guessing on spelling: never tmp_X always temporary_X
+#   dont_makedirs -> no_makedirs
 #   no guessing on case: local vars, functions and methods are lower case. classes are ThisClass(). Globals are THIS.
 #   del vars explicitely ASAP, assumptions are buggy
 #   rely on the compiler, code verbosity and explicitness can only be overruled by benchamrks (are really compiler bugs)
@@ -94,10 +95,12 @@ from pathlib import Path
 from asserttool import nevd
 from asserttool import validate_slice
 from asserttool import eprint, ic
+from asserttool import verify
 from retry_on_exception import retry_on_exception
 from enumerate_input import enumerate_input
 #from collections import defaultdict
-#from prettyprinter import cpprint, install_extras
+#from prettyprinter import cpprint
+#from prettyprinter import install_extras
 #install_extras(['attrs'])
 #from timetool import get_timestamp
 #from configtool import click_read_config
@@ -117,6 +120,7 @@ from typing import Generator
 from typing import Iterable
 from typing import ByteString
 from typing import Optional
+from typing import Union
 
 # click-command-tree
 #from click_plugins import with_plugins

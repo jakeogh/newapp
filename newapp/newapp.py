@@ -276,16 +276,16 @@ def generate_init_template(package_name):
     return init.format(package_name=package_name)
 
 
-def rename_repo_on_clone(*,
-                         app_path: Path,
-                         old_name: str,
-                         new_name: str,
-                         app_group: str,
-                         hg: bool,
-                         local: bool,
-                         verbose: bool,
-                         debug: bool,
-                         ):
+def rename_repo_at_app_path(*,
+                            app_path: Path,
+                            old_name: str,
+                            new_name: str,
+                            app_group: str,
+                            hg: bool,
+                            local: bool,
+                            verbose: bool,
+                            debug: bool,
+                            ):
     ic(old_name, new_name)
     old_module_name = old_name.replace('-', '_')
     new_module_name = old_name.replace('-', '_')
@@ -360,63 +360,6 @@ def rename_repo_on_clone(*,
         sh.git.commit('-m rename')
 
 
-@click.group(context_settings=CONTEXT_SETTINGS, no_args_is_help=True)
-@click.option('--verbose', is_flag=True)
-@click.option('--debug', is_flag=True)
-@click.pass_context
-def cli(ctx, verbose, debug):
-    ctx.ensure_object(dict)
-    ctx.obj['verbose'] = verbose
-    ctx.obj['debug'] = debug
-
-
-@cli.command()
-@click.pass_context
-def get_pylint_config(ctx):
-    app_template = generate_app_template('TEMP',
-                                         language='python',
-                                         append=None,
-                                         verbose=ctx.obj['verbose'],
-                                         debug=ctx.obj['debug'],)
-    for line in app_template.splitlines():
-        if line.startswith('# flake8: '):
-            print(line)
-        if line.startswith('# pylint: '):
-            print(line)
-
-
-@cli.command()
-@click.argument('overlay_name', type=str, nargs=1)
-@click.pass_context
-def get_overlay_url(ctx,
-                    overlay_name,
-                    ):
-    url = get_url_for_overlay(overlay_name,
-                              verbose=ctx.obj['verbose'],
-                              debug=ctx.obj['debug'],)
-    print(url)
-
-
-@cli.command()
-@click.argument("app", type=str)
-@click.pass_context
-def nineify(ctx, app):
-    not_root()
-    assert '/' in app
-    group, name = app.split('/')
-    ic(group)
-    ic(name)
-    relative_destination = Path(group) / Path(name)
-    template_path = Path("/var/db/repos/gentoo") / relative_destination
-    ic(template_path)
-    local_overlay = Path("/home/cfg/_myapps/jakeogh")
-    destination = local_overlay / relative_destination
-    ic(template_path, destination)
-    try:
-        shutil.copytree(template_path, destination)
-    except FileExistsError as e:
-        ic(e)
-
 def clone_repo(*,
                branch: str,
                repo_url: str,
@@ -454,14 +397,14 @@ def clone_repo(*,
         git_fork_cmd = "hub fork"
         os.system(git_fork_cmd)
     else:
-        rename_repo_on_clone(app_path=app_path,
-                             app_group=app_group,
-                             local=local,
-                             hg=hg,
-                             old_name=template_app_name,
-                             new_name=app_name,
-                             verbose=verbose,
-                             debug=debug,)
+        rename_repo_at_app_path(app_path=app_path,
+                                app_group=app_group,
+                                local=local,
+                                hg=hg,
+                                old_name=template_app_name,
+                                new_name=app_name,
+                                verbose=verbose,
+                                debug=debug,)
 
 
 def create_repo(*,
@@ -578,6 +521,64 @@ def write_setup_py(*,
                                    description=description,
                                    license=license,
                                    url=repo_url,))
+
+
+@click.group(context_settings=CONTEXT_SETTINGS, no_args_is_help=True)
+@click.option('--verbose', is_flag=True)
+@click.option('--debug', is_flag=True)
+@click.pass_context
+def cli(ctx, verbose, debug):
+    ctx.ensure_object(dict)
+    ctx.obj['verbose'] = verbose
+    ctx.obj['debug'] = debug
+
+
+@cli.command()
+@click.pass_context
+def get_pylint_config(ctx):
+    app_template = generate_app_template('TEMP',
+                                         language='python',
+                                         append=None,
+                                         verbose=ctx.obj['verbose'],
+                                         debug=ctx.obj['debug'],)
+    for line in app_template.splitlines():
+        if line.startswith('# flake8: '):
+            print(line)
+        if line.startswith('# pylint: '):
+            print(line)
+
+
+@cli.command()
+@click.argument('overlay_name', type=str, nargs=1)
+@click.pass_context
+def get_overlay_url(ctx,
+                    overlay_name,
+                    ):
+    url = get_url_for_overlay(overlay_name,
+                              verbose=ctx.obj['verbose'],
+                              debug=ctx.obj['debug'],)
+    print(url)
+
+
+@cli.command()
+@click.argument("app", type=str)
+@click.pass_context
+def nineify(ctx, app):
+    not_root()
+    assert '/' in app
+    group, name = app.split('/')
+    ic(group)
+    ic(name)
+    relative_destination = Path(group) / Path(name)
+    template_path = Path("/var/db/repos/gentoo") / relative_destination
+    ic(template_path)
+    local_overlay = Path("/home/cfg/_myapps/jakeogh")
+    destination = local_overlay / relative_destination
+    ic(template_path, destination)
+    try:
+        shutil.copytree(template_path, destination)
+    except FileExistsError as e:
+        ic(e)
 
 
 @cli.command()
@@ -938,7 +939,7 @@ def check_all(ctx,
 @click.option('--owner-email', type=str, required=True)
 @click.option('--description', type=str, default="Short explination of what it does _here_")
 @click.option('--local', is_flag=True)
-#@click.option('--template', 'template_repo_url', type=str)
+@click.option('--rename', type=str)
 @click.option('--hg', is_flag=True)
 @click.option('--use-existing-repo', is_flag=True)
 @click.option('--verbose', is_flag=True)
@@ -949,6 +950,7 @@ def new(ctx,
         repo_url: str,
         group: str,
         branch: str,
+        rename: Optional[str],
         append: Optional[Path],
         apps_folder: str,
         gentoo_overlay_repo: str,
@@ -990,6 +992,8 @@ def new(ctx,
                                                                       apps_folder=apps_folder,
                                                                       verbose=verbose,
                                                                       debug=debug,)
+        if rename:
+            _app_name = rename
         repo_url = 'https://github.com/{github_user}/{app_name}'.format(github_user=github_user, app_name=_app_name)
         del _app_name, _app_user, _app_module_name, _app_path
     else:
@@ -1197,18 +1201,6 @@ def new(ctx,
 #        print(y)
 #
 #
-#def domain_set_to_sorted_list_grouped_by_tld(domains):
-#    data = []
-#    for x in domains:
-#       d = x.strip().split('.')
-#       d.reverse()
-#       data.append(d)
-#    data.sort()
-#    for y in data:
-#       y.reverse()
-#       print('.'.join(y))
-#
-#
 #def print_hex(text):
 #    print(':'.join(hex(ord(x))[2:] for x in text))
 #
@@ -1217,9 +1209,6 @@ def new(ctx,
 #    if click_debug:
 #        caller = sys._getframe(1).f_code.co_name
 #        print(str("%.5f" % time.time()), os.getpid(), '{0: <15}'.format(caller+'()'), *args, file=sys.stderr, **kwargs)
-#
-#def eprint(*args, **kwargs):
-#    print(*args, file=sys.stderr, **kwargs)
 #
 #print(pydoc.render_doc(logger))
 #
