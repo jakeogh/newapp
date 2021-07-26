@@ -920,7 +920,7 @@ def check_all(ctx,
 
 
 @cli.command()
-@click.argument('language', type=click.Choice(['python', 'bash', 'zig', 'c']), nargs=1)
+@click.argument('language', type=click.Choice(['python', 'bash', 'sh', 'zig', 'c']), nargs=1)
 @click.argument('repo_url', type=str, nargs=1)
 @click.argument('group', type=str, nargs=1)
 @click.argument('branch', type=str, callback=valid_branch, nargs=1, default="master")
@@ -1007,6 +1007,9 @@ def new(ctx,
     ic(app_user)
     assert app_user == github_user
     assert '_' not in app_path.name
+
+    if language == 'sh':
+        language = 'bash'
 
     if language == 'python':
         ext = '.py'
