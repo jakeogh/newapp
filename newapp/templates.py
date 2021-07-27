@@ -21,6 +21,7 @@ pre_lint_command=""
 dont_unmerge=""
 '''
 
+
 zig_app= '''
 const std = @import("std");
 
@@ -301,6 +302,7 @@ def cli(ctx,
 
 '''
 
+
 depend_python = '''
 RDEPEND="
 	dev-python/click[${PYTHON_USEDEP}]
@@ -312,6 +314,7 @@ RDEPEND="
 
 DEPEND="${RDEPEND}"
 '''
+
 
 ebuild = '''# Copyright 1999-2021 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
@@ -340,12 +343,21 @@ KEYWORDS=""
 #}}
 '''
 
+
+src_install_dobin = '''
+src_install() {{
+        dobin ${{app_name}}
+}}'''
+
+
+
 gitignore = '''.git
 .edit_config
 enable_github.sh
 '''
 
-setup_py='''# -*- coding: utf-8 -*-
+
+setup_py = '''# -*- coding: utf-8 -*-
 
 import sys
 import fastentrypoints

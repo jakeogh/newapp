@@ -52,6 +52,7 @@ from .templates import gitignore
 from .templates import init
 from .templates import python_app
 from .templates import setup_py
+from .templates import src_install_dobin
 from .templates import zig_app
 
 CFG, CONFIG_MTIME = click_read_config(click_instance=click,
@@ -221,11 +222,17 @@ def generate_setup_py(*,
                            description=description,)
 
 
+def generate_src_install_dobin_template(app_name):
+    return src_install_dobin.format(app_name=app_name)
+
+
 def generate_ebuild_template(*,
                              description: str,
                              enable_python: bool,
+                             enable_dobin: bool,
                              homepage: str,
                              app_path: Path,
+                             app_name: str,
                              ):
     ic(enable_python)
     inherit_python = ''
@@ -233,11 +240,15 @@ def generate_ebuild_template(*,
     if enable_python:
         inherit_python = 'inherit distutils-r1'
         rdepend_python = depend_python
-    return ebuild.format(description=description,
-                         inherit_python=inherit_python,
-                         depend_python=rdepend_python,
-                         homepage=homepage,
-                         app_path=app_path)
+    result = ebuild.format(description=description,
+                           inherit_python=inherit_python,
+                           depend_python=rdepend_python,
+                           homepage=homepage,
+                           app_path=app_path,)
+
+    if enable_dobin:
+        result += generate_src_install_dobin_template(app_name)
+    return result
 
 
 def generate_gitignore_template():
@@ -299,7 +310,7 @@ def rename_repo_at_app_path(*,
         with open(".edit_config", 'x') as fh:
             fh.write(generate_edit_config(package_name=new_name,
                                           package_group=app_group,
-                                          local=local))
+                                          local=local,))
 
         # enable_github.sh needs to be created if this is a remote template
         remote_add_origin(hg=hg,
@@ -309,7 +320,9 @@ def rename_repo_at_app_path(*,
                           verbose=verbose,
                           debug=debug,)
 
-        all_paths = list(paths(app_path, verbose=verbose, debug=debug,))
+        all_paths = list(paths(app_path,
+                               verbose=verbose,
+                               debug=debug,))
         exclude_path = app_path / Path('.git')
         for dent in all_paths:
             path = dent.pathlib
@@ -340,7 +353,9 @@ def rename_repo_at_app_path(*,
                 new_path = path.parent / Path(new_path_name)
                 sh.git.mv(path, new_path)
 
-        all_files = list(files(app_path, verbose=verbose, debug=debug,))
+        all_files = list(files(app_path,
+                               verbose=verbose,
+                               debug=debug,))
         exclude_path = app_path / Path('.git')
         for dent in all_files:
             ic(dent)
@@ -1116,10 +1131,16 @@ def new(ctx,
 
         os.makedirs(ebuild_path, exist_ok=False)
         ebuild_name = app_name + "-9999.ebuild"
+
+        enable_dobin = False
+        if language in ['bash']:
+            enable_dobin = True
         with chdir(ebuild_path):
             with open(ebuild_name, 'w') as fh:
-                fh.write(generate_ebuild_template(description=description,
+                fh.write(generate_ebuild_template(app_name=app_name,
+                                                  description=description,
                                                   enable_python=enable_python,
+                                                  enable_dobin=enable_dobin,
                                                   homepage=repo_url,
                                                   app_path=app_path,))
             sh.git.add(ebuild_name)
