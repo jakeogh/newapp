@@ -240,9 +240,9 @@ def cli(ctx,
                                        dont_decode=True,  # paths are bytes
                                        null=null,
                                        progress=False,
-                                       skip=skip,
-                                       head=head,
-                                       tail=tail,
+                                       skip=None,
+                                       head=None,
+                                       tail=None,
                                        debug=debug,
                                        verbose=verbose,):
         path = Path(os.fsdecode(path))
