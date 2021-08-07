@@ -173,24 +173,16 @@ from typing import Union
 @click.option('--debug', is_flag=True)
 @click.option('--simulate', is_flag=True)
 @click.option('--ipython', is_flag=True)
-@click.option('--count', is_flag=True)
-@click.option('--skip', type=int, default=False)
-@click.option('--head', type=int, default=False)
-@click.option('--tail', type=int, default=False)
 #@click.option("--progress", is_flag=True)
 @click.pass_context
 def cli(ctx,
-        paths: tuple[str],
+        paths: Optional[tuple[str]],
         sysskel: Path,
         slice_syntax: str,
         verbose: bool,
         debug: bool,
         simulate: bool,
         ipython: bool,
-        count: bool,
-        skip: int,
-        head: int,
-        tail: int,
         ):
 
     null, end, verbose, debug = nevd(ctx=ctx,
@@ -206,10 +198,6 @@ def cli(ctx,
     #ctx.obj['end'] = end
     #ctx.obj['null'] = null
     #ctx.obj['progress'] = progress
-    ctx.obj['count'] = count
-    ctx.obj['skip'] = skip
-    ctx.obj['head'] = head
-    ctx.obj['tail'] = tail
 
     #global APP_NAME
     #config, config_mtime = click_read_config(click_instance=click,
@@ -234,6 +222,7 @@ def cli(ctx,
     #        ic(config)
 
     iterator = paths
+    del paths
 
     index = 0
     for index, path in enumerate_input(iterator=iterator,
