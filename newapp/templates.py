@@ -229,9 +229,6 @@ def cli(ctx,
                                        dont_decode=True,  # paths are bytes
                                        null=null,
                                        progress=False,
-                                       skip=None,
-                                       head=None,
-                                       tail=None,
                                        debug=debug,
                                        verbose=verbose,):
         path = Path(os.fsdecode(path))
@@ -279,9 +276,6 @@ def cli(ctx,
 #    for index, url in enumerate_input(iterator=iterator,
 #                                      null=ctx.obj['null'],
 #                                      progress=ctx.obj['progress'],
-#                                      skip=ctx.obj['skip'],
-#                                      head=ctx.obj['head'],
-#                                      tail=ctx.obj['tail'],
 #                                      debug=ctx.obj['debug'],
 #                                      verbose=ctx.obj['verbose'],):
 #
