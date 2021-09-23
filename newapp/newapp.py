@@ -1075,13 +1075,13 @@ def new(ctx,
                                    license=license,
                                    repo_url=repo_url,)
 
-                template = generate_gitignore_template()
+                gitignore_template = generate_gitignore_template()
                 if use_existing_repo:
                     with open('.gitignore', 'a') as fh:
-                        fh.write(template)
+                        fh.write(gitignore_template)
                 else:
                     with open('.gitignore', 'x') as fh:
-                        fh.write(template)
+                        fh.write(gitignore_template)
 
                 if not Path('url.sh').exists():
                     write_url_sh(repo_url, verbose=verbose, debug=debug,)
