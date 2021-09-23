@@ -227,7 +227,6 @@ def cli(ctx,
     index = 0
     for index, path in enumerate_input(iterator=iterator,
                                        dont_decode=True,  # paths are bytes
-                                       null=null,
                                        progress=False,
                                        debug=debug,
                                        verbose=verbose,):

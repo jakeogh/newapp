@@ -939,7 +939,7 @@ def check_all(ctx,
 @click.argument('repo_url', type=str, nargs=1)
 @click.argument('group', type=str, nargs=1)
 @click.argument('branch', type=str, callback=valid_branch, nargs=1, default="master")
-@click.option("--append",
+@click.option("--template",
               type=click.Path(exists=True,
                               dir_okay=False,
                               file_okay=True,
@@ -966,7 +966,7 @@ def new(ctx,
         group: str,
         branch: str,
         rename: Optional[str],
-        append: Optional[Path],
+        template: Optional[Path],
         apps_folder: str,
         gentoo_overlay_repo: str,
         github_user: str,
@@ -990,8 +990,8 @@ def new(ctx,
 
     apps_folder = Path(apps_folder)
     ic(apps_folder)
-    if append:
-        append = Path(append).resolve()
+    if template:
+        template = Path(template).resolve()
 
     if repo_url.endswith('.git'):
         repo_url = repo_url[:-4]
@@ -1092,7 +1092,7 @@ def new(ctx,
             with chdir(app_path / app_module_name):
                 app_template = generate_app_template(package_name=app_module_name,
                                                      language=language,
-                                                     append=append,
+                                                     append=template,
                                                      verbose=ctx.obj['verbose'],
                                                      debug=ctx.obj['debug'],)
                 with open(app_module_name + ext, 'x') as fh:
