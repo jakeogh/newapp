@@ -938,7 +938,7 @@ def check_all(ctx,
 @click.argument('language', type=click.Choice(['python', 'bash', 'sh', 'zig', 'c']), nargs=1)
 @click.argument('repo_url', type=str, nargs=1)
 @click.argument('group', type=str, nargs=1)
-@click.argument('branch', type=str, callback=valid_branch, nargs=1, default="master")
+@click.option('--branch', type=str, callback=valid_branch, default="master")
 @click.option("--template",
               type=click.Path(exists=True,
                               dir_okay=False,
@@ -999,6 +999,7 @@ def new(ctx,
     assert '/' not in group
     assert ':' not in group
     assert group in portage_categories()
+    assert repo_url.startswith('https://')
 
     template_repo_url: Optional[str] = None
     if not repo_url.startswith('https://github.com/{}/'.format(github_user)):
