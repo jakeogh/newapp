@@ -257,7 +257,7 @@ def generate_gitignore_template():
 
 def generate_app_template(package_name: str, *,
                           language: str,
-                          append: Optional[Path],
+                          append_files: Optional[tuple[Path]],
                           verbose: bool,
                           debug: bool,
                           ) -> str:
@@ -271,8 +271,8 @@ def generate_app_template(package_name: str, *,
         result = zig_app.format(package_name=package_name, newline="\\n", null="\\x00")
 
     if result:
-        if append:
-            with open(append, 'r') as fh:
+        for file in append_files:
+            with open(file, 'r') as fh:
                 result += fh.read()
         return result
 
@@ -939,13 +939,14 @@ def check_all(ctx,
 @click.argument('repo_url', type=str, nargs=1)
 @click.argument('group', type=str, nargs=1)
 @click.option('--branch', type=str, callback=valid_branch, default="master")
-@click.option("--template",
+@click.option("--template", 'templates',
               type=click.Path(exists=True,
                               dir_okay=False,
                               file_okay=True,
                               allow_dash=False,
                               path_type=Path,),
-              required=False,)
+              required=False,
+              multiple=True,)
 @click.option('--apps-folder', type=str, required=True)
 @click.option('--gentoo-overlay-repo', type=str, required=True)
 @click.option('--github-user', type=str, required=True)
@@ -966,7 +967,7 @@ def new(ctx,
         group: str,
         branch: str,
         rename: Optional[str],
-        template: Optional[Path],
+        templates: Optional[tuple[Path]],
         apps_folder: str,
         gentoo_overlay_repo: str,
         github_user: str,
@@ -990,8 +991,8 @@ def new(ctx,
 
     apps_folder = Path(apps_folder)
     ic(apps_folder)
-    if template:
-        template = Path(template).resolve()
+    #if template:
+    #    template = Path(template).resolve()
 
     if repo_url.endswith('.git'):
         repo_url = repo_url[:-4]
@@ -1093,7 +1094,7 @@ def new(ctx,
             with chdir(app_path / app_module_name):
                 app_template = generate_app_template(package_name=app_module_name,
                                                      language=language,
-                                                     append=template,
+                                                     append_files=templates,
                                                      verbose=ctx.obj['verbose'],
                                                      debug=ctx.obj['debug'],)
                 with open(app_module_name + ext, 'x') as fh:
