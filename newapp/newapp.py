@@ -991,6 +991,9 @@ def new(ctx,
 
     apps_folder = Path(apps_folder)
     ic(apps_folder)
+
+    templates = [t.resolve() for t in templates]
+
     #if template:
     #    template = Path(template).resolve()
 
