@@ -953,7 +953,7 @@ def check_all(ctx,
 @click.option('--license', type=click.Choice(license_list(verbose=False, debug=False,)), default="ISC")
 @click.option('--owner', type=str, required=True)
 @click.option('--owner-email', type=str, required=True)
-@click.option('--description', type=str, default="Short explination of what it does _here_")
+@click.option('--description', type=str,)
 @click.option('--local', is_flag=True)
 @click.option('--rename', type=str)
 @click.option('--hg', is_flag=True)
