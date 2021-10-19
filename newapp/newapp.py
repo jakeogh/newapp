@@ -270,6 +270,9 @@ def generate_app_template(package_name: str, *,
     if language == 'zig':
         result = zig_app.format(package_name=package_name, newline="\\n", null="\\x00")
 
+    if append_files is None:
+        append_files = ()
+
     if result:
         for file in append_files:
             with open(file, 'r') as fh:
