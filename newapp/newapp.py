@@ -553,7 +553,7 @@ def cli(ctx, verbose, debug):
 def get_pylint_config(ctx):
     app_template = generate_app_template('TEMP',
                                          language='python',
-                                         append=None,
+                                         append_files=None,
                                          verbose=ctx.obj['verbose'],
                                          debug=ctx.obj['debug'],)
     for line in app_template.splitlines():
@@ -604,7 +604,7 @@ def template_python(ctx,
                     ):
     app_template = generate_app_template(package_name,
                                          language='python',
-                                         append=None,
+                                         append_files=None,
                                          verbose=ctx.obj['verbose'],
                                          debug=ctx.obj['debug'],)
     print(app_template)
@@ -619,7 +619,7 @@ def template_bash(ctx,
 
     app_template = generate_app_template(package_name,
                                          language='bash',
-                                         append=None,
+                                         append_files=None,
                                          verbose=ctx.obj['verbose'],
                                          debug=ctx.obj['debug'],)
     print(app_template)
@@ -634,7 +634,7 @@ def template_zig(ctx,
 
     app_template = generate_app_template(package_name,
                                          language='zig',
-                                         append=None,
+                                         append_files=None,
                                          verbose=ctx.obj['verbose'],
                                          debug=ctx.obj['debug'],)
     print(app_template)
