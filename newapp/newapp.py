@@ -466,6 +466,7 @@ def remote_add_origin(*,
         'hub create {}'.format('jakeogh/' + app_name),
         repo_config_command,
         'git push --set-upstream origin master',
+        'touch .push_enabled',
         "\n"]
     enable_github = "\n".join(enable_github)
     output_file = app_path / Path('enable_github.sh')
