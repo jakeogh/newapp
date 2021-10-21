@@ -1175,7 +1175,7 @@ def new(ctx,
 
     main_py_path = app_path / Path(app_module_name) / Path(app_module_name + ext)
     ic(main_py_path)
-    os.system("edit " + main_py_path.as_posix())
+    os.system("edittool edit " + main_py_path.as_posix())
 
 
 ##http://liw.fi/cmdtest/
