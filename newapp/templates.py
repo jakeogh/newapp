@@ -44,7 +44,7 @@ python_app = '''#!/usr/bin/env python3
 
 # flake8: noqa           # flake8 has no per file settings :(
 # pylint: disable=C0111  # docstrings are always outdated and wrong
-# pylint: disable=C0114  #      Missing module docstring (missing-module-docstring)
+# pylint: disable=C0114  # Missing module docstring (missing-module-docstring)
 # pylint: disable=W0511  # todo is encouraged
 # pylint: disable=C0301  # line too long
 # pylint: disable=R0902  # too many instance attributes
