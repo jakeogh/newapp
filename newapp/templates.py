@@ -40,6 +40,7 @@ exit 1
 
 python_app = '''#!/usr/bin/env python3
 # -*- coding: utf8 -*-
+# tab-width:4
 
 # flake8: noqa           # flake8 has no per file settings :(
 # pylint: disable=C0111  # docstrings are always outdated and wrong
