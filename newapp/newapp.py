@@ -554,7 +554,7 @@ def cli(ctx, verbose, debug):
 
 @cli.command()
 @click.pass_context
-def get_pylint_config(ctx):
+def template_pylint(ctx):
     app_template = generate_app_template('TEMP',
                                          language='python',
                                          append_files=None,
