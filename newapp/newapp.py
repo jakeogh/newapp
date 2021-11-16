@@ -1164,7 +1164,7 @@ def new(ctx,
             write_line_to_file(path=accept_keywords,
                                line=accept_keyword,
                                unique=True,
-                               make_new_if_necessary=False,
+                               make_new_if_necessary=True,
                                verbose=verbose,
                                debug=debug,)
             sh.ln('-s', ebuild_path / ebuild_name, app_path / ebuild_name)
