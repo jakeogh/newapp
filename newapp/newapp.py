@@ -1160,6 +1160,7 @@ def new(ctx,
             os.system("sudo emaint sync -A")
             accept_keyword = "={}/{}-9999 **\n".format(group, app_name)
             accept_keywords = Path("/etc/portage/package.accept_keywords") / Path(group) / Path(app_name)
+            accept_keywords.parent.mkdir(exist_ok=True)
             write_line_to_file(path=accept_keywords,
                                line=accept_keyword,
                                unique=True,
