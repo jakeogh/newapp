@@ -39,6 +39,7 @@ from getdents import files
 from getdents import paths
 from licenseguesser import license_list
 from pathtool import write_line_to_file
+from portagetool import portage_categories
 from replace_text import replace_text_in_file
 from run_command import run_command
 from with_chdir import chdir
@@ -110,16 +111,6 @@ def replace_match_pairs_in_file(*,
                      replacement=new_match,
                      verbose=verbose,
                      debug=debug,)
-
-
-def portage_categories():
-    categories_path = Path(str(sh.portageq('get_repo_path', '/', 'gentoo').strip())) / Path('profiles') / Path('categories')
-    with open(categories_path, 'r') as fh:
-        lines = fh.readlines()
-    categories = [c.strip() for c in lines]
-    del lines
-    del categories_path
-    return categories
 
 
 def get_url_for_overlay(overlay: str,
