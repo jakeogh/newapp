@@ -1159,6 +1159,8 @@ def new(ctx,
                                verbose=verbose,
                                debug=debug,)
             sh.ln('-s', ebuild_path / ebuild_name, app_path / ebuild_name)
+            sh.git.diff('--exit-code')
+            # need to commit any pending ebuild changes here, but that's the wront git message, and it fails if it's unhanged
             sh.git.commit('-m', 'initial commit')
     else:
         eprint("Not creating new ebuild, {} already exists.".format(ebuild_path))
