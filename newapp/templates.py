@@ -157,6 +157,7 @@ signal(SIGPIPE, SIG_DFL)
 
 
 # update setup.py if changing function name
+#@click.argument("slice_syntax", type=validate_slice, nargs=1)
 @click.command()
 @click.argument("paths", type=str, nargs=-1)
 @click.argument("sysskel",
@@ -167,15 +168,15 @@ signal(SIGPIPE, SIG_DFL)
                                 path_type=Path,),
                 nargs=1,
                 required=True,)
-@click.argument("slice_syntax", type=validate_slice, nargs=1)
 @click.option('--ipython', is_flag=True)
 #@click_add_options(click_global_options)
 @click.pass_context
 def cli(ctx,
         paths: Optional[tuple[str]],
         sysskel: Path,
-        verbose: bool,
         ipython: bool,
+        verbose: int,
+        verbose_inf: bool,
         ):
 
     tty, verbose = tv(ctx=ctx,
@@ -183,15 +184,19 @@ def cli(ctx,
                       verbose_inf=verbose_inf,
                       )
 
-    iterator = paths
-    del paths
+    if paths:
+        iterator = paths
+        del paths
+    else:
+        iterator = unmp(allow_types=[bytes,], verbose=verbose)
 
     index = 0
-    for index, path in enumerate_input(iterator=iterator,
-                                       dont_decode=True,  # paths are bytes
-                                       progress=False,
-                                       debug=debug,
-                                       verbose=verbose,):
+    #for index, path in enumerate_input(iterator=iterator,
+    #                                   dont_decode=True,  # paths are bytes
+    #                                   progress=False,
+    #                                   verbose=verbose,
+    #                                   ):
+    for index, path in enumerate(iterator):
         path = Path(os.fsdecode(path))
 
         if verbose:  # or simulate:
