@@ -24,6 +24,7 @@
 import os
 import shutil
 import sys
+from math import inf
 from pathlib import Path
 from typing import Optional
 from urllib.parse import urlparse
@@ -32,8 +33,10 @@ import click
 import sh
 from asserttool import eprint
 from asserttool import ic
-from asserttool import nevd
 from asserttool import not_root
+from asserttool import tv
+from clicktool import click_add_options
+from clicktool import click_global_options
 from configtool import click_read_config
 from getdents import files
 from getdents import paths
@@ -59,7 +62,7 @@ from .templates import zig_app
 CFG, CONFIG_MTIME = click_read_config(click_instance=click,
                                       app_name='newapp',
                                       verbose=False,
-                                      debug=False,)
+                                      )
 
 
 # https://github.com/mitsuhiko/click/issues/441
@@ -75,7 +78,6 @@ def replace_text(path: Path,
                  match: str,
                  replacement: str,
                  verbose: bool,
-                 debug: bool,
                  ) -> None:
 
     if verbose:
@@ -84,14 +86,13 @@ def replace_text(path: Path,
     replace_text_in_file(path=path,
                          match=match.encode('utf8'),
                          replacement=replacement.encode('utf8'),
-                         end=b'\00',        # unused
                          output_fh=None,
                          read_mode='rb',
                          write_mode='wb',
                          stdout=False,
                          remove_match=False,
                          verbose=verbose,
-                         debug=debug,)
+                         )
 
 
 
@@ -99,7 +100,6 @@ def replace_match_pairs_in_file(*,
                                 path: Path,
                                 match_pairs: tuple,
                                 verbose: bool,
-                                debug: bool,
                                 ):
     assert isinstance(match_pairs, tuple)
     for old_match, new_match in match_pairs:
@@ -110,12 +110,11 @@ def replace_match_pairs_in_file(*,
                      match=old_match,
                      replacement=new_match,
                      verbose=verbose,
-                     debug=debug,)
+                     )
 
 
 def get_url_for_overlay(overlay: str,
                         verbose: bool,
-                        debug: bool,
                         ) -> str:
     command = ["eselect", "repository", "list"]
     command_output = run_command(command, str_output=True)
@@ -150,15 +149,12 @@ def valid_branch(ctx, param, value):
 def find_edit_configs(*,
                       apps_folder: Path,
                       verbose: bool,
-                      debug: bool,
                       ):
 
     edit_configs = []
-    for path in files(apps_folder, verbose=verbose, debug=debug,):
+    for path in files(apps_folder, verbose=verbose,):
         if path.name == b'.edit_config':
             path = Path(path)  # Dent -> Path
-            if debug:
-                ic(path)
             edit_configs.append(path)
 
     edit_configs = sorted(edit_configs)
@@ -250,7 +246,6 @@ def generate_app_template(package_name: str, *,
                           language: str,
                           append_files: Optional[tuple[Path]],
                           verbose: bool,
-                          debug: bool,
                           ) -> str:
 
     result = None
@@ -289,7 +284,6 @@ def rename_repo_at_app_path(*,
                             hg: bool,
                             local: bool,
                             verbose: bool,
-                            debug: bool,
                             ):
     ic(old_name, new_name)
     old_module_name = old_name.replace('-', '_')
@@ -312,11 +306,11 @@ def rename_repo_at_app_path(*,
                           local=local,
                           app_name=new_name,
                           verbose=verbose,
-                          debug=debug,)
+                          )
 
         all_paths = list(paths(app_path,
                                verbose=verbose,
-                               debug=debug,))
+                               ))
         exclude_path = app_path / Path('.git')
         for dent in all_paths:
             path = dent.pathlib
@@ -326,8 +320,6 @@ def rename_repo_at_app_path(*,
                 continue
             if path.as_posix().startswith(exclude_path.as_posix()):
                 continue
-            if debug:
-                ic(dent)
 
             if old_name in path.name:
                 if path.name == new_name:
@@ -349,7 +341,7 @@ def rename_repo_at_app_path(*,
 
         all_files = list(files(app_path,
                                verbose=verbose,
-                               debug=debug,))
+                               ))
         exclude_path = app_path / Path('.git')
         for dent in all_files:
             ic(dent)
@@ -364,7 +356,7 @@ def rename_repo_at_app_path(*,
             replace_match_pairs_in_file(path=path,
                                  match_pairs=((old_name, new_name), (old_module_name, new_module_name),),
                                  verbose=verbose,
-                                 debug=debug,)
+                                 )
         sh.git.add('-u')
         sh.git.commit('-m rename')
 
@@ -379,13 +371,12 @@ def clone_repo(*,
                hg: bool,
                local: bool,
                verbose: bool,
-               debug: bool,
                ):
 
-    app_name, app_user, _, _ = parse_url(repo_url, apps_folder=apps_folder, verbose=verbose, debug=debug,)
+    app_name, app_user, _, _ = parse_url(repo_url, apps_folder=apps_folder, verbose=verbose,)
     rename_cloned_repo = False
     if template_repo_url:
-        template_app_name, template_app_user, _, _ = parse_url(template_repo_url, apps_folder=apps_folder, verbose=verbose, debug=debug,)
+        template_app_name, template_app_user, _, _ = parse_url(template_repo_url, apps_folder=apps_folder, verbose=verbose,)
         repo_to_clone_url = template_repo_url
         if template_app_name != app_name:
             rename_cloned_repo = True
@@ -413,7 +404,7 @@ def clone_repo(*,
                                 old_name=template_app_name,
                                 new_name=app_name,
                                 verbose=verbose,
-                                debug=debug,)
+                                )
 
 
 def create_repo(*,
@@ -421,7 +412,6 @@ def create_repo(*,
                 app_module_name: str,
                 hg: bool,
                 verbose: bool,
-                debug: bool,
                 ):
 
     if hg:
@@ -438,7 +428,6 @@ def remote_add_origin(*,
                       app_name: str,
                       hg: bool,
                       verbose: bool,
-                      debug: bool,
                       ):
 
     if hg:
@@ -469,7 +458,6 @@ def parse_url(repo_url: str,
               *,
               apps_folder: Path,
               verbose: bool,
-              debug: bool,
               keep_underscore: bool = False,    # for rename
               ):
 
@@ -500,7 +488,6 @@ def parse_url(repo_url: str,
 
 def write_url_sh(repo_url, *,
                  verbose: bool,
-                 debug: bool,
                  ):
     url_template = generate_url_template(url=repo_url)
     with open("url.sh", 'x') as fh:
@@ -534,13 +521,14 @@ def write_setup_py(*,
 
 
 @click.group(context_settings=CONTEXT_SETTINGS, no_args_is_help=True)
-@click.option('--verbose', is_flag=True)
-@click.option('--debug', is_flag=True)
+@click_add_options(click_global_options)
 @click.pass_context
-def cli(ctx, verbose, debug):
+def cli(ctx,
+        verbose: int,
+        verbose_inf: bool,
+        ):
     ctx.ensure_object(dict)
     ctx.obj['verbose'] = verbose
-    ctx.obj['debug'] = debug
 
 
 @cli.command()
@@ -550,7 +538,7 @@ def template_pylint(ctx):
                                          language='python',
                                          append_files=None,
                                          verbose=ctx.obj['verbose'],
-                                         debug=ctx.obj['debug'],)
+                                         )
     for line in app_template.splitlines():
         if line.startswith('# flake8: '):
             print(line)
@@ -566,7 +554,7 @@ def get_overlay_url(ctx,
                     ):
     url = get_url_for_overlay(overlay_name,
                               verbose=ctx.obj['verbose'],
-                              debug=ctx.obj['debug'],)
+                              )
     print(url)
 
 
@@ -601,7 +589,7 @@ def template_python(ctx,
                                          language='python',
                                          append_files=None,
                                          verbose=ctx.obj['verbose'],
-                                         debug=ctx.obj['debug'],)
+                                         )
     print(app_template)
 
 
@@ -616,7 +604,7 @@ def template_bash(ctx,
                                          language='bash',
                                          append_files=None,
                                          verbose=ctx.obj['verbose'],
-                                         debug=ctx.obj['debug'],)
+                                         )
     print(app_template)
 
 
@@ -631,7 +619,7 @@ def template_zig(ctx,
                                          language='zig',
                                          append_files=None,
                                          verbose=ctx.obj['verbose'],
-                                         debug=ctx.obj['debug'],)
+                                         )
     print(app_template)
 
 
@@ -644,8 +632,7 @@ def template_zig(ctx,
 @click.option('--github-user', type=str, required=True)
 @click.option('--local', is_flag=True)
 @click.option('--hg', is_flag=True)
-@click.option('--verbose', is_flag=True)
-@click.option('--debug', is_flag=True)
+@click_add_options(click_global_options)
 @click.pass_context
 def rename(ctx,
            old_repo_url,
@@ -655,17 +642,16 @@ def rename(ctx,
            gentoo_overlay_repo,
            github_user,
            local,
-           verbose: bool,
-           debug: bool,
+           verbose: int,
+           verbose_inf: bool,
            hg: bool,
            ):
 
     not_root()
-    null, end, verbose, debug = nevd(ctx=ctx,
-                                     printn=False,
-                                     ipython=False,
-                                     verbose=verbose,
-                                     debug=debug,)
+    tty, verbose = tv(ctx=ctx,
+                      verbose=verbose,
+                      verbose_inf=verbose_inf,
+                      )
 
     apps_folder = Path(apps_folder)
     ic(apps_folder)
@@ -675,12 +661,12 @@ def rename(ctx,
                   apps_folder=apps_folder,
                   keep_underscore=True,
                   verbose=verbose,
-                  debug=debug,)
+                  )
     new_app_name, new_app_user, new_app_module_name, new_app_path = \
         parse_url(new_repo_url,
                   apps_folder=apps_folder,
                   verbose=verbose,
-                  debug=debug,)
+                  )
     assert old_app_user == new_app_user
 
     ic(old_app_name, new_app_name)
@@ -693,7 +679,7 @@ def rename(ctx,
         replace_match_pairs_in_file(path=old_setup_py,
                                     match_pairs=((old_app_name, new_app_name), (old_app_module_name, new_app_module_name),),
                                     verbose=verbose,
-                                    debug=debug,)
+                                    )
         sh.git.add(old_setup_py)
         del old_setup_py
 
@@ -702,7 +688,7 @@ def rename(ctx,
             replace_match_pairs_in_file(path=old_readme_md,
                                         match_pairs=((old_app_name, new_app_name), (old_app_module_name, new_app_module_name),),
                                         verbose=verbose,
-                                        debug=debug,)
+                                        )
         except FileNotFoundError as e:
             ic(e)
             sh.touch('README.md')
@@ -715,9 +701,9 @@ def rename(ctx,
                          match=old_app_name,
                          replacement=new_app_name,
                          verbose=verbose,
-                        debug=debug,)
+                         )
         except Exception as e:
-            write_url_sh(new_repo_url, verbose=verbose, debug=debug,)
+            write_url_sh(new_repo_url, verbose=verbose,)
         sh.git.add(old_url_sh)
         del old_url_sh
 
@@ -726,7 +712,7 @@ def rename(ctx,
                      match=old_app_name,
                      replacement=new_app_name,
                      verbose=verbose,
-                     debug=debug,)
+                     )
         #sh.git.add(old_edit_config)
         del old_edit_config
 
@@ -735,7 +721,7 @@ def rename(ctx,
                      match=old_app_name,
                      replacement=new_app_name,
                      verbose=verbose,
-                     debug=debug,)
+                     )
         #sh.git.add(enable_github_sh)
         del enable_github_sh
 
@@ -743,7 +729,7 @@ def rename(ctx,
         replace_match_pairs_in_file(path=old_app_py,
                                     match_pairs=((old_app_name, new_app_name), (old_app_module_name, new_app_module_name),),
                                     verbose=verbose,
-                                    debug=debug,)
+                                    )
         sh.git.add(old_app_py)
         #del old_app_py
 
@@ -752,7 +738,7 @@ def rename(ctx,
                      match=old_app_module_name,
                      replacement=new_app_module_name,
                      verbose=verbose,
-                     debug=debug,)
+                     )
         sh.git.add(old_app_init_py)
         del old_app_init_py
 
@@ -786,7 +772,7 @@ def rename(ctx,
                          match=old_app_module_name,
                          replacement=new_app_module_name,
                          verbose=verbose,
-                         debug=debug,)
+                         )
             sh.git.add(old_ebuild_path)
             new_ebuild_name = Path(new_app_name + '-9999.ebuild')
             sh.git.mv(old_ebuild_path, new_ebuild_name)
@@ -821,7 +807,7 @@ def rename(ctx,
                  match='/' + old_app_module_name + '-',
                  replacement='/' + new_app_module_name + '-',
                  verbose=verbose,
-                 debug=debug,)
+                 )
 
 
 @cli.command('list')
@@ -833,28 +819,26 @@ def rename(ctx,
                               path_type=Path,),
               required=True,)
 @click.option('--ls-remote', is_flag=True)
-@click.option('--verbose', is_flag=True)
-@click.option('--debug', is_flag=True)
+@click_add_options(click_global_options)
 @click.pass_context
 def list_all(ctx,
              apps_folder: Path,
              ls_remote: bool,
-             verbose: bool,
-             debug: bool,
+             verbose: int,
+             verbose_inf: bool,
              ):
 
-    null, end, verbose, debug = nevd(ctx=ctx,
-                                     printn=False,
-                                     ipython=False,
-                                     verbose=verbose,
-                                     debug=debug,)
+    tty, verbose = tv(ctx=ctx,
+                      verbose=verbose,
+                      verbose_inf=verbose_inf,
+                      )
 
     apps_folder = Path(apps_folder)
     ic(apps_folder)
 
     edit_configs = find_edit_configs(apps_folder=apps_folder,
                                      verbose=verbose,
-                                     debug=debug,)
+                                     )
     for config in edit_configs:
         if verbose:
             ic(config)
@@ -886,29 +870,28 @@ def list_all(ctx,
 @click.option('--gentoo-overlay-repo', type=str, required=True)
 @click.option('--local', is_flag=True)
 @click.option('--github-user', type=str, required=True)
-@click.option('--verbose', is_flag=True)
-@click.option('--debug', is_flag=True)
+@click_add_options(click_global_options)
 @click.pass_context
 def check_all(ctx,
               apps_folder: Path,
               gentoo_overlay_repo: str,
               github_user: str,
-              verbose: bool,
-              debug: bool,
+              verbose: int,
+              verbose_inf: bool,
               local: bool,
               ):
 
     not_root()
-    null, end, verbose, debug = nevd(ctx=ctx,
-                                     printn=False,
-                                     ipython=False,
-                                     verbose=verbose,
-                                     debug=debug,)
+    tty, verbose = tv(ctx=ctx,
+                      verbose=verbose,
+                      verbose_inf=verbose_inf,
+                      )
+
     ic(apps_folder)
 
     edit_configs = find_edit_configs(apps_folder=apps_folder,
                                      verbose=verbose,
-                                     debug=debug,)
+                                     )
 
     for edit_config_path in edit_configs:
         ic(edit_config_path)
@@ -917,7 +900,7 @@ def check_all(ctx,
             app_name, app_user, app_module_name, app_path = parse_url(remote,
                                                                       apps_folder=apps_folder,
                                                                       verbose=verbose,
-                                                                      debug=debug,)
+                                                                      )
             if not remote.startswith('git@github.com:'):
                 if app_user == github_user:
                     ic('remote is to', github_user, 'but does not startwith git@github.com:', remote)
@@ -945,7 +928,7 @@ def check_all(ctx,
 @click.option('--apps-folder', type=str, required=True)
 @click.option('--gentoo-overlay-repo', type=str, required=True)
 @click.option('--github-user', type=str, required=True)
-@click.option('--license', type=click.Choice(license_list(verbose=False, debug=False,)), default="ISC")
+@click.option('--license', type=click.Choice(license_list(verbose=False,)), default="ISC")
 @click.option('--owner', type=str, required=True)
 @click.option('--owner-email', type=str, required=True)
 @click.option('--description', type=str, required=True)
@@ -953,8 +936,7 @@ def check_all(ctx,
 @click.option('--rename', type=str)
 @click.option('--hg', is_flag=True)
 @click.option('--use-existing-repo', is_flag=True)
-@click.option('--verbose', is_flag=True)
-@click.option('--debug', is_flag=True)
+@click_add_options(click_global_options)
 @click.pass_context
 def new(ctx,
         language: str,
@@ -972,17 +954,16 @@ def new(ctx,
         description: str,
         local: bool,
         use_existing_repo: bool,
-        verbose: bool,
-        debug: bool,
+        verbose: int,
+        verbose_inf: bool,
         hg: bool,
         ):
 
     not_root()
-    null, end, verbose, debug = nevd(ctx=ctx,
-                                 printn=False,
-                                 ipython=False,
-                                 verbose=verbose,
-                                 debug=debug,)
+    tty, verbose = tv(ctx=ctx,
+                      verbose=verbose,
+                      verbose_inf=verbose_inf,
+                      )
 
     apps_folder = Path(apps_folder)
     ic(apps_folder)
@@ -1006,7 +987,7 @@ def new(ctx,
         _app_name, _app_user, _app_module_name, _app_path = parse_url(repo_url,
                                                                       apps_folder=apps_folder,
                                                                       verbose=verbose,
-                                                                      debug=debug,)
+                                                                      )
         if rename:
             _app_name = rename
         repo_url = 'https://github.com/{github_user}/{app_name}'.format(github_user=github_user, app_name=_app_name)
@@ -1017,7 +998,7 @@ def new(ctx,
     app_name, app_user, app_module_name, app_path = parse_url(repo_url,
                                                               apps_folder=apps_folder,
                                                               verbose=verbose,
-                                                              debug=debug,)
+                                                              )
     ic(app_name)
     ic(app_user)
     assert app_user == github_user
@@ -1048,7 +1029,7 @@ def new(ctx,
                    app_group=group,
                    local=local,
                    verbose=verbose,
-                   debug=debug,)
+                   )
 
     if ((not app_path.exists()) or use_existing_repo):
         if not use_existing_repo:
@@ -1056,7 +1037,7 @@ def new(ctx,
                         app_path=app_path,
                         app_module_name=app_module_name,
                         verbose=verbose,
-                        debug=debug,)
+                        )
         else:
             assert app_path.is_dir()
             assert Path(app_path / Path('.git')).exists()
@@ -1084,7 +1065,7 @@ def new(ctx,
                         fh.write(gitignore_template)
 
                 if not Path('url.sh').exists():
-                    write_url_sh(repo_url, verbose=verbose, debug=debug,)
+                    write_url_sh(repo_url, verbose=verbose,)
 
                 if language == 'python':
                     os.system("fastep")
@@ -1094,7 +1075,7 @@ def new(ctx,
                                                      language=language,
                                                      append_files=templates,
                                                      verbose=ctx.obj['verbose'],
-                                                     debug=ctx.obj['debug'],)
+                                                     )
                 with open(app_module_name + ext, 'x') as fh:
                     fh.write(app_template)
 
@@ -1118,7 +1099,7 @@ def new(ctx,
                               local=local,
                               app_name=app_name,
                               verbose=verbose,
-                              debug=debug,)
+                              )
     else:
         eprint("Not creating new app, {} already exists.".format(app_path))
 
@@ -1157,7 +1138,7 @@ def new(ctx,
                                unique=True,
                                make_new_if_necessary=True,
                                verbose=verbose,
-                               debug=debug,)
+                               )
             sh.ln('-s', ebuild_path / ebuild_name, app_path / ebuild_name)
             sh.git.diff('--exit-code')
             # need to commit any pending ebuild changes here, but that's the wront git message, and it fails if it's unhanged
