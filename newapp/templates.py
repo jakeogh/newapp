@@ -42,7 +42,6 @@ python_app = '''#!/usr/bin/env python3
 # -*- coding: utf8 -*-
 # tab-width:4
 
-# flake8: noqa           # flake8 has no per file settings :(
 # pylint: disable=C0111  # docstrings are always outdated and wrong
 # pylint: disable=C0114  # Missing module docstring (missing-module-docstring)
 # pylint: disable=W0511  # todo is encouraged
@@ -90,12 +89,12 @@ import sys
 import click
 import time
 import sh
+from clicktool import clock_add_options, click_global_options
 from signal import signal, SIGPIPE, SIG_DFL
-signal(SIGPIPE, SIG_DFL)
 from pathlib import Path
 #from with_sshfs import sshfs
 #from with_chdir import chdir
-from asserttool import nevd
+from asserttool import tv
 from asserttool import validate_slice
 from asserttool import eprint, ic
 from asserttool import verify
@@ -139,22 +138,22 @@ from typing import Union
 ##
 ##sys.excepthook = log_uncaught_exceptions
 
+#this should be earlier in the imports, but isort stops working
+signal(SIGPIPE, SIG_DFL)
 
 #@with_plugins(iter_entry_points('click_command_tree'))
 #@click.group()
-#@click.option('--verbose', is_flag=True)
-#@click.option('--debug', is_flag=True)
+#@click_add_options(click_global_options)
 #@click.pass_context
 #def cli(ctx,
-#        verbose: bool,
-#        debug: bool,
+#        verbose: int,
+#        verbose_inf: bool,
 #        ):
 #
-#    null, end, verbose, debug = nevd(ctx=ctx,
-#                                     printn=False,
-#                                     ipython=False,
-#                                     verbose=verbose,
-#                                     debug=debug,)
+#    tty, verbose = tv(ctx=ctx,
+#                      verbose=verbose,
+#                      verbose_inf=verbose_inf,
+#                      )
 
 
 # update setup.py if changing function name
@@ -169,58 +168,20 @@ from typing import Union
                 nargs=1,
                 required=True,)
 @click.argument("slice_syntax", type=validate_slice, nargs=1)
-#@click.option('--add', is_flag=True)
-@click.option('--verbose', is_flag=True)
-@click.option('--debug', is_flag=True)
-@click.option('--simulate', is_flag=True)
 @click.option('--ipython', is_flag=True)
-#@click.option("--progress", is_flag=True)
+#@click_add_options(click_global_options)
 @click.pass_context
 def cli(ctx,
         paths: Optional[tuple[str]],
         sysskel: Path,
-        slice_syntax: str,
         verbose: bool,
-        debug: bool,
-        simulate: bool,
         ipython: bool,
         ):
 
-    null, end, verbose, debug = nevd(ctx=ctx,
-                                     printn=False,
-                                     ipython=False,
-                                     verbose=verbose,
-                                     debug=debug,)
-
-    #progress = False
-    #if (verbose or debug):
-    #    progress = False
-
-    #ctx.obj['end'] = end
-    #ctx.obj['null'] = null
-    #ctx.obj['progress'] = progress
-
-    #global APP_NAME
-    #config, config_mtime = click_read_config(click_instance=click,
-    #                                         app_name=APP_NAME,
-    #                                         verbose=verbose,
-    #                                         debug=debug,)
-    #if verbose:
-    #    ic(config, config_mtime)
-
-    #if add:
-    #    section = "test_section"
-    #    key = "test_key"
-    #    value = "test_value"
-    #    config, config_mtime = click_write_config_entry(click_instance=click,
-    #                                                    app_name=APP_NAME,
-    #                                                    section=section,
-    #                                                    key=key,
-    #                                                    value=value,
-    #                                                    verbose=verbose,
-    #                                                    debug=debug,)
-    #    if verbose:
-    #        ic(config)
+    tty, verbose = tv(ctx=ctx,
+                      verbose=verbose,
+                      verbose_inf=verbose_inf,
+                      )
 
     iterator = paths
     del paths
@@ -247,40 +208,14 @@ def cli(ctx,
             path_bytes_data = fh.read()
 
         if not count:
-            print(path, end=end)
+            output(path, tty=tty, verbose=verbose)
 
     if count:
-        print(index + 1, end=end)
+        output(index + 1, tty=tty, verbose=verbose)
 
 #        if ipython:
 #            import IPython; IPython.embed()
 
-#@cli.command()
-#@click.argument("urls", type=str, nargs=-1)
-#@click.option('--verbose', is_flag=True)
-#@click.option('--debug', is_flag=True)
-#@click.pass_context
-#def some_command(ctx,
-#                 urls,
-#                 verbose: bool,
-#                 debug: bool,
-#                 ):
-#    if verbose:
-#        ctx.obj['verbose'] = verbose
-#    verbose = ctx.obj['verbose']
-#    if debug:
-#        ctx.obj['debug'] = debug
-#    debug = ctx.obj['debug']
-#
-#    iterator = urls
-#    for index, url in enumerate_input(iterator=iterator,
-#                                      null=ctx.obj['null'],
-#                                      progress=ctx.obj['progress'],
-#                                      debug=ctx.obj['debug'],
-#                                      verbose=ctx.obj['verbose'],):
-#
-#        if ctx.obj['verbose']:
-#            ic(index, url)
 
 
 '''
