@@ -1087,7 +1087,7 @@ def new(ctx,
 
             with chdir(app_path):
                 sh.git.add('--all')
-                sh.git.commit('autocomit')
+                sh.git.commit('-m', 'autocomit')
 
         with chdir(app_path):
             with open(".edit_config", 'x') as fh:
