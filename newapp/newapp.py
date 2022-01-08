@@ -117,7 +117,7 @@ def get_url_for_overlay(overlay: str,
                         verbose: bool,
                         ) -> str:
     command = ["eselect", "repository", "list"]
-    command_output = run_command(command, str_output=True)
+    command_output = run_command(command, str_output=True, verbose=verbose,)
     command_output = command_output.split('\n')
     if verbose:
         ic(type(command_output))
