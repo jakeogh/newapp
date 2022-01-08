@@ -89,15 +89,15 @@ import sys
 import click
 import time
 import sh
-from clicktool import clock_add_options, click_global_options
+from clicktool import click_add_options, click_global_options
 from signal import signal, SIGPIPE, SIG_DFL
 from pathlib import Path
 #from with_sshfs import sshfs
 #from with_chdir import chdir
+from printtool import output
 from asserttool import tv
 from asserttool import validate_slice
 from asserttool import eprint, ic
-from asserttool import verify
 from retry_on_exception import retry_on_exception
 from enumerate_input import enumerate_input
 #from collections import defaultdict
@@ -115,6 +115,7 @@ from enumerate_input import enumerate_input
 #from prettytable import PrettyTable
 #output_table = PrettyTable()
 
+from unmp import unmp
 from typing import List
 from typing import Tuple
 from typing import Sequence
@@ -169,7 +170,7 @@ signal(SIGPIPE, SIG_DFL)
                 nargs=1,
                 required=True,)
 @click.option('--ipython', is_flag=True)
-#@click_add_options(click_global_options)
+@click_add_options(click_global_options)
 @click.pass_context
 def cli(ctx,
         paths: Optional[tuple[str]],
