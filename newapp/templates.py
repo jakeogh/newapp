@@ -104,7 +104,7 @@ from enumerate_input import enumerate_input
 #from prettyprinter import cpprint
 #from prettyprinter import install_extras
 #install_extras(['attrs'])
-#from timetool import get_timestamp
+from timetool import get_timestamp
 #from configtool import click_read_config
 #from configtool import click_write_config_entry
 

@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf8 -*-
 
-# flake8: noqa
 # pylint: disable=C0111  # docstrings are always outdated and wrong
 # pylint: disable=W0511  # todo is encouraged
 # pylint: disable=C0301  # line too long
@@ -78,7 +77,7 @@ CONTEXT_SETTINGS = dict(default_map=CFG)
 def replace_text(path: Path,
                  match: str,
                  replacement: str,
-                 verbose: bool,
+                 verbose: int,
                  ) -> None:
 
     if verbose:
@@ -96,12 +95,11 @@ def replace_text(path: Path,
                          )
 
 
-
 def replace_match_pairs_in_file(*,
                                 path: Path,
                                 match_pairs: tuple,
-                                verbose: bool,
-                                ):
+                                verbose: int,
+                                ) -> None:
     assert isinstance(match_pairs, tuple)
     for old_match, new_match in match_pairs:
         if old_match == new_match:
@@ -115,7 +113,7 @@ def replace_match_pairs_in_file(*,
 
 
 def get_url_for_overlay(overlay: str,
-                        verbose: bool,
+                        verbose: int,
                         ) -> str:
     command = ["eselect", "repository", "list"]
     command_output = run_command(command, str_output=True, verbose=verbose,)
@@ -136,20 +134,20 @@ def get_url_for_overlay(overlay: str,
         if repo_name == overlay:
             return repo_url
 
-    raise ValueError('unknown repo {}'.format(overlay))
+    raise ValueError(f'unknown repo {overlay}')
 
 
 def valid_branch(ctx, param, value):
     ic(value)
     branch_check_cmd = "git check-ref-format --branch " + value
     if os.system(branch_check_cmd):
-        raise click.BadParameter('fatal: "{0}" is not a valid branch name'.format(value))
+        raise click.BadParameter(f'fatal: "{value}" is not a valid branch name')
     return value
 
 
 def find_edit_configs(*,
                       apps_folder: Path,
-                      verbose: bool,
+                      verbose: int,
                       ):
 
     edit_configs = []
@@ -172,7 +170,7 @@ def generate_edit_config(*,
         remote = "#"
     else:
         remote = ''
-    remote += '''remote="https://github.com/jakeogh/{}.git"'''.format(package_name)
+    remote += f'''remote="https://github.com/jakeogh/{package_name}.git"'''
 
     optional_blank_remote = ''
     if local:
@@ -180,7 +178,8 @@ def generate_edit_config(*,
     return edit_config.format(package_name=package_name,
                               package_group=package_group,
                               optional_blank_remote=optional_blank_remote,
-                              remote=remote)
+                              remote=remote,
+                              )
 
 
 def generate_setup_py(*,
@@ -248,7 +247,7 @@ def generate_gitignore_template():
 def generate_app_template(package_name: str, *,
                           language: str,
                           append_files: Optional[tuple[Path]],
-                          verbose: bool,
+                          verbose: int,
                           ) -> str:
 
     result = None
@@ -264,7 +263,7 @@ def generate_app_template(package_name: str, *,
 
     if result:
         for file in append_files:
-            with open(file, 'r') as fh:
+            with open(file, 'r', encoding='utf8') as fh:
                 result += fh.read()
         return result
 
@@ -286,7 +285,7 @@ def rename_repo_at_app_path(*,
                             app_group: str,
                             hg: bool,
                             local: bool,
-                            verbose: bool,
+                            verbose: int,
                             ):
     ic(old_name, new_name)
     old_module_name = old_name.replace('-', '_')
@@ -298,7 +297,7 @@ def rename_repo_at_app_path(*,
         if Path(old_name.replace('-', '_')).exists():  # not all apps have a dir here
             sh.git.mv(old_name.replace('-', '_'), new_name)
 
-        with open(".edit_config", 'x') as fh:
+        with open(".edit_config", 'x', encoding='utf8') as fh:
             fh.write(generate_edit_config(package_name=new_name,
                                           package_group=app_group,
                                           local=local,))
@@ -357,9 +356,9 @@ def rename_repo_at_app_path(*,
                 continue
 
             replace_match_pairs_in_file(path=path,
-                                 match_pairs=((old_name, new_name), (old_module_name, new_module_name),),
-                                 verbose=verbose,
-                                 )
+                                        match_pairs=((old_name, new_name), (old_module_name, new_module_name),),
+                                        verbose=verbose,
+                                        )
         sh.git.add('-u')
         sh.git.commit('-m rename')
 
@@ -373,7 +372,7 @@ def clone_repo(*,
                app_group: str,
                hg: bool,
                local: bool,
-               verbose: bool,
+               verbose: int,
                ):
 
     app_name, app_user, _, _ = parse_url(repo_url, apps_folder=apps_folder, verbose=verbose,)
@@ -414,7 +413,7 @@ def create_repo(*,
                 app_path: Path,
                 app_module_name: str,
                 hg: bool,
-                verbose: bool,
+                verbose: int,
                 ):
 
     if hg:
@@ -430,13 +429,13 @@ def remote_add_origin(*,
                       local: bool,
                       app_name: str,
                       hg: bool,
-                      verbose: bool,
+                      verbose: int,
                       ):
 
     if hg:
         raise NotImplementedError('hg')
 
-    repo_config_command = "git remote add origin git@github.com:jakeogh/{}.git".format(app_name)
+    repo_config_command = f"git remote add origin git@github.com:jakeogh/{app_name}.git"
     ic(repo_config_command)
     if not local:
         with chdir(app_path):
@@ -453,14 +452,14 @@ def remote_add_origin(*,
         "\n"]
     enable_github = "\n".join(enable_github)
     output_file = app_path / Path('enable_github.sh')
-    with open(output_file, 'x') as fh:
+    with open(output_file, 'x', encoding='utf8') as fh:
         fh.write(enable_github)
 
 
 def parse_url(repo_url: str,
               *,
               apps_folder: Path,
-              verbose: bool,
+              verbose: int,
               keep_underscore: bool = False,    # for rename
               ):
 
@@ -489,11 +488,12 @@ def parse_url(repo_url: str,
     return app_name, app_user, app_module_name, app_path
 
 
-def write_url_sh(repo_url, *,
-                 verbose: bool,
+def write_url_sh(repo_url,
+                 *,
+                 verbose: int,
                  ):
     url_template = generate_url_template(url=repo_url)
-    with open("url.sh", 'x') as fh:
+    with open("url.sh", 'x', encoding='utf8') as fh:
         fh.write(url_template)
     sh.chmod('+x', 'url.sh')
 
@@ -778,16 +778,16 @@ def rename(ctx,
                          )
             sh.git.add(old_ebuild_path)
             new_ebuild_name = Path(new_app_name + '-9999.ebuild')
-            sh.git.mv(old_ebuild_path, new_ebuild_name)
+            sh.git.mv('-v', old_ebuild_path, new_ebuild_name, _out=sys.stdout, _err=sys.stderr,)
             sh.git.add(new_ebuild_name)
             sh.git.commit('-m', 'rename')
             del old_ebuild_path
 
         with chdir(old_ebuild_dir.parent):
             # in ebuild parent folder
-            sh.mv(old_app_name, new_app_name, '-v')
+            sh.mv('-v', old_app_name, new_app_name, _out=sys.stdout, _err=sys.stderr,)
             new_ebuild_path = Path(new_app_name / new_ebuild_name).resolve()
-            sh.git.commit('-m', 'rename', _ok_code=[0, 1])
+            sh.git.commit('-m', 'rename', _ok_code=[0, 1], _out=sys.stdout, _err=sys.stderr,)
             sh.git.push()
 
         with chdir(old_app_path):
@@ -804,7 +804,7 @@ def rename(ctx,
             sh.git.push(_ok_code=[0, 128])
 
     with chdir(apps_folder):
-        sh.mv(old_app_path, new_app_path, '-v')
+        sh.mv('-v', old_app_path, new_app_path, _out=sys.stdout, _err=sys.stderr,)
 
     replace_text(path=Path('/etc/portage/package.accept_keywords'),
                  match='/' + old_app_module_name + '-',
@@ -971,10 +971,8 @@ def new(ctx,
     apps_folder = Path(apps_folder)
     ic(apps_folder)
 
-    templates = [t.resolve() for t in templates]
-
-    #if template:
-    #    template = Path(template).resolve()
+    if templates:
+        templates = [t.resolve() for t in templates]
 
     if repo_url.endswith('.git'):
         repo_url = repo_url[:-4]
