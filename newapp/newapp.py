@@ -24,6 +24,7 @@
 import os
 import shutil
 import sys
+from datetime import date
 from math import inf
 from pathlib import Path
 from typing import Optional
@@ -231,7 +232,9 @@ def generate_ebuild_template(*,
                            inherit_python=inherit_python,
                            depend_python=rdepend_python,
                            homepage=homepage,
-                           app_path=app_path,)
+                           app_path=app_path,
+                           year=str(date.today().year),
+                           )
 
     if enable_dobin:
         result += generate_src_install_dobin_template(app_name)
