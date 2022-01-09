@@ -240,7 +240,7 @@ DEPEND="${RDEPEND}"
 '''
 
 
-ebuild = '''# Copyright 1999-2021 Gentoo Authors
+ebuild = '''# Copyright 1999-{year} Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
