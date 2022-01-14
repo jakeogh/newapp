@@ -125,6 +125,8 @@ from typing import ByteString
 from typing import Optional
 from typing import Union
 
+sh.mv = None  # use sh.busybox('mv'), coreutils ignores stdin read errors
+
 # click-command-tree
 #from click_plugins import with_plugins
 #from pkg_resources import iter_entry_points
@@ -187,16 +189,11 @@ def cli(ctx,
 
     if paths:
         iterator = paths
-        del paths
     else:
         iterator = unmp(valid_types=[bytes,], verbose=verbose)
+    del paths
 
     index = 0
-    #for index, path in enumerate_input(iterator=iterator,
-    #                                   dont_decode=True,  # paths are bytes
-    #                                   progress=False,
-    #                                   verbose=verbose,
-    #                                   ):
     for index, path in enumerate(iterator):
         path = Path(os.fsdecode(path))
 
