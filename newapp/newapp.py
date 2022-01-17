@@ -39,6 +39,7 @@ from clicktool import click_add_options
 from clicktool import click_global_options
 from configtool import click_read_config
 from getdents import files
+from getdents import files_pathlib
 from getdents import paths
 from licenseguesser import license_list
 from pathtool import write_line_to_file
@@ -58,6 +59,8 @@ from .templates import python_app
 from .templates import setup_py
 from .templates import src_install_dobin
 from .templates import zig_app
+
+sh.mv = None
 
 CFG, CONFIG_MTIME = click_read_config(click_instance=click,
                                       app_name='newapp',
@@ -151,9 +154,8 @@ def find_edit_configs(*,
                       ):
 
     edit_configs = []
-    for path in files(apps_folder, verbose=verbose,):
-        if path.name == b'.edit_config':
-            path = Path(path)  # Dent -> Path
+    for path in files_pathlib(apps_folder, verbose=verbose,):
+        if path.name == '.edit_config':
             edit_configs.append(path)
 
     edit_configs = sorted(edit_configs)
@@ -785,7 +787,7 @@ def rename(ctx,
 
         with chdir(old_ebuild_dir.parent):
             # in ebuild parent folder
-            sh.mv('-v', old_app_name, new_app_name, _out=sys.stdout, _err=sys.stderr,)
+            sh.busybox.mv('-v', old_app_name, new_app_name, _out=sys.stdout, _err=sys.stderr,)
             new_ebuild_path = Path(new_app_name / new_ebuild_name).resolve()
             sh.git.commit('-m', 'rename', _ok_code=[0, 1], _out=sys.stdout, _err=sys.stderr,)
             sh.git.push()
@@ -804,7 +806,7 @@ def rename(ctx,
             sh.git.push(_ok_code=[0, 128])
 
     with chdir(apps_folder):
-        sh.mv('-v', old_app_path, new_app_path, _out=sys.stdout, _err=sys.stderr,)
+        sh.busybox.mv('-v', old_app_path, new_app_path, _out=sys.stdout, _err=sys.stderr,)
 
     replace_text(path=Path('/etc/portage/package.accept_keywords'),
                  match='/' + old_app_module_name + '-',
