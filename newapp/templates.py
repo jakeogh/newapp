@@ -80,6 +80,7 @@ python_app = '''#!/usr/bin/env python3
 #   expicit loop control is better than while (condition):
 #       while True:
 #           # continue/break explicit logic
+#   only computer generated commit messages _should_ start with a cap letter
 
 
 # TODO:
@@ -145,7 +146,7 @@ sh.mv = None  # use sh.busybox('mv'), coreutils ignores stdin read errors
 signal(SIGPIPE, SIG_DFL)
 
 #@with_plugins(iter_entry_points('click_command_tree'))
-#@click.group()
+#@click.group(no_args_is_help=True)
 #@click_add_options(click_global_options)
 #@click.pass_context
 #def cli(ctx,
@@ -175,7 +176,7 @@ signal(SIGPIPE, SIG_DFL)
 @click_add_options(click_global_options)
 @click.pass_context
 def cli(ctx,
-        paths: Optional[tuple[str]],
+        paths: tuple[str],
         sysskel: Path,
         ipython: bool,
         verbose: int,
@@ -246,6 +247,7 @@ PYTHON_COMPAT=( python3_{{8..10}} )
 inherit git-r3
 {inherit_python}
 #inherit xdg
+#DISTUTILS_USE_SETUPTOOLS=pyproject.toml
 
 DESCRIPTION="{description}"
 HOMEPAGE="{homepage}"
