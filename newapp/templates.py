@@ -91,6 +91,7 @@ import click
 import time
 import sh
 from clicktool import click_add_options, click_global_options
+from click_auto_help import AHMixin
 from signal import signal, SIGPIPE, SIG_DFL
 from pathlib import Path
 #from with_sshfs import sshfs
@@ -146,7 +147,7 @@ sh.mv = None  # use sh.busybox('mv'), coreutils ignores stdin read errors
 signal(SIGPIPE, SIG_DFL)
 
 #@with_plugins(iter_entry_points('click_command_tree'))
-#@click.group(no_args_is_help=True)
+#@click.group(no_args_is_help=True, cls=AHMixin)
 #@click_add_options(click_global_options)
 #@click.pass_context
 #def cli(ctx,
