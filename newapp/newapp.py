@@ -155,7 +155,10 @@ def find_edit_configs(*,
                       ):
 
     edit_configs = []
-    for path in files_pathlib(apps_folder, verbose=verbose,):
+    for path in files_pathlib(apps_folder,
+                              verbose=verbose,
+                              max_depth=1,
+                              ):
         if path.name == '.edit_config':
             edit_configs.append(path)
 
