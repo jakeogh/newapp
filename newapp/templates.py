@@ -96,12 +96,12 @@ from signal import signal, SIGPIPE, SIG_DFL
 from pathlib import Path
 #from with_sshfs import sshfs
 #from with_chdir import chdir
-from printtool import output
+from mptool import output
 from asserttool import tv
 from asserttool import validate_slice
 from asserttool import eprint, ic
 from retry_on_exception import retry_on_exception
-from enumerate_input import enumerate_input
+#from enumerate_input import enumerate_input
 #from collections import defaultdict
 #from prettyprinter import cpprint
 #from prettyprinter import install_extras
@@ -151,7 +151,7 @@ signal(SIGPIPE, SIG_DFL)
 #@click_add_options(click_global_options)
 #@click.pass_context
 #def cli(ctx,
-#        verbose: int,
+#        verbose: Union[bool, int, float],
 #        verbose_inf: bool,
 #        ):
 #
@@ -180,7 +180,7 @@ def cli(ctx,
         paths: tuple[str],
         sysskel: Path,
         ipython: bool,
-        verbose: int,
+        verbose: Union[bool, int, float],
         verbose_inf: bool,
         ):
 
