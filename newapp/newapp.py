@@ -898,7 +898,7 @@ def list_all_paths(ctx,
     for config in edit_configs:
         if verbose:
             ic(config)
-        output(config.parent.as_posix(), tty=tty, verbose=verbose,)
+        output(os.fsencode(config.parent.as_posix()), tty=tty, verbose=verbose,)
 
 
 @cli.command()
