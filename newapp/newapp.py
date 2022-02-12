@@ -42,6 +42,7 @@ from getdents import files
 from getdents import files_pathlib
 from getdents import paths
 from licenseguesser import license_list
+from mptool import output
 from pathtool import write_line_to_file
 from portagetool import portage_categories
 from replace_text import replace_text_in_file
@@ -78,16 +79,16 @@ CONTEXT_SETTINGS = dict(default_map=CFG)
 
 
 def replace_text(path: Path,
-                 match: str,
+                 str_to_match: str,
                  replacement: str,
                  verbose: int,
                  ) -> None:
 
     if verbose:
-        ic(match, replacement)
+        ic(str_to_match, replacement)
 
     replace_text_in_file(path=path,
-                         match=match.encode('utf8'),
+                         bytes_to_match=str_to_match.encode('utf8'),
                          replacement=replacement.encode('utf8'),
                          output_fh=None,
                          read_mode='rb',
@@ -109,7 +110,7 @@ def replace_match_pairs_in_file(*,
             continue
         ic(path, old_match, new_match)
         replace_text(path=path,
-                     match=old_match,
+                     str_to_match=old_match,
                      replacement=new_match,
                      verbose=verbose,
                      )
@@ -703,7 +704,7 @@ def rename(ctx,
         old_url_sh = old_app_path / Path('url.sh')
         try:
             replace_text(path=old_url_sh,
-                         match=old_app_name,
+                         str_to_match=old_app_name,
                          replacement=new_app_name,
                          verbose=verbose,
                          )
@@ -714,7 +715,7 @@ def rename(ctx,
 
         old_edit_config = old_app_path / Path('.edit_config')
         replace_text(path=old_edit_config,
-                     match=old_app_name,
+                     str_to_match=old_app_name,
                      replacement=new_app_name,
                      verbose=verbose,
                      )
@@ -723,7 +724,7 @@ def rename(ctx,
 
         enable_github_sh = old_app_path / Path('enable_github.sh')
         replace_text(path=enable_github_sh,
-                     match=old_app_name,
+                     str_to_match=old_app_name,
                      replacement=new_app_name,
                      verbose=verbose,
                      )
@@ -740,7 +741,7 @@ def rename(ctx,
 
         old_app_init_py = old_app_path / old_app_module_name / Path('__init__.py')
         replace_text(path=old_app_init_py,
-                     match=old_app_module_name,
+                     str_to_match=old_app_module_name,
                      replacement=new_app_module_name,
                      verbose=verbose,
                      )
@@ -774,7 +775,7 @@ def rename(ctx,
             # in ebuild folder
             old_ebuild_path = Path(old_app_name + '-9999.ebuild').resolve()
             replace_text(path=old_ebuild_path,
-                         match=old_app_module_name,
+                         str_to_match=old_app_module_name,
                          replacement=new_app_module_name,
                          verbose=verbose,
                          )
@@ -809,7 +810,7 @@ def rename(ctx,
         sh.busybox.mv('-v', old_app_path, new_app_path, _out=sys.stdout, _err=sys.stderr,)
 
     replace_text(path=Path('/etc/portage/package.accept_keywords'),
-                 match='/' + old_app_module_name + '-',
+                 str_to_match='/' + old_app_module_name + '-',
                  replacement='/' + new_app_module_name + '-',
                  verbose=verbose,
                  )
@@ -859,9 +860,9 @@ def list_all(ctx,
                 except sh.ErrorReturnCode_128:
                     return_code = 128
 
-            print(return_code, config.parent.name)
+            output((return_code, config.parent.name), tty=tty, verbose=verbose,)
         else:
-            print(config.parent.name)
+            output(config.parent.name, tty=tty, verbose=verbose,)
 
 
 @cli.command()
