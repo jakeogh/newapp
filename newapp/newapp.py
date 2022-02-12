@@ -865,6 +865,39 @@ def list_all(ctx,
             output(config.parent.name, tty=tty, verbose=verbose,)
 
 
+@cli.command('list-paths')
+@click.option('--apps-folder',
+              type=click.Path(exists=True,
+                              dir_okay=True,
+                              file_okay=False,
+                              allow_dash=False,
+                              path_type=Path,),
+              required=True,)
+@click_add_options(click_global_options)
+@click.pass_context
+def list_all_paths(ctx,
+                   apps_folder: Path,
+                   verbose: int,
+                   verbose_inf: bool,
+                   ):
+
+    tty, verbose = tv(ctx=ctx,
+                      verbose=verbose,
+                      verbose_inf=verbose_inf,
+                      )
+
+    apps_folder = Path(apps_folder)
+    ic(apps_folder)
+
+    edit_configs = find_edit_configs(apps_folder=apps_folder,
+                                     verbose=verbose,
+                                     )
+    for config in edit_configs:
+        if verbose:
+            ic(config)
+        output(config.parent, tty=tty, verbose=verbose,)
+
+
 @cli.command()
 @click.option('--apps-folder',
               type=click.Path(exists=True,
