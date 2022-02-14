@@ -31,13 +31,13 @@ from urllib.parse import urlparse
 
 import click
 import sh
-from asserttool import eprint
 from asserttool import ic
 from asserttool import not_root
-from asserttool import tv
 from clicktool import click_add_options
 from clicktool import click_global_options
+from clicktool import tv
 from configtool import click_read_config
+from eprint import eprint
 from getdents import files
 from getdents import files_pathlib
 from getdents import paths
