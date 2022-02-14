@@ -46,7 +46,6 @@ from mptool import output
 from pathtool import write_line_to_file
 from portagetool import portage_categories
 from replace_text import replace_text_in_file
-from run_command import run_command
 from with_chdir import chdir
 
 from .templates import bash_app
@@ -119,12 +118,11 @@ def replace_match_pairs_in_file(*,
 def get_url_for_overlay(overlay: str,
                         verbose: int,
                         ) -> str:
-    command = ["eselect", "repository", "list"]
-    command_output = run_command(command, str_output=True, verbose=verbose,)
-    command_output = command_output.split('\n')
+
+    command = sh.eselect('repository', "list")
+    command_output = command.stdout.split('\n')
     if verbose:
-        ic(type(command_output))
-        ic(command_output)
+        ic(type(command_output), command_output)
 
     for line in command_output[1:]:
         if verbose:

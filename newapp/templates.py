@@ -119,12 +119,12 @@ from timetool import get_timestamp
 #output_table = PrettyTable()
 
 from unmp import unmp
-from typing import List
-from typing import Tuple
+#from typing import List
+#from typing import Tuple
 from typing import Sequence
-from typing import Generator
+#from typing import Generator
 from typing import Iterable
-from typing import ByteString
+#from typing import ByteString
 from typing import Optional
 from typing import Union
 
