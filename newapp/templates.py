@@ -97,9 +97,10 @@ from pathlib import Path
 #from with_sshfs import sshfs
 #from with_chdir import chdir
 from mptool import output
-from asserttool import tv
+from clicktool import tv
 from asserttool import validate_slice
-from asserttool import eprint, ic
+from eprint import eprint
+from asserttool import ic
 from retry_on_exception import retry_on_exception
 #from enumerate_input import enumerate_input
 #from collections import defaultdict
@@ -153,7 +154,7 @@ signal(SIGPIPE, SIG_DFL)
 #def cli(ctx,
 #        verbose: Union[bool, int, float],
 #        verbose_inf: bool,
-#        ):
+#        ) -> None:
 #
 #    tty, verbose = tv(ctx=ctx,
 #                      verbose=verbose,
@@ -182,7 +183,7 @@ def cli(ctx,
         ipython: bool,
         verbose: Union[bool, int, float],
         verbose_inf: bool,
-        ):
+        ) -> None:
 
     tty, verbose = tv(ctx=ctx,
                       verbose=verbose,
@@ -206,9 +207,6 @@ def cli(ctx,
         #        ic(count)
         #        sys.exit(0)
 
-        #if simulate:
-        #    continue
-
         with open(path, 'rb') as fh:
             path_bytes_data = fh.read()
 
@@ -220,7 +218,6 @@ def cli(ctx,
 
 #        if ipython:
 #            import IPython; IPython.embed()
-
 
 
 '''
