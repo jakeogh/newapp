@@ -178,7 +178,7 @@ signal(SIGPIPE, SIG_DFL)
 @click_add_options(click_global_options)
 @click.pass_context
 def cli(ctx,
-        paths: tuple[str],
+        paths: Sequence[str],
         sysskel: Path,
         ipython: bool,
         verbose: Union[bool, int, float],

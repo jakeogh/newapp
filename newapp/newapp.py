@@ -27,6 +27,7 @@ from datetime import date
 from math import inf
 from pathlib import Path
 from typing import Optional
+from typing import Sequence
 from urllib.parse import urlparse
 
 import click
@@ -45,6 +46,7 @@ from licenseguesser import license_list
 from mptool import output
 from pathtool import write_line_to_file
 from portagetool import portage_categories
+from portagetool import resolve_package_name
 from replace_text import replace_text_in_file
 from with_chdir import chdir
 
@@ -194,7 +196,8 @@ def generate_setup_py(*,
                       owner: str,
                       owner_email: str,
                       description: str,
-                      ):
+                      dependencies: Sequence[str],
+                      ) -> str:
 
     ic(url,
        package_name,
@@ -224,7 +227,8 @@ def generate_ebuild_template(*,
                              homepage: str,
                              app_path: Path,
                              app_name: str,
-                             ):
+                             dependencies: Sequence[str],
+                             ) -> str:
     ic(enable_python)
     inherit_python = ''
     rdepend_python = ''
@@ -250,7 +254,7 @@ def generate_gitignore_template():
 
 def generate_app_template(package_name: str, *,
                           language: str,
-                          append_files: Optional[tuple[Path]],
+                          append_files: Sequence[Path],
                           verbose: int,
                           ) -> str:
 
@@ -261,9 +265,6 @@ def generate_app_template(package_name: str, *,
         result = bash_app.format(package_name=package_name, newline="\\n", null="\\x00")
     if language == 'zig':
         result = zig_app.format(package_name=package_name, newline="\\n", null="\\x00")
-
-    if append_files is None:
-        append_files = ()
 
     if result:
         for file in append_files:
@@ -509,6 +510,7 @@ def write_setup_py(*,
                    owner: str,
                    owner_email: str,
                    description: str,
+                   dependencies: Sequence[str],
                    license: str,
                    repo_url: str,
                    ):
@@ -517,12 +519,13 @@ def write_setup_py(*,
         if Path('setup.py').exists():
             return
 
-    with open("setup.py", 'x') as fh:
+    with open("setup.py", 'x', encoding='utf8') as fh:
         fh.write(generate_setup_py(package_name=app_module_name,
                                    command=app_name,
                                    owner=owner,
                                    owner_email=owner_email,
                                    description=description,
+                                   dependencies=dependencies,
                                    license=license,
                                    url=repo_url,))
 
@@ -534,8 +537,10 @@ def cli(ctx,
         verbose: int,
         verbose_inf: bool,
         ):
-    ctx.ensure_object(dict)
-    ctx.obj['verbose'] = verbose
+    tty, verbose = tv(ctx=ctx,
+                      verbose=verbose,
+                      verbose_inf=verbose_inf,
+                      )
 
 
 @cli.command()
@@ -543,7 +548,7 @@ def cli(ctx,
 def template_pylint(ctx):
     app_template = generate_app_template('TEMP',
                                          language='python',
-                                         append_files=None,
+                                         append_files=(),
                                          verbose=ctx.obj['verbose'],
                                          )
     for line in app_template.splitlines():
@@ -592,9 +597,10 @@ def nineify(ctx, app):
 def template_python(ctx,
                     package_name: str,
                     ):
+
     app_template = generate_app_template(package_name,
                                          language='python',
-                                         append_files=None,
+                                         append_files=(),
                                          verbose=ctx.obj['verbose'],
                                          )
     print(app_template)
@@ -609,7 +615,7 @@ def template_bash(ctx,
 
     app_template = generate_app_template(package_name,
                                          language='bash',
-                                         append_files=None,
+                                         append_files=(),
                                          verbose=ctx.obj['verbose'],
                                          )
     print(app_template)
@@ -624,7 +630,7 @@ def template_zig(ctx,
 
     app_template = generate_app_template(package_name,
                                          language='zig',
-                                         append_files=None,
+                                         append_files=(),
                                          verbose=ctx.obj['verbose'],
                                          )
     print(app_template)
@@ -965,6 +971,10 @@ def check_all(ctx,
                               path_type=Path,),
               required=False,
               multiple=True,)
+@click.option("--depend", 'dependencies',
+              type=str,
+              required=False,
+              multiple=True,)
 @click.option('--apps-folder', type=str, required=True)
 @click.option('--gentoo-overlay-repo', type=str, required=True)
 @click.option('--github-user', type=str, required=True)
@@ -984,7 +994,8 @@ def new(ctx,
         group: str,
         branch: str,
         rename: Optional[str],
-        templates: Optional[tuple[Path]],
+        templates: Sequence[Path],
+        dependencies: Sequence[str],
         apps_folder: str,
         gentoo_overlay_repo: str,
         github_user: str,
@@ -1011,6 +1022,9 @@ def new(ctx,
     if templates:
         templates = [t.resolve() for t in templates]
 
+    if dependencies:
+        dependencies = [resolve_package_name(dependency, verbose=verbose) for dependency in dependencies]
+
     if repo_url.endswith('.git'):
         repo_url = repo_url[:-4]
 
@@ -1020,7 +1034,7 @@ def new(ctx,
     assert repo_url.startswith('https://')
 
     template_repo_url: Optional[str] = None
-    if not repo_url.startswith('https://github.com/{}/'.format(github_user)):
+    if not repo_url.startswith(f'https://github.com/{github_user}/'):
         template_repo_url = repo_url
         _app_name, _app_user, _app_module_name, _app_path = parse_url(repo_url,
                                                                       apps_folder=apps_folder,
@@ -1028,7 +1042,7 @@ def new(ctx,
                                                                       )
         if rename:
             _app_name = rename
-        repo_url = 'https://github.com/{github_user}/{app_name}'.format(github_user=github_user, app_name=_app_name)
+        repo_url = f'https://github.com/{github_user}/{_app_name}'
         del _app_name, _app_user, _app_module_name, _app_path
     else:
         template_repo_url = None
@@ -1091,6 +1105,7 @@ def new(ctx,
                                    owner=owner,
                                    owner_email=owner_email,
                                    description=description,
+                                   dependencies=dependencies,
                                    license=license,
                                    repo_url=repo_url,)
 
@@ -1162,6 +1177,7 @@ def new(ctx,
                                                   enable_python=enable_python,
                                                   enable_dobin=enable_dobin,
                                                   homepage=repo_url,
+                                                  dependencies=dependencies,
                                                   app_path=app_path,))
             sh.git.add(ebuild_name)
             sh.ebuild(ebuild_name,  'manifest')
