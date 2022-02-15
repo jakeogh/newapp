@@ -28,6 +28,7 @@ from math import inf
 from pathlib import Path
 from typing import Optional
 from typing import Sequence
+from typing import Union
 from urllib.parse import urlparse
 
 import click
@@ -82,7 +83,7 @@ CONTEXT_SETTINGS = dict(default_map=CFG)
 def replace_text(path: Path,
                  str_to_match: str,
                  replacement: str,
-                 verbose: int,
+                 verbose: Union[bool, int, float],
                  ) -> None:
 
     if verbose:
@@ -103,7 +104,7 @@ def replace_text(path: Path,
 def replace_match_pairs_in_file(*,
                                 path: Path,
                                 match_pairs: tuple,
-                                verbose: int,
+                                verbose: Union[bool, int, float],
                                 ) -> None:
     assert isinstance(match_pairs, tuple)
     for old_match, new_match in match_pairs:
@@ -118,7 +119,7 @@ def replace_match_pairs_in_file(*,
 
 
 def get_url_for_overlay(overlay: str,
-                        verbose: int,
+                        verbose: Union[bool, int, float],
                         ) -> str:
 
     command = sh.eselect('repository', "list")
@@ -151,7 +152,7 @@ def valid_branch(ctx, param, value):
 
 def find_edit_configs(*,
                       apps_folder: Path,
-                      verbose: int,
+                      verbose: Union[bool, int, float],
                       ):
 
     edit_configs = []
@@ -255,7 +256,7 @@ def generate_gitignore_template():
 def generate_app_template(package_name: str, *,
                           language: str,
                           append_files: Sequence[Path],
-                          verbose: int,
+                          verbose: Union[bool, int, float],
                           ) -> str:
 
     result = None
@@ -290,7 +291,7 @@ def rename_repo_at_app_path(*,
                             app_group: str,
                             hg: bool,
                             local: bool,
-                            verbose: int,
+                            verbose: Union[bool, int, float],
                             ):
     ic(old_name, new_name)
     old_module_name = old_name.replace('-', '_')
@@ -377,7 +378,7 @@ def clone_repo(*,
                app_group: str,
                hg: bool,
                local: bool,
-               verbose: int,
+               verbose: Union[bool, int, float],
                ):
 
     app_name, app_user, _, _ = parse_url(repo_url, apps_folder=apps_folder, verbose=verbose,)
@@ -418,7 +419,7 @@ def create_repo(*,
                 app_path: Path,
                 app_module_name: str,
                 hg: bool,
-                verbose: int,
+                verbose: Union[bool, int, float],
                 ):
 
     if hg:
@@ -434,7 +435,7 @@ def remote_add_origin(*,
                       local: bool,
                       app_name: str,
                       hg: bool,
-                      verbose: int,
+                      verbose: Union[bool, int, float],
                       ):
 
     if hg:
@@ -464,7 +465,7 @@ def remote_add_origin(*,
 def parse_url(repo_url: str,
               *,
               apps_folder: Path,
-              verbose: int,
+              verbose: Union[bool, int, float],
               keep_underscore: bool = False,    # for rename
               ):
 
@@ -495,7 +496,7 @@ def parse_url(repo_url: str,
 
 def write_url_sh(repo_url,
                  *,
-                 verbose: int,
+                 verbose: Union[bool, int, float],
                  ):
     url_template = generate_url_template(url=repo_url)
     with open("url.sh", 'x', encoding='utf8') as fh:
@@ -534,7 +535,7 @@ def write_setup_py(*,
 @click_add_options(click_global_options)
 @click.pass_context
 def cli(ctx,
-        verbose: int,
+        verbose: Union[bool, int, float],
         verbose_inf: bool,
         ):
     tty, verbose = tv(ctx=ctx,
@@ -544,25 +545,13 @@ def cli(ctx,
 
 
 @cli.command()
-@click.pass_context
-def template_pylint(ctx):
-    app_template = generate_app_template('TEMP',
-                                         language='python',
-                                         append_files=(),
-                                         verbose=ctx.obj['verbose'],
-                                         )
-    for line in app_template.splitlines():
-        if line.startswith('# flake8: '):
-            print(line)
-        if line.startswith('# pylint: '):
-            print(line)
-
-
-@cli.command()
 @click.argument('overlay_name', type=str, nargs=1)
+@click_add_options(click_global_options)
 @click.pass_context
 def get_overlay_url(ctx,
                     overlay_name,
+                    verbose: Union[bool, int, float],
+                    verbose_inf: bool,
                     ):
     url = get_url_for_overlay(overlay_name,
                               verbose=ctx.obj['verbose'],
@@ -572,8 +561,17 @@ def get_overlay_url(ctx,
 
 @cli.command()
 @click.argument("app", type=str)
+@click_add_options(click_global_options)
 @click.pass_context
-def nineify(ctx, app):
+def nineify(ctx,
+            app,
+            verbose: Union[bool, int, float],
+            verbose_inf: bool,
+            ):
+    tty, verbose = tv(ctx=ctx,
+                      verbose=verbose,
+                      verbose_inf=verbose_inf,
+                      )
     not_root()
     assert '/' in app
     group, name = app.split('/')
@@ -592,27 +590,65 @@ def nineify(ctx, app):
 
 
 @cli.command()
+@click_add_options(click_global_options)
+@click.pass_context
+def template_pylint(ctx,
+                    verbose: Union[bool, int, float],
+                    verbose_inf: bool,
+                    ):
+
+    tty, verbose = tv(ctx=ctx,
+                      verbose=verbose,
+                      verbose_inf=verbose_inf,
+                      )
+    app_template = generate_app_template('TEMP',
+                                         language='python',
+                                         append_files=(),
+                                         verbose=ctx.obj['verbose'],
+                                         )
+    for line in app_template.splitlines():
+        if line.startswith('# flake8: '):
+            print(line)
+        if line.startswith('# pylint: '):
+            print(line)
+
+
+@cli.command()
 @click.argument("package-name", type=str, default="TESTPACKAGE")
+@click_add_options(click_global_options)
 @click.pass_context
 def template_python(ctx,
                     package_name: str,
+                    verbose: Union[bool, int, float],
+                    verbose_inf: bool,
                     ):
 
+    tty, verbose = tv(ctx=ctx,
+                      verbose=verbose,
+                      verbose_inf=verbose_inf,
+                      )
     app_template = generate_app_template(package_name,
                                          language='python',
                                          append_files=(),
                                          verbose=ctx.obj['verbose'],
                                          )
-    print(app_template)
+    output(app_template, tty=tty, verbose=verbose)
 
 
 @cli.command()
 @click.argument("package-name", type=str, default="TESTPACKAGE")
+@click_add_options(click_global_options)
 @click.pass_context
 def template_bash(ctx,
                   package_name: str,
+                  verbose: Union[bool, int, float],
+                  verbose_inf: bool,
                   ):
 
+    tty, verbose = tv(ctx=ctx,
+                      verbose=verbose,
+                      verbose_inf=verbose_inf,
+                      )
     app_template = generate_app_template(package_name,
                                          language='bash',
                                          append_files=(),
@@ -623,11 +659,18 @@ def template_bash(ctx,
 
 @cli.command()
 @click.argument("package-name", type=str, default="TESTPACKAGE")
+@click_add_options(click_global_options)
 @click.pass_context
 def template_zig(ctx,
                  package_name: str,
+                 verbose: Union[bool, int, float],
+                 verbose_inf: bool,
                  ):
 
+    tty, verbose = tv(ctx=ctx,
+                      verbose=verbose,
+                      verbose_inf=verbose_inf,
+                      )
     app_template = generate_app_template(package_name,
                                          language='zig',
                                          append_files=(),
@@ -655,7 +698,7 @@ def rename(ctx,
            gentoo_overlay_repo,
            github_user,
            local,
-           verbose: int,
+           verbose: Union[bool, int, float],
            verbose_inf: bool,
            hg: bool,
            ):
@@ -837,7 +880,7 @@ def rename(ctx,
 def list_all(ctx,
              apps_folder: Path,
              ls_remote: bool,
-             verbose: int,
+             verbose: Union[bool, int, float],
              verbose_inf: bool,
              ):
 
@@ -884,7 +927,7 @@ def list_all(ctx,
 @click.pass_context
 def list_all_paths(ctx,
                    apps_folder: Path,
-                   verbose: int,
+                   verbose: Union[bool, int, float],
                    verbose_inf: bool,
                    ):
 
@@ -922,7 +965,7 @@ def check_all(ctx,
               apps_folder: Path,
               gentoo_overlay_repo: str,
               github_user: str,
-              verbose: int,
+              verbose: Union[bool, int, float],
               verbose_inf: bool,
               local: bool,
               ):
@@ -1005,7 +1048,7 @@ def new(ctx,
         description: str,
         local: bool,
         use_existing_repo: bool,
-        verbose: int,
+        verbose: Union[bool, int, float],
         verbose_inf: bool,
         hg: bool,
         ):
