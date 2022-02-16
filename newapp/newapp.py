@@ -1225,6 +1225,7 @@ def new(ctx,
             sh.git.add(ebuild_name)
             sh.ebuild(ebuild_name,  'manifest')
             sh.git.add('*')
+            sh.git.add('-u')  # add any unstaged changes (like some other ebuild was deleted)
             os.system("git commit -m 'newapp {}'".format(app_name))
             os.system("git push")
             os.system("sudo emaint sync -A")
