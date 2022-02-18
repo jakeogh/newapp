@@ -1289,7 +1289,10 @@ def delete(ctx,
     ic(app_name, app_user, app_module_name, app_path)
     assert app_user == github_user
     assert '_' not in app_path.name
+    assert app_path.is_dir()
 
+    ebuild_path = Path(gentoo_overlay_repo) / Path(group) / Path(app_name)
+    ic(ebuild_path)
 
 
 ##http://liw.fi/cmdtest/
