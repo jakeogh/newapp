@@ -297,7 +297,7 @@ def rename_repo_at_app_path(*,
     old_module_name = old_name.replace('-', '_')
     new_module_name = old_name.replace('-', '_')
 
-    with chdir(app_path):
+    with chdir(app_path, verbose=verbose,):
         if Path(old_name).exists():  # not all apps have a dir here
             sh.git.mv(old_name, new_name)
         if Path(old_name.replace('-', '_')).exists():  # not all apps have a dir here
@@ -425,7 +425,7 @@ def create_repo(*,
     if hg:
         raise NotImplementedError('hg')
     os.makedirs(app_path, exist_ok=False)
-    with chdir(app_path):
+    with chdir(app_path, verbose=verbose,):
         os.makedirs(app_module_name, exist_ok=False)
         os.system("git init")
 
@@ -444,7 +444,7 @@ def remote_add_origin(*,
     repo_config_command = f"git remote add origin git@github.com:jakeogh/{app_name}.git"
     ic(repo_config_command)
     if not local:
-        with chdir(app_path):
+        with chdir(app_path, verbose=verbose,):
             os.system(repo_config_command)
     else:
         ic('local == True, skipping:', repo_config_command)
@@ -568,6 +568,7 @@ def nineify(ctx,
             verbose: Union[bool, int, float],
             verbose_inf: bool,
             ):
+
     tty, verbose = tv(ctx=ctx,
                       verbose=verbose,
                       verbose_inf=verbose_inf,
@@ -730,7 +731,7 @@ def rename(ctx,
 
     assert group in portage_categories()
 
-    with chdir(old_app_path):
+    with chdir(old_app_path, verbose=verbose,):
         old_setup_py = old_app_path / Path('setup.py')
         replace_match_pairs_in_file(path=old_setup_py,
                                     match_pairs=((old_app_name, new_app_name), (old_app_module_name, new_app_module_name),),
@@ -821,7 +822,7 @@ def rename(ctx,
 
     old_ebuild_dir = old_ebuild_symlink.resolve().parent
     if old_ebuild_symlink.exists():
-        with chdir(old_ebuild_dir):
+        with chdir(old_ebuild_dir, verbose=verbose,):
             # in ebuild folder
             old_ebuild_path = Path(old_app_name + '-9999.ebuild').resolve()
             replace_text(path=old_ebuild_path,
@@ -836,14 +837,14 @@ def rename(ctx,
             sh.git.commit('-m', 'rename')
             del old_ebuild_path
 
-        with chdir(old_ebuild_dir.parent):
+        with chdir(old_ebuild_dir.parent, verbose=verbose,):
             # in ebuild parent folder
             sh.busybox.mv('-v', old_app_name, new_app_name, _out=sys.stdout, _err=sys.stderr,)
             new_ebuild_path = Path(new_app_name / new_ebuild_name).resolve()
             sh.git.commit('-m', 'rename', _ok_code=[0, 1], _out=sys.stdout, _err=sys.stderr,)
             sh.git.push()
 
-        with chdir(old_app_path):
+        with chdir(old_app_path, verbose=verbose,):
             print(sh.ls())
             sh.rm(old_ebuild_symlink.name)
             del old_ebuild_symlink
@@ -856,7 +857,7 @@ def rename(ctx,
             sh.git.remote.rm('origin', _ok_code=[0, 2])
             sh.git.push(_ok_code=[0, 128])
 
-    with chdir(apps_folder):
+    with chdir(apps_folder, verbose=verbose,):
         sh.busybox.mv('-v', old_app_path, new_app_path, _out=sys.stdout, _err=sys.stderr,)
 
     replace_text(path=Path('/etc/portage/package.accept_keywords'),
@@ -903,7 +904,7 @@ def list_all(ctx,
             return_code = None
             if verbose:
                 ic(project_dir)
-            with chdir(project_dir):
+            with chdir(project_dir, verbose=verbose,):
                 try:
                     sh.git('ls-remote')
                     return_code = 0
@@ -984,7 +985,7 @@ def check_all(ctx,
 
     for edit_config_path in edit_configs:
         ic(edit_config_path)
-        with chdir(edit_config_path.parent):
+        with chdir(edit_config_path.parent, verbose=verbose,):
             remote = str(sh.git.remote('get-url', 'origin')).strip()
             app_name, app_user, app_module_name, app_path = parse_url(remote,
                                                                       apps_folder=apps_folder,
@@ -1136,11 +1137,11 @@ def new(ctx,
         else:
             assert app_path.is_dir()
             assert Path(app_path / Path('.git')).exists()
-            with chdir(app_path):
+            with chdir(app_path, verbose=verbose,):
                 os.makedirs(app_module_name, exist_ok=True)
 
         if not template_repo_url:
-            with chdir(app_path):
+            with chdir(app_path, verbose=verbose,):
                 if language == 'python':
                     write_setup_py(use_existing_repo=use_existing_repo,
                                    app_module_name=app_module_name,
@@ -1166,7 +1167,7 @@ def new(ctx,
                 if language == 'python':
                     os.system("fastep")
 
-            with chdir(app_path / app_module_name):
+            with chdir(app_path / app_module_name, verbose=verbose,):
                 app_template = generate_app_template(package_name=app_module_name,
                                                      language=language,
                                                      append_files=templates,
@@ -1181,11 +1182,11 @@ def new(ctx,
                         fh.write(init_template)
                     sh.touch('py.typed')
 
-            with chdir(app_path):
+            with chdir(app_path, verbose=verbose,):
                 sh.git.add('--all')
                 sh.git.commit('-m', 'autocomit')
 
-        with chdir(app_path):
+        with chdir(app_path, verbose=verbose,):
             with open(".edit_config", 'x') as fh:
                 fh.write(generate_edit_config(package_name=app_name,
                                               package_group=group,
@@ -1213,7 +1214,7 @@ def new(ctx,
         enable_dobin = False
         if language in ['bash']:
             enable_dobin = True
-        with chdir(ebuild_path):
+        with chdir(ebuild_path, verbose=verbose,):
             with open(ebuild_name, 'w') as fh:
                 fh.write(generate_ebuild_template(app_name=app_name,
                                                   description=description,
@@ -1251,6 +1252,44 @@ def new(ctx,
     main_py_path = app_path / Path(app_module_name) / Path(app_module_name + ext)
     ic(main_py_path)
     os.system("edittool edit " + main_py_path.as_posix())
+
+
+@cli.command()
+@click.argument('repo_url', type=str, nargs=1)
+@click.argument('group', type=str, nargs=1)
+@click.option('--apps-folder', type=str, required=True)
+@click.option('--gentoo-overlay-repo', type=str, required=True)
+@click.option('--github-user', type=str, required=True)
+@click_add_options(click_global_options)
+@click.pass_context
+def delete(ctx,
+           repo_url: str,
+           group: str,
+           apps_folder: str,
+           gentoo_overlay_repo: str,
+           github_user: str,
+           verbose: Union[bool, int, float],
+           verbose_inf: bool,
+           ):
+
+    not_root()
+    tty, verbose = tv(ctx=ctx,
+                      verbose=verbose,
+                      verbose_inf=verbose_inf,
+                      )
+
+    apps_folder = Path(apps_folder)
+    ic(apps_folder)
+
+
+    app_name, app_user, app_module_name, app_path = parse_url(repo_url,
+                                                              apps_folder=apps_folder,
+                                                              verbose=verbose,
+                                                              )
+    ic(app_name, app_user, app_module_name, app_path)
+    assert app_user == github_user
+    assert '_' not in app_path.name
+
 
 
 ##http://liw.fi/cmdtest/
