@@ -1295,7 +1295,7 @@ def delete(ctx,
     ebuild_path = Path(gentoo_overlay_repo) / Path(group) / Path(app_name)
     ic(ebuild_path)
     recycle_bin = Path('/delme') / Path('deleted_apps') / Path(get_timestamp())
-    recycle_bin.mkdir(exist_ok=False)
+    recycle_bin.mkdir(parents=True, exist_ok=False)
     ic(recycle_bin)
     with chdir(recycle_bin, verbose=verbose,):
         group_path = Path(group)
