@@ -49,6 +49,7 @@ from pathtool import write_line_to_file
 from portagetool import portage_categories
 from portagetool import resolve_package_name
 from replace_text import replace_text_in_file
+from timetool import get_timestamp
 from with_chdir import chdir
 
 from .templates import bash_app
@@ -1293,6 +1294,14 @@ def delete(ctx,
 
     ebuild_path = Path(gentoo_overlay_repo) / Path(group) / Path(app_name)
     ic(ebuild_path)
+    recycle_bin = Path('/delme') / Path('deleted_apps') / Path(get_timestamp())
+    recycle_bin.mkdir(exist_ok=False)
+    ic(recycle_bin)
+    with chdir(recycle_bin, verbose=verbose,):
+        group_path = Path(group)
+        group_path.mkdir(exist_ok=False)
+        sh.busybox.mv(ebuild_path, group_path, _close_stderr=True)
+        sh.busybox.mv(app_path, '.', _close_stderr=True)
 
 
 ##http://liw.fi/cmdtest/
