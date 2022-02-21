@@ -66,65 +66,71 @@ from .templates import zig_app
 
 sh.mv = None
 
-CFG, CONFIG_MTIME = click_read_config(click_instance=click,
-                                      app_name='newapp',
-                                      verbose=False,
-                                      )
+CFG, CONFIG_MTIME = click_read_config(
+    click_instance=click,
+    app_name="newapp",
+    verbose=False,
+)
 
 
 # https://github.com/mitsuhiko/click/issues/441
 CONTEXT_SETTINGS = dict(default_map=CFG)
-    #dict(help_option_names=['--help'],
-    #     terminal_width=shutil.get_terminal_size((80, 20)).columns)
+# dict(help_option_names=['--help'],
+#     terminal_width=shutil.get_terminal_size((80, 20)).columns)
 
 
-#ic(CFG)
+# ic(CFG)
 
 
-def replace_text(path: Path,
-                 str_to_match: str,
-                 replacement: str,
-                 verbose: Union[bool, int, float],
-                 ) -> None:
+def replace_text(
+    path: Path,
+    str_to_match: str,
+    replacement: str,
+    verbose: Union[bool, int, float],
+) -> None:
 
     if verbose:
         ic(str_to_match, replacement)
 
-    replace_text_in_file(path=path,
-                         bytes_to_match=str_to_match.encode('utf8'),
-                         replacement=replacement.encode('utf8'),
-                         output_fh=None,
-                         read_mode='rb',
-                         write_mode='wb',
-                         stdout=False,
-                         remove_match=False,
-                         verbose=verbose,
-                         )
+    replace_text_in_file(
+        path=path,
+        bytes_to_match=str_to_match.encode("utf8"),
+        replacement=replacement.encode("utf8"),
+        output_fh=None,
+        read_mode="rb",
+        write_mode="wb",
+        stdout=False,
+        remove_match=False,
+        verbose=verbose,
+    )
 
 
-def replace_match_pairs_in_file(*,
-                                path: Path,
-                                match_pairs: tuple,
-                                verbose: Union[bool, int, float],
-                                ) -> None:
+def replace_match_pairs_in_file(
+    *,
+    path: Path,
+    match_pairs: tuple,
+    verbose: Union[bool, int, float],
+) -> None:
     assert isinstance(match_pairs, tuple)
     for old_match, new_match in match_pairs:
         if old_match == new_match:
             continue
         ic(path, old_match, new_match)
-        replace_text(path=path,
-                     str_to_match=old_match,
-                     replacement=new_match,
-                     verbose=verbose,
-                     )
+        replace_text(
+            path=path,
+            str_to_match=old_match,
+            replacement=new_match,
+            verbose=verbose,
+        )
 
 
-def get_url_for_overlay(overlay: str,
-                        verbose: Union[bool, int, float],
-                        ) -> str:
+def get_url_for_overlay(
+    overlay: str,
+    verbose: Union[bool, int, float],
+) -> str:
 
-    command = sh.eselect('repository', "list")
-    command_output = command.stdout.split('\n')
+    command = sh.eselect("repository", "list")
+    command_output = command.stdout.split("\n")
     if verbose:
         ic(type(command_output), command_output)
 
@@ -140,7 +146,7 @@ def get_url_for_overlay(overlay: str,
         if repo_name == overlay:
             return repo_url
 
-    raise ValueError(f'unknown repo {overlay}')
+    raise ValueError(f"unknown repo {overlay}")
 
 
 def valid_branch(ctx, param, value):
@@ -151,99 +157,110 @@ def valid_branch(ctx, param, value):
     return value
 
 
-def find_edit_configs(*,
-                      apps_folder: Path,
-                      verbose: Union[bool, int, float],
-                      ):
+def find_edit_configs(
+    *,
+    apps_folder: Path,
+    verbose: Union[bool, int, float],
+):
 
     edit_configs = []
-    for path in files_pathlib(apps_folder,
-                              verbose=verbose,
-                              max_depth=1,
-                              ):
-        if path.name == '.edit_config':
+    for path in files_pathlib(
+        apps_folder,
+        verbose=verbose,
+        max_depth=1,
+    ):
+        if path.name == ".edit_config":
             edit_configs.append(path)
 
     edit_configs = sorted(edit_configs)
     return edit_configs
 
 
-def generate_edit_config(*,
-                         package_name: str,
-                         package_group: str,
-                         local: bool,
-                         ):
+def generate_edit_config(
+    *,
+    package_name: str,
+    package_group: str,
+    local: bool,
+):
 
     if local:
         remote = "#"
     else:
-        remote = ''
+        remote = ""
     remote += f'''remote="https://github.com/jakeogh/{package_name}.git"'''
 
-    optional_blank_remote = ''
+    optional_blank_remote = ""
     if local:
         optional_blank_remote = '''remote=""'''
-    return edit_config.format(package_name=package_name,
-                              package_group=package_group,
-                              optional_blank_remote=optional_blank_remote,
-                              remote=remote,
-                              )
+    return edit_config.format(
+        package_name=package_name,
+        package_group=package_group,
+        optional_blank_remote=optional_blank_remote,
+        remote=remote,
+    )
 
 
-def generate_setup_py(*,
-                      url: str,
-                      package_name: str,
-                      command: str,
-                      license: str,
-                      owner: str,
-                      owner_email: str,
-                      description: str,
-                      dependencies: Sequence[str],
-                      ) -> str:
+def generate_setup_py(
+    *,
+    url: str,
+    package_name: str,
+    command: str,
+    license: str,
+    owner: str,
+    owner_email: str,
+    description: str,
+    dependencies: Sequence[str],
+) -> str:
 
-    ic(url,
-       package_name,
-       command,
-       license,
-       owner,
-       owner_email,
-       description,)
+    ic(
+        url,
+        package_name,
+        command,
+        license,
+        owner,
+        owner_email,
+        description,
+    )
 
-    return setup_py.format(package_name=package_name,
-                           command=command,
-                           url=url,
-                           license=license,
-                           owner=owner,
-                           owner_email=owner_email,
-                           description=description,)
+    return setup_py.format(
+        package_name=package_name,
+        command=command,
+        url=url,
+        license=license,
+        owner=owner,
+        owner_email=owner_email,
+        description=description,
+    )
 
 
 def generate_src_install_dobin_template(app_name):
     return src_install_dobin.format(app_name=app_name)
 
 
-def generate_ebuild_template(*,
-                             description: str,
-                             enable_python: bool,
-                             enable_dobin: bool,
-                             homepage: str,
-                             app_path: Path,
-                             app_name: str,
-                             dependencies: Sequence[str],
-                             ) -> str:
+def generate_ebuild_template(
+    *,
+    description: str,
+    enable_python: bool,
+    enable_dobin: bool,
+    homepage: str,
+    app_path: Path,
+    app_name: str,
+    dependencies: Sequence[str],
+) -> str:
     ic(enable_python)
-    inherit_python = ''
-    rdepend_python = ''
+    inherit_python = ""
+    rdepend_python = ""
     if enable_python:
-        inherit_python = 'inherit distutils-r1'
+        inherit_python = "inherit distutils-r1"
         rdepend_python = depend_python
-    result = ebuild.format(description=description,
-                           inherit_python=inherit_python,
-                           depend_python=rdepend_python,
-                           homepage=homepage,
-                           app_path=app_path,
-                           year=str(date.today().year),
-                           )
+    result = ebuild.format(
+        description=description,
+        inherit_python=inherit_python,
+        depend_python=rdepend_python,
+        homepage=homepage,
+        app_path=app_path,
+        year=str(date.today().year),
+    )
 
     if enable_dobin:
         result += generate_src_install_dobin_template(app_name)
@@ -254,23 +271,27 @@ def generate_gitignore_template():
     return gitignore.format()
 
 
-def generate_app_template(package_name: str, *,
-                          language: str,
-                          append_files: Sequence[Path],
-                          verbose: Union[bool, int, float],
-                          ) -> str:
+def generate_app_template(
+    package_name: str,
+    *,
+    language: str,
+    append_files: Sequence[Path],
+    verbose: Union[bool, int, float],
+) -> str:
 
     result = None
-    if language == 'python':
-        result = python_app.format(package_name=package_name, newline="\\n", null="\\x00")
-    if language == 'bash':
+    if language == "python":
+        result = python_app.format(
+            package_name=package_name, newline="\\n", null="\\x00"
+        )
+    if language == "bash":
         result = bash_app.format(package_name=package_name, newline="\\n", null="\\x00")
-    if language == 'zig':
+    if language == "zig":
         result = zig_app.format(package_name=package_name, newline="\\n", null="\\x00")
 
     if result:
         for file in append_files:
-            with open(file, 'r', encoding='utf8') as fh:
+            with open(file, "r", encoding="utf8") as fh:
                 result += fh.read()
         return result
 
@@ -285,47 +306,59 @@ def generate_init_template(package_name):
     return init.format(package_name=package_name)
 
 
-def rename_repo_at_app_path(*,
-                            app_path: Path,
-                            old_name: str,
-                            new_name: str,
-                            app_group: str,
-                            hg: bool,
-                            local: bool,
-                            verbose: Union[bool, int, float],
-                            ):
+def rename_repo_at_app_path(
+    *,
+    app_path: Path,
+    old_name: str,
+    new_name: str,
+    app_group: str,
+    hg: bool,
+    local: bool,
+    verbose: Union[bool, int, float],
+):
     ic(old_name, new_name)
-    old_module_name = old_name.replace('-', '_')
-    new_module_name = old_name.replace('-', '_')
+    old_module_name = old_name.replace("-", "_")
+    new_module_name = old_name.replace("-", "_")
 
-    with chdir(app_path, verbose=verbose,):
+    with chdir(
+        app_path,
+        verbose=verbose,
+    ):
         if Path(old_name).exists():  # not all apps have a dir here
             sh.git.mv(old_name, new_name)
-        if Path(old_name.replace('-', '_')).exists():  # not all apps have a dir here
-            sh.git.mv(old_name.replace('-', '_'), new_name)
+        if Path(old_name.replace("-", "_")).exists():  # not all apps have a dir here
+            sh.git.mv(old_name.replace("-", "_"), new_name)
 
-        with open(".edit_config", 'x', encoding='utf8') as fh:
-            fh.write(generate_edit_config(package_name=new_name,
-                                          package_group=app_group,
-                                          local=local,))
+        with open(".edit_config", "x", encoding="utf8") as fh:
+            fh.write(
+                generate_edit_config(
+                    package_name=new_name,
+                    package_group=app_group,
+                    local=local,
+                )
+            )
 
         # enable_github.sh needs to be created if this is a remote template
-        remote_add_origin(hg=hg,
-                          app_path=app_path,
-                          local=local,
-                          app_name=new_name,
-                          verbose=verbose,
-                          )
+        remote_add_origin(
+            hg=hg,
+            app_path=app_path,
+            local=local,
+            app_name=new_name,
+            verbose=verbose,
+        )
 
-        all_paths = list(paths(app_path,
-                               verbose=verbose,
-                               ))
-        exclude_path = app_path / Path('.git')
+        all_paths = list(
+            paths(
+                app_path,
+                verbose=verbose,
+            )
+        )
+        exclude_path = app_path / Path(".git")
         for dent in all_paths:
             path = dent.pathlib
-            if path.name.startswith('.'):
+            if path.name.startswith("."):
                 continue
-            if path.parent.name.startswith('.'):
+            if path.parent.name.startswith("."):
                 continue
             if path.as_posix().startswith(exclude_path.as_posix()):
                 continue
@@ -339,53 +372,69 @@ def rename_repo_at_app_path(*,
                 new_path = path.parent / Path(new_path_name)
                 sh.git.mv(path, new_path)
 
-            if old_name.replace('-', '_') in path.name:
+            if old_name.replace("-", "_") in path.name:
                 if path.name == new_name:
                     continue
-                ic(old_name.replace('-', '_'), path.name)
-                new_path_name = path.name.replace(old_name.replace('-', '_'), new_name)
+                ic(old_name.replace("-", "_"), path.name)
+                new_path_name = path.name.replace(old_name.replace("-", "_"), new_name)
                 ic(new_path_name)
                 new_path = path.parent / Path(new_path_name)
                 sh.git.mv(path, new_path)
 
-        all_files = list(files(app_path,
-                               verbose=verbose,
-                               ))
-        exclude_path = app_path / Path('.git')
+        all_files = list(
+            files(
+                app_path,
+                verbose=verbose,
+            )
+        )
+        exclude_path = app_path / Path(".git")
         for dent in all_files:
             ic(dent)
             path = dent.pathlib
-            if path.name.startswith('.'):
+            if path.name.startswith("."):
                 continue
-            if path.parent.name.startswith('.'):
+            if path.parent.name.startswith("."):
                 continue
             if path.as_posix().startswith(exclude_path.as_posix()):
                 continue
 
-            replace_match_pairs_in_file(path=path,
-                                        match_pairs=((old_name, new_name), (old_module_name, new_module_name),),
-                                        verbose=verbose,
-                                        )
-        sh.git.add('-u')
-        sh.git.commit('-m rename')
+            replace_match_pairs_in_file(
+                path=path,
+                match_pairs=(
+                    (old_name, new_name),
+                    (old_module_name, new_module_name),
+                ),
+                verbose=verbose,
+            )
+        sh.git.add("-u")
+        sh.git.commit("-m rename")
 
 
-def clone_repo(*,
-               branch: str,
-               repo_url: str,
-               apps_folder: Path,
-               template_repo_url: str,
-               app_path: Path,
-               app_group: str,
-               hg: bool,
-               local: bool,
-               verbose: Union[bool, int, float],
-               ):
+def clone_repo(
+    *,
+    branch: str,
+    repo_url: str,
+    apps_folder: Path,
+    template_repo_url: str,
+    app_path: Path,
+    app_group: str,
+    hg: bool,
+    local: bool,
+    verbose: Union[bool, int, float],
+):
 
-    app_name, app_user, _, _ = parse_url(repo_url, apps_folder=apps_folder, verbose=verbose,)
+    app_name, app_user, _, _ = parse_url(
+        repo_url,
+        apps_folder=apps_folder,
+        verbose=verbose,
+    )
     rename_cloned_repo = False
     if template_repo_url:
-        template_app_name, template_app_user, _, _ = parse_url(template_repo_url, apps_folder=apps_folder, verbose=verbose,)
+        template_app_name, template_app_user, _, _ = parse_url(
+            template_repo_url,
+            apps_folder=apps_folder,
+            verbose=verbose,
+        )
         repo_to_clone_url = template_repo_url
         if template_app_name != app_name:
             rename_cloned_repo = True
@@ -393,7 +442,7 @@ def clone_repo(*,
         repo_to_clone_url = repo_url
 
     if hg:
-        sh.hg('clone', repo_to_clone_url, str(app_path))
+        sh.hg("clone", repo_to_clone_url, str(app_path))
     else:
         sh.git.clone(repo_to_clone_url, str(app_path))
 
@@ -402,80 +451,93 @@ def clone_repo(*,
         ic(branch_cmd)
         os.system(branch_cmd)
 
-    if not rename_cloned_repo:  # when renaming a template repo, dont want to fork if its one of my repos
+    if (
+        not rename_cloned_repo
+    ):  # when renaming a template repo, dont want to fork if its one of my repos
         git_fork_cmd = "hub fork"
         os.system(git_fork_cmd)
     else:
-        rename_repo_at_app_path(app_path=app_path,
-                                app_group=app_group,
-                                local=local,
-                                hg=hg,
-                                old_name=template_app_name,
-                                new_name=app_name,
-                                verbose=verbose,
-                                )
+        rename_repo_at_app_path(
+            app_path=app_path,
+            app_group=app_group,
+            local=local,
+            hg=hg,
+            old_name=template_app_name,
+            new_name=app_name,
+            verbose=verbose,
+        )
 
 
-def create_repo(*,
-                app_path: Path,
-                app_module_name: str,
-                hg: bool,
-                verbose: Union[bool, int, float],
-                ):
+def create_repo(
+    *,
+    app_path: Path,
+    app_module_name: str,
+    hg: bool,
+    verbose: Union[bool, int, float],
+):
 
     if hg:
-        raise NotImplementedError('hg')
+        raise NotImplementedError("hg")
     os.makedirs(app_path, exist_ok=False)
-    with chdir(app_path, verbose=verbose,):
+    with chdir(
+        app_path,
+        verbose=verbose,
+    ):
         os.makedirs(app_module_name, exist_ok=False)
         os.system("git init")
 
 
-def remote_add_origin(*,
-                      app_path: Path,
-                      local: bool,
-                      app_name: str,
-                      hg: bool,
-                      verbose: Union[bool, int, float],
-                      ):
+def remote_add_origin(
+    *,
+    app_path: Path,
+    local: bool,
+    app_name: str,
+    hg: bool,
+    verbose: Union[bool, int, float],
+):
 
     if hg:
-        raise NotImplementedError('hg')
+        raise NotImplementedError("hg")
 
     repo_config_command = f"git remote add origin git@github.com:jakeogh/{app_name}.git"
     ic(repo_config_command)
     if not local:
-        with chdir(app_path, verbose=verbose,):
+        with chdir(
+            app_path,
+            verbose=verbose,
+        ):
             os.system(repo_config_command)
     else:
-        ic('local == True, skipping:', repo_config_command)
+        ic("local == True, skipping:", repo_config_command)
 
     enable_github = [
         "#!/bin/sh",
-        'hub create {}'.format('jakeogh/' + app_name),
+        "hub create {}".format("jakeogh/" + app_name),
         repo_config_command,
-        'git push --set-upstream origin master',
-        'touch .push_enabled',
-        "\n"]
+        "git push --set-upstream origin master",
+        "touch .push_enabled",
+        "\n",
+    ]
     enable_github = "\n".join(enable_github)
-    output_file = app_path / Path('enable_github.sh')
-    with open(output_file, 'x', encoding='utf8') as fh:
+    output_file = app_path / Path("enable_github.sh")
+    with open(output_file, "x", encoding="utf8") as fh:
         fh.write(enable_github)
 
 
-def parse_url(repo_url: str,
-              *,
-              apps_folder: Path,
-              verbose: Union[bool, int, float],
-              keep_underscore: bool = False,    # for rename
-              ):
+def parse_url(
+    repo_url: str,
+    *,
+    apps_folder: Path,
+    verbose: Union[bool, int, float],
+    keep_underscore: bool = False,  # for rename
+):
 
     if verbose:
         ic(repo_url)
 
-    if repo_url.startswith('git:github.com:'):
-        app_name = repo_url.split(':')[-1].split('.git')[0]
-        app_user = repo_url.split(':')[-1].split('/')[0]
+    if repo_url.startswith("git:github.com:"):
+        app_name = repo_url.split(":")[-1].split(".git")[0]
+        app_user = repo_url.split(":")[-1].split("/")[0]
     else:
         url_parsed = urlparse(repo_url)
         if verbose:
@@ -487,76 +549,88 @@ def parse_url(repo_url: str,
 
     app_name = app_name.lower()
     if not keep_underscore:
-        app_name = app_name.replace('_', '-')
-    app_module_name = app_name.replace('-', '_')
+        app_name = app_name.replace("_", "-")
+    app_module_name = app_name.replace("-", "_")
     ic(app_module_name)
     app_path = apps_folder / Path(app_name)
     ic(app_path)
     return app_name, app_user, app_module_name, app_path
 
 
-def write_url_sh(repo_url,
-                 *,
-                 verbose: Union[bool, int, float],
-                 ):
+def write_url_sh(
+    repo_url,
+    *,
+    verbose: Union[bool, int, float],
+):
     url_template = generate_url_template(url=repo_url)
-    with open("url.sh", 'x', encoding='utf8') as fh:
+    with open("url.sh", "x", encoding="utf8") as fh:
         fh.write(url_template)
-    sh.chmod('+x', 'url.sh')
+    sh.chmod("+x", "url.sh")
 
 
-def write_setup_py(*,
-                   use_existing_repo: bool,
-                   app_module_name: str,
-                   app_name: str,
-                   owner: str,
-                   owner_email: str,
-                   description: str,
-                   dependencies: Sequence[str],
-                   license: str,
-                   repo_url: str,
-                   ):
+def write_setup_py(
+    *,
+    use_existing_repo: bool,
+    app_module_name: str,
+    app_name: str,
+    owner: str,
+    owner_email: str,
+    description: str,
+    dependencies: Sequence[str],
+    license: str,
+    repo_url: str,
+):
 
     if use_existing_repo:
-        if Path('setup.py').exists():
+        if Path("setup.py").exists():
             return
 
-    with open("setup.py", 'x', encoding='utf8') as fh:
-        fh.write(generate_setup_py(package_name=app_module_name,
-                                   command=app_name,
-                                   owner=owner,
-                                   owner_email=owner_email,
-                                   description=description,
-                                   dependencies=dependencies,
-                                   license=license,
-                                   url=repo_url,))
+    with open("setup.py", "x", encoding="utf8") as fh:
+        fh.write(
+            generate_setup_py(
+                package_name=app_module_name,
+                command=app_name,
+                owner=owner,
+                owner_email=owner_email,
+                description=description,
+                dependencies=dependencies,
+                license=license,
+                url=repo_url,
+            )
+        )
 
 
 @click.group(context_settings=CONTEXT_SETTINGS, no_args_is_help=True)
 @click_add_options(click_global_options)
 @click.pass_context
-def cli(ctx,
-        verbose: Union[bool, int, float],
-        verbose_inf: bool,
-        ):
-    tty, verbose = tv(ctx=ctx,
-                      verbose=verbose,
-                      verbose_inf=verbose_inf,
-                      )
+def cli(
+    ctx,
+    verbose: Union[bool, int, float],
+    verbose_inf: bool,
+    dict_input: bool,
+):
+    tty, verbose = tv(
+        ctx=ctx,
+        verbose=verbose,
+        verbose_inf=verbose_inf,
+    )
 
 
 @cli.command()
-@click.argument('overlay_name', type=str, nargs=1)
+@click.argument("overlay_name", type=str, nargs=1)
 @click_add_options(click_global_options)
 @click.pass_context
-def get_overlay_url(ctx,
-                    overlay_name,
-                    verbose: Union[bool, int, float],
-                    verbose_inf: bool,
-                    ):
-    url = get_url_for_overlay(overlay_name,
-                              verbose=ctx.obj['verbose'],
-                              )
+def get_overlay_url(
+    ctx,
+    overlay_name,
+    verbose: Union[bool, int, float],
+    verbose_inf: bool,
+    dict_input: bool,
+):
+    url = get_url_for_overlay(
+        overlay_name,
+        verbose=ctx.obj["verbose"],
+    )
     print(url)
 
 
@@ -564,19 +638,22 @@ def get_overlay_url(ctx,
 @click.argument("app", type=str)
 @click_add_options(click_global_options)
 @click.pass_context
-def nineify(ctx,
-            app,
-            verbose: Union[bool, int, float],
-            verbose_inf: bool,
-            ):
+def nineify(
+    ctx,
+    app,
+    verbose: Union[bool, int, float],
+    verbose_inf: bool,
+    dict_input: bool,
+):
 
-    tty, verbose = tv(ctx=ctx,
-                      verbose=verbose,
-                      verbose_inf=verbose_inf,
-                      )
+    tty, verbose = tv(
+        ctx=ctx,
+        verbose=verbose,
+        verbose_inf=verbose_inf,
+    )
     not_root()
-    assert '/' in app
-    group, name = app.split('/')
+    assert "/" in app
+    group, name = app.split("/")
     ic(group)
     ic(name)
     relative_destination = Path(group) / Path(name)
@@ -594,24 +671,28 @@ def nineify(ctx,
 @cli.command()
 @click_add_options(click_global_options)
 @click.pass_context
-def template_pylint(ctx,
-                    verbose: Union[bool, int, float],
-                    verbose_inf: bool,
-                    ):
+def template_pylint(
+    ctx,
+    verbose: Union[bool, int, float],
+    verbose_inf: bool,
+    dict_input: bool,
+):
 
-    tty, verbose = tv(ctx=ctx,
-                      verbose=verbose,
-                      verbose_inf=verbose_inf,
-                      )
-    app_template = generate_app_template('TEMP',
-                                         language='python',
-                                         append_files=(),
-                                         verbose=ctx.obj['verbose'],
-                                         )
+    tty, verbose = tv(
+        ctx=ctx,
+        verbose=verbose,
+        verbose_inf=verbose_inf,
+    )
+    app_template = generate_app_template(
+        "TEMP",
+        language="python",
+        append_files=(),
+        verbose=ctx.obj["verbose"],
+    )
     for line in app_template.splitlines():
-        if line.startswith('# flake8: '):
+        if line.startswith("# flake8: "):
             print(line)
-        if line.startswith('# pylint: '):
+        if line.startswith("# pylint: "):
             print(line)
 
 
@@ -619,43 +700,51 @@ def template_pylint(ctx,
 @click.argument("package-name", type=str, default="TESTPACKAGE")
 @click_add_options(click_global_options)
 @click.pass_context
-def template_python(ctx,
-                    package_name: str,
-                    verbose: Union[bool, int, float],
-                    verbose_inf: bool,
-                    ):
+def template_python(
+    ctx,
+    package_name: str,
+    verbose: Union[bool, int, float],
+    verbose_inf: bool,
+    dict_input: bool,
+):
 
-    tty, verbose = tv(ctx=ctx,
-                      verbose=verbose,
-                      verbose_inf=verbose_inf,
-                      )
-    app_template = generate_app_template(package_name,
-                                         language='python',
-                                         append_files=(),
-                                         verbose=ctx.obj['verbose'],
-                                         )
-    output(app_template, tty=tty, verbose=verbose)
+    tty, verbose = tv(
+        ctx=ctx,
+        verbose=verbose,
+        verbose_inf=verbose_inf,
+    )
+    app_template = generate_app_template(
+        package_name,
+        language="python",
+        append_files=(),
+        verbose=ctx.obj["verbose"],
+    )
+    output(app_template, reason=None, dict_input=dict_input, tty=tty, verbose=verbose)
 
 
 @cli.command()
 @click.argument("package-name", type=str, default="TESTPACKAGE")
 @click_add_options(click_global_options)
 @click.pass_context
-def template_bash(ctx,
-                  package_name: str,
-                  verbose: Union[bool, int, float],
-                  verbose_inf: bool,
-                  ):
+def template_bash(
+    ctx,
+    package_name: str,
+    verbose: Union[bool, int, float],
+    verbose_inf: bool,
+    dict_input: bool,
+):
 
-    tty, verbose = tv(ctx=ctx,
-                      verbose=verbose,
-                      verbose_inf=verbose_inf,
-                      )
-    app_template = generate_app_template(package_name,
-                                         language='bash',
-                                         append_files=(),
-                                         verbose=ctx.obj['verbose'],
-                                         )
+    tty, verbose = tv(
+        ctx=ctx,
+        verbose=verbose,
+        verbose_inf=verbose_inf,
+    )
+    app_template = generate_app_template(
+        package_name,
+        language="bash",
+        append_files=(),
+        verbose=ctx.obj["verbose"],
+    )
     print(app_template)
 
 
@@ -663,68 +752,75 @@ def template_bash(ctx,
 @click.argument("package-name", type=str, default="TESTPACKAGE")
 @click_add_options(click_global_options)
 @click.pass_context
-def template_zig(ctx,
-                 package_name: str,
-                 verbose: Union[bool, int, float],
-                 verbose_inf: bool,
-                 ):
+def template_zig(
+    ctx,
+    package_name: str,
+    verbose: Union[bool, int, float],
+    verbose_inf: bool,
+    dict_input: bool,
+):
 
-    tty, verbose = tv(ctx=ctx,
-                      verbose=verbose,
-                      verbose_inf=verbose_inf,
-                      )
-    app_template = generate_app_template(package_name,
-                                         language='zig',
-                                         append_files=(),
-                                         verbose=ctx.obj['verbose'],
-                                         )
+    tty, verbose = tv(
+        ctx=ctx,
+        verbose=verbose,
+        verbose_inf=verbose_inf,
+    )
+    app_template = generate_app_template(
+        package_name,
+        language="zig",
+        append_files=(),
+        verbose=ctx.obj["verbose"],
+    )
     print(app_template)
 
 
 @cli.command()
-@click.argument('old_repo_url', type=str, nargs=1)
-@click.argument('new_repo_url', type=str, nargs=1)
-@click.argument('group', type=str, nargs=1)
-@click.option('--apps-folder', type=str, required=True)
-@click.option('--gentoo-overlay-repo', type=str, required=True)
-@click.option('--github-user', type=str, required=True)
-@click.option('--local', is_flag=True)
-@click.option('--hg', is_flag=True)
+@click.argument("old_repo_url", type=str, nargs=1)
+@click.argument("new_repo_url", type=str, nargs=1)
+@click.argument("group", type=str, nargs=1)
+@click.option("--apps-folder", type=str, required=True)
+@click.option("--gentoo-overlay-repo", type=str, required=True)
+@click.option("--github-user", type=str, required=True)
+@click.option("--local", is_flag=True)
+@click.option("--hg", is_flag=True)
 @click_add_options(click_global_options)
 @click.pass_context
-def rename(ctx,
-           old_repo_url,
-           new_repo_url,
-           group,
-           apps_folder,
-           gentoo_overlay_repo,
-           github_user,
-           local,
-           verbose: Union[bool, int, float],
-           verbose_inf: bool,
-           hg: bool,
-           ):
+def rename(
+    ctx,
+    old_repo_url,
+    new_repo_url,
+    group,
+    apps_folder,
+    gentoo_overlay_repo,
+    github_user,
+    local,
+    verbose: Union[bool, int, float],
+    verbose_inf: bool,
+    dict_input: bool,
+    hg: bool,
+):
 
     not_root()
-    tty, verbose = tv(ctx=ctx,
-                      verbose=verbose,
-                      verbose_inf=verbose_inf,
-                      )
+    tty, verbose = tv(
+        ctx=ctx,
+        verbose=verbose,
+        verbose_inf=verbose_inf,
+    )
 
     apps_folder = Path(apps_folder)
     ic(apps_folder)
 
-    old_app_name, old_app_user, old_app_module_name, old_app_path = \
-        parse_url(old_repo_url,
-                  apps_folder=apps_folder,
-                  keep_underscore=True,
-                  verbose=verbose,
-                  )
-    new_app_name, new_app_user, new_app_module_name, new_app_path = \
-        parse_url(new_repo_url,
-                  apps_folder=apps_folder,
-                  verbose=verbose,
-                  )
+    old_app_name, old_app_user, old_app_module_name, old_app_path = parse_url(
+        old_repo_url,
+        apps_folder=apps_folder,
+        keep_underscore=True,
+        verbose=verbose,
+    )
+    new_app_name, new_app_user, new_app_module_name, new_app_path = parse_url(
+        new_repo_url,
+        apps_folder=apps_folder,
+        verbose=verbose,
+    )
     assert old_app_user == new_app_user
 
     ic(old_app_name, new_app_name)
@@ -732,76 +828,102 @@ def rename(ctx,
 
     assert group in portage_categories()
 
-    with chdir(old_app_path, verbose=verbose,):
-        old_setup_py = old_app_path / Path('setup.py')
-        replace_match_pairs_in_file(path=old_setup_py,
-                                    match_pairs=((old_app_name, new_app_name), (old_app_module_name, new_app_module_name),),
-                                    verbose=verbose,
-                                    )
+    with chdir(
+        old_app_path,
+        verbose=verbose,
+    ):
+        old_setup_py = old_app_path / Path("setup.py")
+        replace_match_pairs_in_file(
+            path=old_setup_py,
+            match_pairs=(
+                (old_app_name, new_app_name),
+                (old_app_module_name, new_app_module_name),
+            ),
+            verbose=verbose,
+        )
         sh.git.add(old_setup_py)
         del old_setup_py
 
-        old_readme_md = old_app_path / Path('README.md')
+        old_readme_md = old_app_path / Path("README.md")
         try:
-            replace_match_pairs_in_file(path=old_readme_md,
-                                        match_pairs=((old_app_name, new_app_name), (old_app_module_name, new_app_module_name),),
-                                        verbose=verbose,
-                                        )
+            replace_match_pairs_in_file(
+                path=old_readme_md,
+                match_pairs=(
+                    (old_app_name, new_app_name),
+                    (old_app_module_name, new_app_module_name),
+                ),
+                verbose=verbose,
+            )
         except FileNotFoundError as e:
             ic(e)
-            sh.touch('README.md')
+            sh.touch("README.md")
         sh.git.add(old_readme_md)
         del old_readme_md
 
-        old_url_sh = old_app_path / Path('url.sh')
+        old_url_sh = old_app_path / Path("url.sh")
         try:
-            replace_text(path=old_url_sh,
-                         str_to_match=old_app_name,
-                         replacement=new_app_name,
-                         verbose=verbose,
-                         )
+            replace_text(
+                path=old_url_sh,
+                str_to_match=old_app_name,
+                replacement=new_app_name,
+                verbose=verbose,
+            )
         except Exception as e:
-            write_url_sh(new_repo_url, verbose=verbose,)
+            write_url_sh(
+                new_repo_url,
+                verbose=verbose,
+            )
         sh.git.add(old_url_sh)
         del old_url_sh
 
-        old_edit_config = old_app_path / Path('.edit_config')
-        replace_text(path=old_edit_config,
-                     str_to_match=old_app_name,
-                     replacement=new_app_name,
-                     verbose=verbose,
-                     )
-        #sh.git.add(old_edit_config)
+        old_edit_config = old_app_path / Path(".edit_config")
+        replace_text(
+            path=old_edit_config,
+            str_to_match=old_app_name,
+            replacement=new_app_name,
+            verbose=verbose,
+        )
+        # sh.git.add(old_edit_config)
         del old_edit_config
 
-        enable_github_sh = old_app_path / Path('enable_github.sh')
-        replace_text(path=enable_github_sh,
-                     str_to_match=old_app_name,
-                     replacement=new_app_name,
-                     verbose=verbose,
-                     )
-        #sh.git.add(enable_github_sh)
+        enable_github_sh = old_app_path / Path("enable_github.sh")
+        replace_text(
+            path=enable_github_sh,
+            str_to_match=old_app_name,
+            replacement=new_app_name,
+            verbose=verbose,
+        )
+        # sh.git.add(enable_github_sh)
         del enable_github_sh
 
-        old_app_py = old_app_path / old_app_module_name / Path(old_app_module_name + '.py')
-        replace_match_pairs_in_file(path=old_app_py,
-                                    match_pairs=((old_app_name, new_app_name), (old_app_module_name, new_app_module_name),),
-                                    verbose=verbose,
-                                    )
+        old_app_py = (
+            old_app_path / old_app_module_name / Path(old_app_module_name + ".py")
+        )
+        replace_match_pairs_in_file(
+            path=old_app_py,
+            match_pairs=(
+                (old_app_name, new_app_name),
+                (old_app_module_name, new_app_module_name),
+            ),
+            verbose=verbose,
+        )
         sh.git.add(old_app_py)
-        #del old_app_py
+        # del old_app_py
 
-        old_app_init_py = old_app_path / old_app_module_name / Path('__init__.py')
-        replace_text(path=old_app_init_py,
-                     str_to_match=old_app_module_name,
-                     replacement=new_app_module_name,
-                     verbose=verbose,
-                     )
+        old_app_init_py = old_app_path / old_app_module_name / Path("__init__.py")
+        replace_text(
+            path=old_app_init_py,
+            str_to_match=old_app_module_name,
+            replacement=new_app_module_name,
+            verbose=verbose,
+        )
         sh.git.add(old_app_init_py)
         del old_app_init_py
 
         # in old_app_path
-        new_app_py = old_app_path / old_app_module_name / Path(new_app_module_name + '.py')
+        new_app_py = (
+            old_app_path / old_app_module_name / Path(new_app_module_name + ".py")
+        )
         if new_app_py.as_posix() != old_app_py.as_posix():
             sh.git.mv(old_app_py, new_app_py)
         del old_app_py
@@ -810,93 +932,145 @@ def rename(ctx,
         if new_app_module_name != old_app_module_name:
             sh.git.mv(old_app_module_name, new_app_module_name)
 
-        #print(sh.ls())
-        sh.git.add(Path(new_app_module_name) / Path('__init__.py'))
-        sh.git.add(Path(new_app_module_name) / Path('py.typed'))
-        sh.git.add(Path(new_app_module_name) / Path(new_app_module_name + '.py'))
-        old_ebuild_symlink = old_app_path / Path(old_app_name + '-9999.ebuild')
+        # print(sh.ls())
+        sh.git.add(Path(new_app_module_name) / Path("__init__.py"))
+        sh.git.add(Path(new_app_module_name) / Path("py.typed"))
+        sh.git.add(Path(new_app_module_name) / Path(new_app_module_name + ".py"))
+        old_ebuild_symlink = old_app_path / Path(old_app_name + "-9999.ebuild")
         if not old_ebuild_symlink.exists():
-            old_ebuild_folder = Path(gentoo_overlay_repo) / Path(group) / Path(old_app_name)
-            sh.ln('-s', old_ebuild_folder / old_ebuild_symlink.name, old_ebuild_symlink.name, _ok_code=[0, 1])
+            old_ebuild_folder = (
+                Path(gentoo_overlay_repo) / Path(group) / Path(old_app_name)
+            )
+            sh.ln(
+                "-s",
+                old_ebuild_folder / old_ebuild_symlink.name,
+                old_ebuild_symlink.name,
+                _ok_code=[0, 1],
+            )
             del old_ebuild_folder
-
 
     old_ebuild_dir = old_ebuild_symlink.resolve().parent
     if old_ebuild_symlink.exists():
-        with chdir(old_ebuild_dir, verbose=verbose,):
+        with chdir(
+            old_ebuild_dir,
+            verbose=verbose,
+        ):
             # in ebuild folder
-            old_ebuild_path = Path(old_app_name + '-9999.ebuild').resolve()
-            replace_text(path=old_ebuild_path,
-                         str_to_match=old_app_module_name,
-                         replacement=new_app_module_name,
-                         verbose=verbose,
-                         )
+            old_ebuild_path = Path(old_app_name + "-9999.ebuild").resolve()
+            replace_text(
+                path=old_ebuild_path,
+                str_to_match=old_app_module_name,
+                replacement=new_app_module_name,
+                verbose=verbose,
+            )
             sh.git.add(old_ebuild_path)
-            new_ebuild_name = Path(new_app_name + '-9999.ebuild')
-            sh.git.mv('-v', old_ebuild_path, new_ebuild_name, _out=sys.stdout, _err=sys.stderr,)
+            new_ebuild_name = Path(new_app_name + "-9999.ebuild")
+            sh.git.mv(
+                "-v",
+                old_ebuild_path,
+                new_ebuild_name,
+                _out=sys.stdout,
+                _err=sys.stderr,
+            )
             sh.git.add(new_ebuild_name)
-            sh.git.commit('-m', 'rename')
+            sh.git.commit("-m", "rename")
             del old_ebuild_path
 
-        with chdir(old_ebuild_dir.parent, verbose=verbose,):
+        with chdir(
+            old_ebuild_dir.parent,
+            verbose=verbose,
+        ):
             # in ebuild parent folder
-            sh.busybox.mv('-v', old_app_name, new_app_name, _out=sys.stdout, _err=sys.stderr,)
+            sh.busybox.mv(
+                "-v",
+                old_app_name,
+                new_app_name,
+                _out=sys.stdout,
+                _err=sys.stderr,
+            )
             new_ebuild_path = Path(new_app_name / new_ebuild_name).resolve()
-            sh.git.commit('-m', 'rename', _ok_code=[0, 1], _out=sys.stdout, _err=sys.stderr,)
+            sh.git.commit(
+                "-m",
+                "rename",
+                _ok_code=[0, 1],
+                _out=sys.stdout,
+                _err=sys.stderr,
+            )
             sh.git.push()
 
-        with chdir(old_app_path, verbose=verbose,):
+        with chdir(
+            old_app_path,
+            verbose=verbose,
+        ):
             print(sh.ls())
             sh.rm(old_ebuild_symlink.name)
             del old_ebuild_symlink
 
             new_ebuild_symlink_name = new_ebuild_name
-            sh.ln('-s', new_ebuild_path, new_ebuild_symlink_name)
+            sh.ln("-s", new_ebuild_path, new_ebuild_symlink_name)
             del new_ebuild_symlink_name
             del new_ebuild_name
-            sh.git.commit('-m', 'rename')
-            sh.git.remote.rm('origin', _ok_code=[0, 2])
+            sh.git.commit("-m", "rename")
+            sh.git.remote.rm("origin", _ok_code=[0, 2])
             sh.git.push(_ok_code=[0, 128])
 
-    with chdir(apps_folder, verbose=verbose,):
-        sh.busybox.mv('-v', old_app_path, new_app_path, _out=sys.stdout, _err=sys.stderr,)
+    with chdir(
+        apps_folder,
+        verbose=verbose,
+    ):
+        sh.busybox.mv(
+            "-v",
+            old_app_path,
+            new_app_path,
+            _out=sys.stdout,
+            _err=sys.stderr,
+        )
 
-    replace_text(path=Path('/etc/portage/package.accept_keywords'),
-                 str_to_match='/' + old_app_module_name + '-',
-                 replacement='/' + new_app_module_name + '-',
-                 verbose=verbose,
-                 )
+    replace_text(
+        path=Path("/etc/portage/package.accept_keywords"),
+        str_to_match="/" + old_app_module_name + "-",
+        replacement="/" + new_app_module_name + "-",
+        verbose=verbose,
+    )
 
 
-@cli.command('list')
-@click.option('--apps-folder',
-              type=click.Path(exists=True,
-                              dir_okay=True,
-                              file_okay=False,
-                              allow_dash=False,
-                              path_type=Path,),
-              required=True,)
-@click.option('--ls-remote', is_flag=True)
+@cli.command("list")
+@click.option(
+    "--apps-folder",
+    type=click.Path(
+        exists=True,
+        dir_okay=True,
+        file_okay=False,
+        allow_dash=False,
+        path_type=Path,
+    ),
+    required=True,
+)
+@click.option("--ls-remote", is_flag=True)
 @click_add_options(click_global_options)
 @click.pass_context
-def list_all(ctx,
-             apps_folder: Path,
-             ls_remote: bool,
-             verbose: Union[bool, int, float],
-             verbose_inf: bool,
-             ):
+def list_all(
+    ctx,
+    apps_folder: Path,
+    ls_remote: bool,
+    verbose: Union[bool, int, float],
+    verbose_inf: bool,
+    dict_input: bool,
+):
 
-    tty, verbose = tv(ctx=ctx,
-                      verbose=verbose,
-                      verbose_inf=verbose_inf,
-                      )
+    tty, verbose = tv(
+        ctx=ctx,
+        verbose=verbose,
+        verbose_inf=verbose_inf,
+    )
 
     apps_folder = Path(apps_folder)
     ic(apps_folder)
 
-    edit_configs = find_edit_configs(apps_folder=apps_folder,
-                                     verbose=verbose,
-                                     )
+    edit_configs = find_edit_configs(
+        apps_folder=apps_folder,
+        verbose=verbose,
+    )
     for config in edit_configs:
         if verbose:
             ic(config)
@@ -905,161 +1079,228 @@ def list_all(ctx,
             return_code = None
             if verbose:
                 ic(project_dir)
-            with chdir(project_dir, verbose=verbose,):
+            with chdir(
+                project_dir,
+                verbose=verbose,
+            ):
                 try:
-                    sh.git('ls-remote')
+                    sh.git("ls-remote")
                     return_code = 0
                 except sh.ErrorReturnCode_128:
                     return_code = 128
 
-            output((return_code, config.parent.name), tty=tty, verbose=verbose,)
+            output(
+                (return_code, config.parent.name),
+                reason=None,
+                dict_input=dict_input,
+                tty=tty,
+                verbose=verbose,
+            )
         else:
-            output(config.parent.name, tty=tty, verbose=verbose,)
+            output(
+                config.parent.name,
+                reason=None,
+                dict_input=dict_input,
+                tty=tty,
+                verbose=verbose,
+            )
 
 
-@cli.command('list-paths')
-@click.option('--apps-folder',
-              type=click.Path(exists=True,
-                              dir_okay=True,
-                              file_okay=False,
-                              allow_dash=False,
-                              path_type=Path,),
-              required=True,)
+@cli.command("list-paths")
+@click.option(
+    "--apps-folder",
+    type=click.Path(
+        exists=True,
+        dir_okay=True,
+        file_okay=False,
+        allow_dash=False,
+        path_type=Path,
+    ),
+    required=True,
+)
 @click_add_options(click_global_options)
 @click.pass_context
-def list_all_paths(ctx,
-                   apps_folder: Path,
-                   verbose: Union[bool, int, float],
-                   verbose_inf: bool,
-                   ):
+def list_all_paths(
+    ctx,
+    apps_folder: Path,
+    verbose: Union[bool, int, float],
+    verbose_inf: bool,
+    dict_input: bool,
+):
 
-    tty, verbose = tv(ctx=ctx,
-                      verbose=verbose,
-                      verbose_inf=verbose_inf,
-                      )
+    tty, verbose = tv(
+        ctx=ctx,
+        verbose=verbose,
+        verbose_inf=verbose_inf,
+    )
 
     apps_folder = Path(apps_folder)
     ic(apps_folder)
 
-    edit_configs = find_edit_configs(apps_folder=apps_folder,
-                                     verbose=verbose,
-                                     )
+    edit_configs = find_edit_configs(
+        apps_folder=apps_folder,
+        verbose=verbose,
+    )
     for config in edit_configs:
         if verbose:
             ic(config)
-        output(os.fsencode(config.parent.as_posix()), tty=tty, verbose=verbose,)
+        output(
+            os.fsencode(config.parent.as_posix()),
+            reason=None,
+            dict_input=dict_input,
+            tty=tty,
+            verbose=verbose,
+        )
 
 
 @cli.command()
-@click.option('--apps-folder',
-              type=click.Path(exists=True,
-                              dir_okay=True,
-                              file_okay=False,
-                              allow_dash=False,
-                              path_type=Path,),
-              required=True,)
-@click.option('--gentoo-overlay-repo', type=str, required=True)
-@click.option('--local', is_flag=True)
-@click.option('--github-user', type=str, required=True)
+@click.option(
+    "--apps-folder",
+    type=click.Path(
+        exists=True,
+        dir_okay=True,
+        file_okay=False,
+        allow_dash=False,
+        path_type=Path,
+    ),
+    required=True,
+)
+@click.option("--gentoo-overlay-repo", type=str, required=True)
+@click.option("--local", is_flag=True)
+@click.option("--github-user", type=str, required=True)
 @click_add_options(click_global_options)
 @click.pass_context
-def check_all(ctx,
-              apps_folder: Path,
-              gentoo_overlay_repo: str,
-              github_user: str,
-              verbose: Union[bool, int, float],
-              verbose_inf: bool,
-              local: bool,
-              ):
+def check_all(
+    ctx,
+    apps_folder: Path,
+    gentoo_overlay_repo: str,
+    github_user: str,
+    verbose: Union[bool, int, float],
+    verbose_inf: bool,
+    dict_input: bool,
+    local: bool,
+):
 
     not_root()
-    tty, verbose = tv(ctx=ctx,
-                      verbose=verbose,
-                      verbose_inf=verbose_inf,
-                      )
+    tty, verbose = tv(
+        ctx=ctx,
+        verbose=verbose,
+        verbose_inf=verbose_inf,
+    )
 
     ic(apps_folder)
 
-    edit_configs = find_edit_configs(apps_folder=apps_folder,
-                                     verbose=verbose,
-                                     )
+    edit_configs = find_edit_configs(
+        apps_folder=apps_folder,
+        verbose=verbose,
+    )
 
     for edit_config_path in edit_configs:
         ic(edit_config_path)
-        with chdir(edit_config_path.parent, verbose=verbose,):
-            remote = str(sh.git.remote('get-url', 'origin')).strip()
-            app_name, app_user, app_module_name, app_path = parse_url(remote,
-                                                                      apps_folder=apps_folder,
-                                                                      verbose=verbose,
-                                                                      )
-            if not remote.startswith('git@github.com:'):
+        with chdir(
+            edit_config_path.parent,
+            verbose=verbose,
+        ):
+            remote = str(sh.git.remote("get-url", "origin")).strip()
+            app_name, app_user, app_module_name, app_path = parse_url(
+                remote,
+                apps_folder=apps_folder,
+                verbose=verbose,
+            )
+            if not remote.startswith("git@github.com:"):
                 if app_user == github_user:
-                    ic('remote is to', github_user, 'but does not startwith git@github.com:', remote)
+                    ic(
+                        "remote is to",
+                        github_user,
+                        "but does not startwith git@github.com:",
+                        remote,
+                    )
                     raise ValueError(edit_config_path, remote)
             if not app_name == edit_config_path.parent.name:
-                ic(app_name, 'is not', edit_config_path.parent.name)
+                ic(app_name, "is not", edit_config_path.parent.name)
                 raise ValueError(edit_config_path, remote)
 
         del app_name, app_user, app_module_name, app_path
 
 
 @cli.command()
-@click.argument('language', type=click.Choice(['python', 'bash', 'sh', 'zig', 'c']), nargs=1)
-@click.argument('repo_url', type=str, nargs=1)
-@click.argument('group', type=str, nargs=1)
-@click.option('--branch', type=str, callback=valid_branch, default="master")
-@click.option("--template", 'templates',
-              type=click.Path(exists=True,
-                              dir_okay=False,
-                              file_okay=True,
-                              allow_dash=False,
-                              path_type=Path,),
-              required=False,
-              multiple=True,)
-@click.option("--depend", 'dependencies',
-              type=str,
-              required=False,
-              multiple=True,)
-@click.option('--apps-folder', type=str, required=True)
-@click.option('--gentoo-overlay-repo', type=str, required=True)
-@click.option('--github-user', type=str, required=True)
-@click.option('--license', type=click.Choice(license_list(verbose=False,)), default="ISC")
-@click.option('--owner', type=str, required=True)
-@click.option('--owner-email', type=str, required=True)
-@click.option('--description', type=str, required=True)
-@click.option('--local', is_flag=True)
-@click.option('--rename', type=str)
-@click.option('--hg', is_flag=True)
-@click.option('--use-existing-repo', is_flag=True)
+@click.argument(
+    "language", type=click.Choice(["python", "bash", "sh", "zig", "c"]), nargs=1
+)
+@click.argument("repo_url", type=str, nargs=1)
+@click.argument("group", type=str, nargs=1)
+@click.option("--branch", type=str, callback=valid_branch, default="master")
+@click.option(
+    "--template",
+    "templates",
+    type=click.Path(
+        exists=True,
+        dir_okay=False,
+        file_okay=True,
+        allow_dash=False,
+        path_type=Path,
+    ),
+    required=False,
+    multiple=True,
+)
+@click.option(
+    "--depend",
+    "dependencies",
+    type=str,
+    required=False,
+    multiple=True,
+)
+@click.option("--apps-folder", type=str, required=True)
+@click.option("--gentoo-overlay-repo", type=str, required=True)
+@click.option("--github-user", type=str, required=True)
+@click.option(
+    "--license",
+    type=click.Choice(
+        license_list(
+            verbose=False,
+        )
+    ),
+    default="ISC",
+)
+@click.option("--owner", type=str, required=True)
+@click.option("--owner-email", type=str, required=True)
+@click.option("--description", type=str, required=True)
+@click.option("--local", is_flag=True)
+@click.option("--rename", type=str)
+@click.option("--hg", is_flag=True)
+@click.option("--use-existing-repo", is_flag=True)
 @click_add_options(click_global_options)
 @click.pass_context
-def new(ctx,
-        language: str,
-        repo_url: str,
-        group: str,
-        branch: str,
-        rename: Optional[str],
-        templates: Sequence[Path],
-        dependencies: Sequence[str],
-        apps_folder: str,
-        gentoo_overlay_repo: str,
-        github_user: str,
-        license: str,
-        owner: str,
-        owner_email: str,
-        description: str,
-        local: bool,
-        use_existing_repo: bool,
-        verbose: Union[bool, int, float],
-        verbose_inf: bool,
-        hg: bool,
-        ):
+def new(
+    ctx,
+    language: str,
+    repo_url: str,
+    group: str,
+    branch: str,
+    rename: Optional[str],
+    templates: Sequence[Path],
+    dependencies: Sequence[str],
+    apps_folder: str,
+    gentoo_overlay_repo: str,
+    github_user: str,
+    license: str,
+    owner: str,
+    owner_email: str,
+    description: str,
+    local: bool,
+    use_existing_repo: bool,
+    verbose: Union[bool, int, float],
+    verbose_inf: bool,
+    dict_input: bool,
+    hg: bool,
+):
 
     not_root()
-    tty, verbose = tv(ctx=ctx,
-                      verbose=verbose,
-                      verbose_inf=verbose_inf,
-                      )
+    tty, verbose = tv(
+        ctx=ctx,
+        verbose=verbose,
+        verbose_inf=verbose_inf,
+    )
 
     apps_folder = Path(apps_folder)
     ic(apps_folder)
@@ -1068,184 +1309,228 @@ def new(ctx,
         templates = [t.resolve() for t in templates]
 
     if dependencies:
-        dependencies = [resolve_package_name(dependency, verbose=verbose) for dependency in dependencies]
+        dependencies = [
+            resolve_package_name(dependency, verbose=verbose)
+            for dependency in dependencies
+        ]
 
-    if repo_url.endswith('.git'):
+    if repo_url.endswith(".git"):
         repo_url = repo_url[:-4]
 
-    assert '/' not in group
-    assert ':' not in group
+    assert "/" not in group
+    assert ":" not in group
     assert group in portage_categories()
-    assert repo_url.startswith('https://')
+    assert repo_url.startswith("https://")
 
     template_repo_url: Optional[str] = None
-    if not repo_url.startswith(f'https://github.com/{github_user}/'):
+    if not repo_url.startswith(f"https://github.com/{github_user}/"):
         template_repo_url = repo_url
-        _app_name, _app_user, _app_module_name, _app_path = parse_url(repo_url,
-                                                                      apps_folder=apps_folder,
-                                                                      verbose=verbose,
-                                                                      )
+        _app_name, _app_user, _app_module_name, _app_path = parse_url(
+            repo_url,
+            apps_folder=apps_folder,
+            verbose=verbose,
+        )
         if rename:
             _app_name = rename
-        repo_url = f'https://github.com/{github_user}/{_app_name}'
+        repo_url = f"https://github.com/{github_user}/{_app_name}"
         del _app_name, _app_user, _app_module_name, _app_path
     else:
         template_repo_url = None
 
-    app_name, app_user, app_module_name, app_path = parse_url(repo_url,
-                                                              apps_folder=apps_folder,
-                                                              verbose=verbose,
-                                                              )
+    app_name, app_user, app_module_name, app_path = parse_url(
+        repo_url,
+        apps_folder=apps_folder,
+        verbose=verbose,
+    )
     ic(app_name)
     ic(app_user)
     assert app_user == github_user
-    assert '_' not in app_path.name
+    assert "_" not in app_path.name
 
-    if language == 'sh':
-        language = 'bash'
+    if language == "sh":
+        language = "bash"
 
-    if language == 'python':
-        ext = '.py'
-    elif language == 'bash':
-        ext = '.sh'
-    elif language == 'zig':
-        ext = '.zig'
-        assert group == 'dev-zig'
-    elif language == 'c':
-        ext = '.c'
+    if language == "python":
+        ext = ".py"
+    elif language == "bash":
+        ext = ".sh"
+    elif language == "zig":
+        ext = ".zig"
+        assert group == "dev-zig"
+    elif language == "c":
+        ext = ".c"
     else:
-        raise ValueError('unsupported language: ' + language)
+        raise ValueError("unsupported language: " + language)
 
     if template_repo_url:
-        clone_repo(repo_url=repo_url,
-                   template_repo_url=template_repo_url,
-                   apps_folder=apps_folder,
-                   hg=hg,
-                   branch=branch,
-                   app_path=app_path,
-                   app_group=group,
-                   local=local,
-                   verbose=verbose,
-                   )
+        clone_repo(
+            repo_url=repo_url,
+            template_repo_url=template_repo_url,
+            apps_folder=apps_folder,
+            hg=hg,
+            branch=branch,
+            app_path=app_path,
+            app_group=group,
+            local=local,
+            verbose=verbose,
+        )
 
-    if ((not app_path.exists()) or use_existing_repo):
+    if (not app_path.exists()) or use_existing_repo:
         if not use_existing_repo:
-            create_repo(hg=hg,
-                        app_path=app_path,
-                        app_module_name=app_module_name,
-                        verbose=verbose,
-                        )
+            create_repo(
+                hg=hg,
+                app_path=app_path,
+                app_module_name=app_module_name,
+                verbose=verbose,
+            )
         else:
             assert app_path.is_dir()
-            assert Path(app_path / Path('.git')).exists()
-            with chdir(app_path, verbose=verbose,):
+            assert Path(app_path / Path(".git")).exists()
+            with chdir(
+                app_path,
+                verbose=verbose,
+            ):
                 os.makedirs(app_module_name, exist_ok=True)
 
         if not template_repo_url:
-            with chdir(app_path, verbose=verbose,):
-                if language == 'python':
-                    write_setup_py(use_existing_repo=use_existing_repo,
-                                   app_module_name=app_module_name,
-                                   app_name=app_name,
-                                   owner=owner,
-                                   owner_email=owner_email,
-                                   description=description,
-                                   dependencies=dependencies,
-                                   license=license,
-                                   repo_url=repo_url,)
+            with chdir(
+                app_path,
+                verbose=verbose,
+            ):
+                if language == "python":
+                    write_setup_py(
+                        use_existing_repo=use_existing_repo,
+                        app_module_name=app_module_name,
+                        app_name=app_name,
+                        owner=owner,
+                        owner_email=owner_email,
+                        description=description,
+                        dependencies=dependencies,
+                        license=license,
+                        repo_url=repo_url,
+                    )
 
                 gitignore_template = generate_gitignore_template()
                 if use_existing_repo:
-                    with open('.gitignore', 'a') as fh:
+                    with open(".gitignore", "a") as fh:
                         fh.write(gitignore_template)
                 else:
-                    with open('.gitignore', 'x') as fh:
+                    with open(".gitignore", "x") as fh:
                         fh.write(gitignore_template)
 
-                if not Path('url.sh').exists():
-                    write_url_sh(repo_url, verbose=verbose,)
+                if not Path("url.sh").exists():
+                    write_url_sh(
+                        repo_url,
+                        verbose=verbose,
+                    )
 
-                if language == 'python':
+                if language == "python":
                     os.system("fastep")
 
-            with chdir(app_path / app_module_name, verbose=verbose,):
-                app_template = generate_app_template(package_name=app_module_name,
-                                                     language=language,
-                                                     append_files=templates,
-                                                     verbose=ctx.obj['verbose'],
-                                                     )
-                with open(app_module_name + ext, 'x') as fh:
+            with chdir(
+                app_path / app_module_name,
+                verbose=verbose,
+            ):
+                app_template = generate_app_template(
+                    package_name=app_module_name,
+                    language=language,
+                    append_files=templates,
+                    verbose=ctx.obj["verbose"],
+                )
+                with open(app_module_name + ext, "x") as fh:
                     fh.write(app_template)
 
-                if language == 'python':
+                if language == "python":
                     init_template = generate_init_template(package_name=app_module_name)
-                    with open("__init__.py", 'x') as fh:
+                    with open("__init__.py", "x") as fh:
                         fh.write(init_template)
-                    sh.touch('py.typed')
+                    sh.touch("py.typed")
 
-            with chdir(app_path, verbose=verbose,):
-                sh.git.add('--all')
-                sh.git.commit('-m', 'autocomit')
+            with chdir(
+                app_path,
+                verbose=verbose,
+            ):
+                sh.git.add("--all")
+                sh.git.commit("-m", "autocomit")
 
-        with chdir(app_path, verbose=verbose,):
-            with open(".edit_config", 'x') as fh:
-                fh.write(generate_edit_config(package_name=app_name,
-                                              package_group=group,
-                                              local=local))
+        with chdir(
+            app_path,
+            verbose=verbose,
+        ):
+            with open(".edit_config", "x") as fh:
+                fh.write(
+                    generate_edit_config(
+                        package_name=app_name, package_group=group, local=local
+                    )
+                )
 
-            remote_add_origin(hg=hg,
-                              app_path=app_path,
-                              local=local,
-                              app_name=app_name,
-                              verbose=verbose,
-                              )
+            remote_add_origin(
+                hg=hg,
+                app_path=app_path,
+                local=local,
+                app_name=app_name,
+                verbose=verbose,
+            )
     else:
         eprint("Not creating new app, {} already exists.".format(app_path))
-
 
     ebuild_path = Path(gentoo_overlay_repo) / Path(group) / Path(app_name)
     if not ebuild_path.exists():
         enable_python = False
-        if Path(app_path / Path('setup.py')).exists():
+        if Path(app_path / Path("setup.py")).exists():
             enable_python = True
 
         os.makedirs(ebuild_path, exist_ok=False)
         ebuild_name = app_name + "-9999.ebuild"
 
         enable_dobin = False
-        if language in ['bash']:
+        if language in ["bash"]:
             enable_dobin = True
-        with chdir(ebuild_path, verbose=verbose,):
-            with open(ebuild_name, 'w') as fh:
-                fh.write(generate_ebuild_template(app_name=app_name,
-                                                  description=description,
-                                                  enable_python=enable_python,
-                                                  enable_dobin=enable_dobin,
-                                                  homepage=repo_url,
-                                                  dependencies=dependencies,
-                                                  app_path=app_path,))
+        with chdir(
+            ebuild_path,
+            verbose=verbose,
+        ):
+            with open(ebuild_name, "w") as fh:
+                fh.write(
+                    generate_ebuild_template(
+                        app_name=app_name,
+                        description=description,
+                        enable_python=enable_python,
+                        enable_dobin=enable_dobin,
+                        homepage=repo_url,
+                        dependencies=dependencies,
+                        app_path=app_path,
+                    )
+                )
             sh.git.add(ebuild_name)
-            sh.ebuild(ebuild_name,  'manifest')
-            sh.git.add('*')
-            sh.git.add('-u')  # add any unstaged changes (like some other ebuild was deleted)
+            sh.ebuild(ebuild_name, "manifest")
+            sh.git.add("*")
+            sh.git.add(
+                "-u"
+            )  # add any unstaged changes (like some other ebuild was deleted)
             os.system("git commit -m 'newapp {}'".format(app_name))
             os.system("git push")
             os.system("sudo emaint sync -A")
             accept_keyword = "={}/{}-9999 **\n".format(group, app_name)
-            accept_keywords = Path("/etc/portage/package.accept_keywords") / Path(group) / Path(app_name)
+            accept_keywords = (
+                Path("/etc/portage/package.accept_keywords")
+                / Path(group)
+                / Path(app_name)
+            )
             accept_keywords.parent.mkdir(exist_ok=True)
-            write_line_to_file(path=accept_keywords,
-                               line=accept_keyword,
-                               unique=True,
-                               make_new_if_necessary=True,
-                               verbose=verbose,
-                               )
-            sh.ln('-s', ebuild_path / ebuild_name, app_path / ebuild_name)
-            sh.git.diff('--exit-code')
+            write_line_to_file(
+                path=accept_keywords,
+                line=accept_keyword,
+                unique=True,
+                make_new_if_necessary=True,
+                verbose=verbose,
+            )
+            sh.ln("-s", ebuild_path / ebuild_name, app_path / ebuild_name)
+            sh.git.diff("--exit-code")
             # need to commit any pending ebuild changes here, but that's the wront git message, and it fails if it's unhanged
-            sh.git.commit('-m', 'initial commit', _ok_code=[0, 1])
+            sh.git.commit("-m", "initial commit", _ok_code=[0, 1])
     else:
-        eprint('Not creating new ebuild, {} already exists.'.format(ebuild_path))
+        eprint("Not creating new ebuild, {} already exists.".format(ebuild_path))
 
     ic(app_path)
     ic(app_module_name)
@@ -1256,58 +1541,64 @@ def new(ctx,
 
 
 @cli.command()
-@click.argument('repo_url', type=str, nargs=1)
-@click.argument('group', type=str, nargs=1)
-@click.option('--apps-folder', type=str, required=True)
-@click.option('--gentoo-overlay-repo', type=str, required=True)
-@click.option('--github-user', type=str, required=True)
+@click.argument("repo_url", type=str, nargs=1)
+@click.argument("group", type=str, nargs=1)
+@click.option("--apps-folder", type=str, required=True)
+@click.option("--gentoo-overlay-repo", type=str, required=True)
+@click.option("--github-user", type=str, required=True)
 @click_add_options(click_global_options)
 @click.pass_context
-def delete(ctx,
-           repo_url: str,
-           group: str,
-           apps_folder: str,
-           gentoo_overlay_repo: str,
-           github_user: str,
-           verbose: Union[bool, int, float],
-           verbose_inf: bool,
-           ):
+def delete(
+    ctx,
+    repo_url: str,
+    group: str,
+    apps_folder: str,
+    gentoo_overlay_repo: str,
+    github_user: str,
+    verbose: Union[bool, int, float],
+    verbose_inf: bool,
+    dict_input: bool,
+):
 
     not_root()
-    tty, verbose = tv(ctx=ctx,
-                      verbose=verbose,
-                      verbose_inf=verbose_inf,
-                      )
+    tty, verbose = tv(
+        ctx=ctx,
+        verbose=verbose,
+        verbose_inf=verbose_inf,
+    )
 
     apps_folder = Path(apps_folder)
     ic(apps_folder)
 
-
-    app_name, app_user, app_module_name, app_path = parse_url(repo_url,
-                                                              apps_folder=apps_folder,
-                                                              verbose=verbose,
-                                                              )
+    app_name, app_user, app_module_name, app_path = parse_url(
+        repo_url,
+        apps_folder=apps_folder,
+        verbose=verbose,
+    )
     ic(app_name, app_user, app_module_name, app_path)
     assert app_user == github_user
-    assert '_' not in app_path.name
+    assert "_" not in app_path.name
     assert app_path.is_dir()
 
     ebuild_path = Path(gentoo_overlay_repo) / Path(group) / Path(app_name)
     ic(ebuild_path)
-    recycle_bin = Path('/delme') / Path('deleted_apps') / Path(get_timestamp())
+    recycle_bin = Path("/delme") / Path("deleted_apps") / Path(get_timestamp())
     recycle_bin.mkdir(parents=True, exist_ok=False)
     ic(recycle_bin)
-    with chdir(recycle_bin, verbose=verbose,):
+    with chdir(
+        recycle_bin,
+        verbose=verbose,
+    ):
         group_path = Path(group)
         group_path.mkdir(exist_ok=False)
         sh.busybox.mv(ebuild_path, group_path, _close_stderr=True)
-        sh.busybox.mv(app_path, '.', _close_stderr=True)
+        sh.busybox.mv(app_path, ".", _close_stderr=True)
 
 
 ##http://liw.fi/cmdtest/
 ##http://liw.fi/cliapp/
 #
-#def debug(func):
+# def debug(func):
 #    msg = func.__qualname__
 #    @wraps(func)
 #    #http://www.dabeaz.com/py3meta/Py3Meta.pdf
@@ -1317,7 +1608,7 @@ def delete(ctx,
 #    return wrapper
 #
 #
-#def formatExceptionInfo(maxTBlevel=5):
+# def formatExceptionInfo(maxTBlevel=5):
 #    cla, exc, trbk = sys.exc_info()
 #    excName = cla.__name__
 #    try:
@@ -1339,7 +1630,7 @@ def delete(ctx,
 #
 #
 ##http://stackoverflow.com/questions/1549509/remove-duplicates-in-a-list-while-keeping-its-order-python
-#def unique(seq):
+# def unique(seq):
 #    seen = set()
 #    for item in seq:
 #        if item not in seen:
@@ -1347,7 +1638,7 @@ def delete(ctx,
 #            yield item
 #
 #
-#def reverse_sort_list(domains):
+# def reverse_sort_list(domains):
 #    data = []
 #    for x in domains:
 #        d = x.strip()[::-1]
@@ -1360,23 +1651,22 @@ def delete(ctx,
 #        print(y)
 #
 #
-#def print_hex(text):
+# def print_hex(text):
 #    print(':'.join(hex(ord(x))[2:] for x in text))
 #
 #
-#def dprint(*args, **kwargs):
+# def dprint(*args, **kwargs):
 #    if click_debug:
 #        caller = sys._getframe(1).f_code.co_name
 #        print(str("%.5f" % time.time()), os.getpid(), '{0: <15}'.format(caller+'()'), *args, file=sys.stderr, **kwargs)
 #
-#print(pydoc.render_doc(logger))
+# print(pydoc.render_doc(logger))
 #
-#log_level=log_levels['DEBUG']
-#log_level=log_levels['INFO:']
+# log_level=log_levels['DEBUG']
+# log_level=log_levels['INFO:']
 #
 #
-#def print_traceback():
+# def print_traceback():
 #    ex_type, ex, tb = sys.exc_info()
 #    traceback.print_tb(tb)
 #    del tb
-
