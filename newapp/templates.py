@@ -3,14 +3,14 @@
 
 from icecream import ic
 
-init='''#from .{package_name} import {package_name}'''
+init = """#from .{package_name} import {package_name}"""
 
 
-echo_url='''#!/bin/sh
+echo_url = '''#!/bin/sh
 echo "{url}"'''
 
 
-edit_config='''#!/bin/sh
+edit_config = """#!/bin/sh
 short_package="{package_name}"
 group="{package_group}"
 package="${{group}}/${{short_package}}"
@@ -19,26 +19,26 @@ package="${{group}}/${{short_package}}"
 test_command_arg="--help"
 pre_lint_command=""
 dont_unmerge=""
-'''
+"""
 
 
-zig_app= '''
+zig_app = """
 const std = @import("std");
 
 pub fn main() !void {{
     const stdout = std.io.getStdOut().writer();
     try stdout.print("Hello{null}, {{s}}!{newline}", .{{"world"}});
 }}
-'''
+"""
 
 
-bash_app = '''#!/usr/bin/env bash
+bash_app = """#!/usr/bin/env bash
 echo '{newline}' '{null}'
 exit 1
-'''
+"""
 
 
-python_app = '''#!/usr/bin/env python3
+python_app = """#!/usr/bin/env python3
 # -*- coding: utf8 -*-
 # tab-width:4
 
@@ -102,7 +102,7 @@ from asserttool import validate_slice
 from eprint import eprint
 from asserttool import ic
 from retry_on_exception import retry_on_exception
-#from enumerate_input import enumerate_input
+#from mptool import unmp
 #from collections import defaultdict
 #from prettyprinter import cpprint
 #from prettyprinter import install_extras
@@ -118,7 +118,7 @@ from timetool import get_timestamp
 #from prettytable import PrettyTable
 #output_table = PrettyTable()
 
-from unmp import unmp
+from mptool import unmp
 #from typing import List
 #from typing import Tuple
 from typing import Sequence
@@ -154,6 +154,7 @@ signal(SIGPIPE, SIG_DFL)
 #def cli(ctx,
 #        verbose: Union[bool, int, float],
 #        verbose_inf: bool,
+#        dict_input: bool,
 #        ) -> None:
 #
 #    tty, verbose = tv(ctx=ctx,
@@ -183,6 +184,7 @@ def cli(ctx,
         ipython: bool,
         verbose: Union[bool, int, float],
         verbose_inf: bool,
+        dict_input: bool,
         ) -> None:
 
     tty, verbose = tv(ctx=ctx,
@@ -211,19 +213,19 @@ def cli(ctx,
             path_bytes_data = fh.read()
 
         if not count:
-            output(path, tty=tty, verbose=verbose)
+            output(path, reason=None, dict_input=dict_input, tty=tty, verbose=verbose)
 
     if count:
-        output(index + 1, tty=tty, verbose=verbose)
+        output(index + 1, reason=None, dict_input=dict_input, tty=tty, verbose=verbose)
 
 #        if ipython:
 #            import IPython; IPython.embed()
 
 
-'''
+"""
 
 
-depend_python = '''
+depend_python = """
 RDEPEND="
 	dev-python/click[${PYTHON_USEDEP}]
 	dev-python/icecream[${PYTHON_USEDEP}]
@@ -233,10 +235,10 @@ RDEPEND="
 "
 
 DEPEND="${RDEPEND}"
-'''
+"""
 
 
-ebuild = '''# Copyright 1999-{year} Gentoo Authors
+ebuild = """# Copyright 1999-{year} Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -262,23 +264,22 @@ KEYWORDS=""
 #	default
 #	xdg_src_prepare
 #}}
-'''
+"""
 
 
-src_install_dobin = '''
+src_install_dobin = """
 src_install() {{
         dobin ${{app_name}}
-}}'''
+}}"""
 
 
-
-gitignore = '''.git
+gitignore = """.git
 .edit_config
 enable_github.sh
-'''
+"""
 
 
-setup_py = '''# -*- coding: utf-8 -*-
+setup_py = """# -*- coding: utf-8 -*-
 
 import sys
 import fastentrypoints
@@ -310,5 +311,4 @@ config = {{
     }},
 }}
 
-setup(**config)'''
-
+setup(**config)"""
