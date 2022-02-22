@@ -147,6 +147,7 @@ sh.mv = None  # use sh.busybox('mv'), coreutils ignores stdin read errors
 #this should be earlier in the imports, but isort stops working
 signal(SIGPIPE, SIG_DFL)
 
+
 #@with_plugins(iter_entry_points('click_command_tree'))
 #@click.group(no_args_is_help=True, cls=AHGroup)
 #@click_add_options(click_global_options)
@@ -199,11 +200,11 @@ def cli(ctx,
     del paths
 
     index = 0
-    for index, path in enumerate(iterator):
-        path = Path(os.fsdecode(path))
-
-        if verbose:  # or simulate:
+    for index, _path in enumerate(iterator):
+        path = Path(os.fsdecode(_path)).resolve()
+        if verbose:
             ic(index, path)
+
         #if count:
         #    if count > (index + 1):
         #        ic(count)
