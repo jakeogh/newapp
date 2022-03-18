@@ -102,7 +102,6 @@ from asserttool import validate_slice
 from eprint import eprint
 from asserttool import ic
 from retry_on_exception import retry_on_exception
-#from mptool import unmp
 #from collections import defaultdict
 #from prettyprinter import cpprint
 #from prettyprinter import install_extras
@@ -205,19 +204,11 @@ def cli(ctx,
         if verbose:
             ic(index, path)
 
-        #if count:
-        #    if count > (index + 1):
-        #        ic(count)
-        #        sys.exit(0)
-
         with open(path, 'rb') as fh:
             path_bytes_data = fh.read()
 
-        if not count:
-            output(path, reason=None, dict_input=dict_input, tty=tty, verbose=verbose)
+        output(path, reason=None, dict_input=dict_input, tty=tty, verbose=verbose)
 
-    if count:
-        output(index + 1, reason=None, dict_input=dict_input, tty=tty, verbose=verbose)
 
 #        if ipython:
 #            import IPython; IPython.embed()
