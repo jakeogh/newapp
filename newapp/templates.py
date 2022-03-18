@@ -209,7 +209,6 @@ def cli(ctx,
 
         output(path, reason=None, dict_input=dict_input, tty=tty, verbose=verbose)
 
-
 #        if ipython:
 #            import IPython; IPython.embed()
 
