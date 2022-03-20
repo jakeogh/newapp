@@ -82,6 +82,14 @@ CONTEXT_SETTINGS = dict(default_map=CFG)
 # ic(CFG)
 
 
+def accept_keywords_path(group: str, app_name: str):
+    accept_keywords = (
+        Path("/etc/portage/package.accept_keywords") / Path(group) / Path(app_name)
+    )
+    accept_keywords.parent.mkdir(exist_ok=True)
+    return accept_keywords
+
+
 def replace_text(
     path: Path,
     str_to_match: str,
@@ -1026,8 +1034,21 @@ def rename(
             _err=sys.stderr,
         )
 
+    old_accept_keywords = accept_keywords_path(group=group, app_name=old_app_name)
+    new_accept_keywords = accept_keywords_path(group=group, app_name=new_app_name)
+    sh.busybox(
+        "mv",
+        "-v",
+        "-i",
+        old_accept_keywords.as_posix(),
+        new_accept_keywords.as_posix(),
+        _out=sys.stdout,
+        _err=sys.stderr,
+        _close_stderr=True,
+    )
+
     replace_text(
-        path=Path("/etc/portage/package.accept_keywords"),
+        path=new_accept_keywords,
         str_to_match="/" + old_app_module_name + "-",
         replacement="/" + new_app_module_name + "-",
         verbose=verbose,
@@ -1512,12 +1533,7 @@ def new(
             os.system("git push")
             os.system("sudo emaint sync -A")
             accept_keyword = "={}/{}-9999 **\n".format(group, app_name)
-            accept_keywords = (
-                Path("/etc/portage/package.accept_keywords")
-                / Path(group)
-                / Path(app_name)
-            )
-            accept_keywords.parent.mkdir(exist_ok=True)
+            accept_keywords = accept_keywords_path(group=group, app_name=app_name)
             write_line_to_file(
                 path=accept_keywords,
                 line=accept_keyword,
