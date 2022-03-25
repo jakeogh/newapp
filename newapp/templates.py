@@ -237,6 +237,7 @@ PYTHON_COMPAT=( python3_{{8..10}} )
 
 inherit git-r3
 {inherit_python}
+{inherit_go}
 #inherit xdg
 #DISTUTILS_USE_SETUPTOOLS=pyproject.toml
 

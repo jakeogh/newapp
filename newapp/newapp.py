@@ -102,8 +102,8 @@ def replace_text(
 
     replace_text_in_file(
         path=path,
-        bytes_to_match=str_to_match.encode("utf8"),
-        replacement=replacement.encode("utf8"),
+        match_bytes=str_to_match.encode("utf8"),
+        replacement_bytes=replacement.encode("utf8"),
         output_fh=None,
         read_mode="rb",
         write_mode="wb",
@@ -249,21 +249,31 @@ def generate_ebuild_template(
     *,
     description: str,
     enable_python: bool,
+    enable_go: bool,
     enable_dobin: bool,
     homepage: str,
     app_path: Path,
     app_name: str,
     dependencies: Sequence[str],
 ) -> str:
+
     ic(enable_python)
     inherit_python = ""
     rdepend_python = ""
     if enable_python:
         inherit_python = "inherit distutils-r1"
         rdepend_python = depend_python
+
+    inherit_go = ""
+    rdepend_go = ""
+    if enable_go:
+        inherit_go = "inherit go-module"
+        # rdepend_go = depend_go
+
     result = ebuild.format(
         description=description,
         inherit_python=inherit_python,
+        inherit_go=inherit_go,
         depend_python=rdepend_python,
         homepage=homepage,
         app_path=app_path,
@@ -1246,7 +1256,7 @@ def check_all(
 
 @cli.command()
 @click.argument(
-    "language", type=click.Choice(["python", "bash", "sh", "zig", "c"]), nargs=1
+    "language", type=click.Choice(["python", "bash", "sh", "zig", "c", "go"]), nargs=1
 )
 @click.argument("repo_url", type=str, nargs=1)
 @click.argument("group", type=str, nargs=1)
@@ -1380,6 +1390,8 @@ def new(
         assert group == "dev-zig"
     elif language == "c":
         ext = ".c"
+    elif language == "go":
+        ext = ".go"
     else:
         raise ValueError("unsupported language: " + language)
 
@@ -1497,6 +1509,9 @@ def new(
 
     ebuild_path = Path(gentoo_overlay_repo) / Path(group) / Path(app_name)
     if not ebuild_path.exists():
+        enable_go = False
+        if language == "go":
+            enable_go = True
         enable_python = False
         if Path(app_path / Path("setup.py")).exists():
             enable_python = True
@@ -1505,7 +1520,7 @@ def new(
         ebuild_name = app_name + "-9999.ebuild"
 
         enable_dobin = False
-        if language in ["bash"]:
+        if language in ["bash", "go"]:
             enable_dobin = True
         with chdir(
             ebuild_path,
@@ -1517,6 +1532,7 @@ def new(
                         app_name=app_name,
                         description=description,
                         enable_python=enable_python,
+                        enable_go=enable_go,
                         enable_dobin=enable_dobin,
                         homepage=repo_url,
                         dependencies=dependencies,
