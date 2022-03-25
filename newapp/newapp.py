@@ -267,7 +267,7 @@ def generate_ebuild_template(
     inherit_go = ""
     rdepend_go = ""
     if enable_go:
-        inherit_go = "inherit go-module golang-vcs golang-vcs-snapshot golang-build"
+        inherit_go = "inherit go-module golang-vcs golang-build"
         # rdepend_go = depend_go
 
     result = ebuild.format(
