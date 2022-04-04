@@ -327,6 +327,7 @@ def generate_init_template(package_name):
 def rename_repo_at_app_path(
     *,
     app_path: Path,
+    app_user: str,
     old_name: str,
     new_name: str,
     app_group: str,
@@ -362,6 +363,7 @@ def rename_repo_at_app_path(
             app_path=app_path,
             local=local,
             app_name=new_name,
+            app_user=app_user,
             verbose=verbose,
         )
 
@@ -477,6 +479,7 @@ def clone_repo(
     else:
         rename_repo_at_app_path(
             app_path=app_path,
+            app_user=app_user,
             app_group=app_group,
             local=local,
             hg=hg,
@@ -510,6 +513,7 @@ def remote_add_origin(
     app_path: Path,
     local: bool,
     app_name: str,
+    app_user: str,
     hg: bool,
     verbose: Union[bool, int, float],
 ):
@@ -530,7 +534,7 @@ def remote_add_origin(
 
     enable_github = [
         "#!/bin/sh",
-        "hub create {}".format("jakeogh/" + app_name),
+        f"hub create {app_user}/{app_name}",
         repo_config_command,
         "git push --set-upstream origin master",
         "touch .push_enabled",
@@ -1502,6 +1506,7 @@ def new(
                 app_path=app_path,
                 local=local,
                 app_name=app_name,
+                app_user=app_user,
                 verbose=verbose,
             )
     else:
