@@ -909,13 +909,14 @@ def rename(
         del old_edit_config
 
         enable_github_sh = old_app_path / Path("enable_github.sh")
-        replace_text(
-            path=enable_github_sh,
-            str_to_match=old_app_name,
-            replacement=new_app_name,
-            verbose=verbose,
-        )
-        # sh.git.add(enable_github_sh)
+        if enable_github_sh.exists():
+            replace_text(
+                path=enable_github_sh,
+                str_to_match=old_app_name,
+                replacement=new_app_name,
+                verbose=verbose,
+            )
+            # sh.git.add(enable_github_sh)
         del enable_github_sh
 
         old_app_py = (
