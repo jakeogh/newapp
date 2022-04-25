@@ -521,14 +521,20 @@ def remote_add_origin(
     if hg:
         raise NotImplementedError("hg")
 
-    repo_config_command = f"git remote add origin git@github.com:jakeogh/{app_name}.git"
+    repo_config_command = sh.Command("git")
+    repo_config_command = repo_config_command.bake(
+        "remote", "add", "origin", f"git@github.com:jakeogh/{app_name}.git"
+    )
+
+    # repo_config_command = f"git remote add origin git@github.com:jakeogh/{app_name}.git"
     ic(repo_config_command)
     if not local:
         with chdir(
             app_path,
             verbose=verbose,
         ):
-            os.system(repo_config_command)
+            # os.system(repo_config_command)
+            repo_config_command()
     else:
         ic("local == True, skipping:", repo_config_command)
 
