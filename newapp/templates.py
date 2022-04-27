@@ -212,6 +212,9 @@ def cli(ctx,
 #        if ipython:
 #            import IPython; IPython.embed()
 
+if __name__ == '__main__':
+    # pylint: disable=E1120
+    cli()
 
 """
 
