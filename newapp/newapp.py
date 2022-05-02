@@ -541,7 +541,7 @@ def remote_add_origin(
     enable_github = [
         "#!/bin/sh",
         f"hub create {app_user}/{app_name}",
-        repo_config_command,
+        str(repo_config_command),
         "git push --set-upstream origin master",
         "touch .push_enabled",
         "\n",
