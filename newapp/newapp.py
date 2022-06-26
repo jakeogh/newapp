@@ -580,6 +580,7 @@ def parse_url(
     app_name = app_name.lower()
     if not keep_underscore:
         app_name = app_name.replace("_", "-")
+    app_name = app_name.split(".git")[0]
     app_module_name = app_name.replace("-", "_")
     app_module_name = app_module_name.split(".git")[0]
     ic(app_module_name)
