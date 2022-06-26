@@ -581,6 +581,7 @@ def parse_url(
     if not keep_underscore:
         app_name = app_name.replace("_", "-")
     app_module_name = app_name.replace("-", "_")
+    app_module_name = app_module_name.split(".git")[0]
     ic(app_module_name)
     app_path = apps_folder / Path(app_name)
     ic(app_path)
