@@ -63,7 +63,7 @@ python_app = """#!/usr/bin/env python3
 # pylint: disable=C0413  # TEMP isort issue [wrong-import-position] Import "from pathlib import Path" should be placed at the top of the module [C0413]
 
 # code style:
-#   no guessing on spelling: never tmp_X always temporary_X
+#   avoid guessing on spelling, just write the word out
 #   dont_makedirs -> no_makedirs
 #   no guessing on case: local vars, functions and methods are lower case. classes are ThisClass(). Globals are THIS.
 #   del vars explicitely ASAP, assumptions are buggy
