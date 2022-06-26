@@ -1358,8 +1358,9 @@ def new(
             for dependency in dependencies
         ]
 
-    if repo_url.endswith(".git"):
-        repo_url = repo_url[:-4]
+    if repo_url.startswith("https://github.com/"):
+        if repo_url.endswith(".git"):
+            repo_url = repo_url[:-4]
 
     assert "/" not in group
     assert ":" not in group
