@@ -274,6 +274,16 @@ enable_github.sh
 """
 
 
+pyproject_toml = """[build-system]
+requires = [
+    "setuptools >= 42",  # At least v42 of setuptools required for versioningit
+    "versioningit",
+    "wheel"
+]
+build-backend = "setuptools.build_meta"
+"""
+
+
 setup_py = """# -*- coding: utf-8 -*-
 
 import sys

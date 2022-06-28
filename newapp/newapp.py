@@ -59,6 +59,7 @@ from .templates import echo_url
 from .templates import edit_config
 from .templates import gitignore
 from .templates import init
+from .templates import pyproject_toml
 from .templates import python_app
 from .templates import setup_py
 from .templates import src_install_dobin
@@ -630,6 +631,11 @@ def write_setup_py(
                 url=repo_url,
             )
         )
+
+
+def write_pyproject_toml():
+    with open("pyproject.toml", "x", encoding="utf8") as fh:
+        fh.write(pyproject_toml)
 
 
 @click.group(context_settings=CONTEXT_SETTINGS, no_args_is_help=True)
