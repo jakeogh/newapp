@@ -62,6 +62,7 @@ python_app = """#!/usr/bin/env python3
 # pylint: disable=attribute-defined-outside-init  # [W0201]
 # pylint: disable=too-many-boolean-expressions    # [R0916] in if statement
 
+from __future__ import annotations
 
 # code style:
 #   avoid guessing on spelling, just write the word out
