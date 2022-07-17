@@ -45,8 +45,8 @@ python_app = """#!/usr/bin/env python3
 # pylint: disable=useless-suppression             # [I0021]
 # pylint: disable=missing-docstring               # [C0111] docstrings are always outdated and wrong
 # pylint: disable=missing-param-doc               # [W9015]
-# pylint: disable=C0114  # Missing module docstring (missing-module-docstring)
-# pylint: disable=fixme                           # [W0511] todo is encouraged
+# pylint: disable=missing-module-docstring        # [C0114]
+# pylint: disable=fixme                           # [W0511] todo encouraged
 # pylint: disable=line-too-long                   # [C0301]
 # pylint: disable=too-many-instance-attributes    # [R0902]
 # pylint: disable=too-many-lines                  # [C0302] too many lines in module
@@ -119,14 +119,11 @@ from timetool import get_timestamp
 #output_table = PrettyTable()
 
 from mptool import unmp
-#from typing import List
-#from typing import Tuple
-from typing import Sequence
+##from typing import Tuple
+from collections.abc import Sequence
 #from typing import Generator
 from typing import Iterable
 #from typing import ByteString
-from typing import Optional
-from typing import Union
 
 sh.mv = None  # use sh.busybox('mv'), coreutils ignores stdin read errors
 
@@ -153,7 +150,7 @@ signal(SIGPIPE, SIG_DFL)
 #@click_add_options(click_global_options)
 #@click.pass_context
 #def cli(ctx,
-#        verbose: Union[bool, int, float],
+#        verbose: bool | int | float,
 #        verbose_inf: bool,
 #        dict_input: bool,
 #        ) -> None:
@@ -183,7 +180,7 @@ def cli(ctx,
         paths: Sequence[str],
         sysskel: Path,
         ipython: bool,
-        verbose: Union[bool, int, float],
+        verbose: bool | int | float,
         verbose_inf: bool,
         dict_input: bool,
         ) -> None:
