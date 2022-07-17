@@ -44,6 +44,7 @@ python_app = """#!/usr/bin/env python3
 
 # pylint: disable=useless-suppression             # [I0021]
 # pylint: disable=missing-docstring               # [C0111] docstrings are always outdated and wrong
+# pylint: disable=missing-param-doc               # [W9015]
 # pylint: disable=C0114  # Missing module docstring (missing-module-docstring)
 # pylint: disable=fixme                           # [W0511] todo is encouraged
 # pylint: disable=line-too-long                   # [C0301]
@@ -60,6 +61,7 @@ python_app = """#!/usr/bin/env python3
 # pylint: disable=no-member                       # [E1101] no member for base
 # pylint: disable=attribute-defined-outside-init  # [W0201]
 # pylint: disable=too-many-boolean-expressions    # [R0916] in if statement
+
 
 # code style:
 #   avoid guessing on spelling, just write the word out
