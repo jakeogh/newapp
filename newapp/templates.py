@@ -91,6 +91,7 @@ import os
 import sys
 import click
 import time
+import logging
 import sh
 from clicktool import click_add_options, click_global_options
 from click_auto_help import AHGroup
@@ -127,6 +128,8 @@ from typing import Iterable
 #from typing import ByteString
 
 sh.mv = None  # use sh.busybox('mv'), coreutils ignores stdin read errors
+
+logging.basicConfig(level=logging.INFO)
 
 # click-command-tree
 #from click_plugins import with_plugins
