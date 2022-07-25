@@ -1,34 +1,33 @@
 #!/usr/bin/env python3
 # -*- coding: utf8 -*-
 
-# pylint: disable=C0111  # docstrings are always outdated and wrong
-# pylint: disable=W0511  # todo is encouraged
-# pylint: disable=C0301  # line too long
-# pylint: disable=R0902  # too many instance attributes
-# pylint: disable=C0302  # too many lines in module
-# pylint: disable=C0103  # single letter var names, func name too descriptive
-# pylint: disable=R0911  # too many return statements
-# pylint: disable=R0912  # too many branches
-# pylint: disable=R0915  # too many statements
-# pylint: disable=R0913  # too many arguments
-# pylint: disable=R1702  # too many nested blocks
-# pylint: disable=R0914  # too many local variables
-# pylint: disable=R0903  # too few public methods
-# pylint: disable=E1101  # no member for base
-# pylint: disable=W0201  # attribute defined outside __init__
-# pylint: disable=R0916  # Too many boolean expressions in if statement
+# pylint: disable=missing-docstring               # [C0111] docstrings are always outdated and wrong
+# pylint: disable=fixme                           # [W0511] todo is encouraged
+# pylint: disable=line-too-long                   # [C0301]
+# pylint: disable=too-many-instance-attributes    # [R0902]
+# pylint: disable=too-many-lines                  # [C0302] too many lines in module
+# pylint: disable=invalid-name                    # [C0103] single letter var names, name too descriptive
+# pylint: disable=too-many-return-statements      # [R0911]
+# pylint: disable=too-many-branches               # [R0912]
+# pylint: disable=too-many-statements             # [R0915]
+# pylint: disable=too-many-arguments              # [R0913]
+# pylint: disable=too-many-nested-blocks          # [R1702]
+# pylint: disable=too-many-locals                 # [R0914]
+# pylint: disable=too-few-public-methods          # [R0903]
+# pylint: disable=no-member                       # [E1101] no member for base
+# pylint: disable=attribute-defined-outside-init  # [W0201]
+# pylint: disable=too-many-boolean-expressions    # [R0916] in if statement
 # pylint: disable=C0305  # Trailing newlines
+from __future__ import annotations
 
-
+import logging
 import os
 import shutil
 import sys
+from collections.abc import Sequence
 from datetime import date
 from math import inf
 from pathlib import Path
-from typing import Optional
-from typing import Sequence
-from typing import Union
 from urllib.parse import urlparse
 
 import click
@@ -66,6 +65,7 @@ from .templates import src_install_dobin
 from .templates import zig_app
 
 sh.mv = None
+logging.basicConfig(level=logging.INFO)
 
 CFG, CONFIG_MTIME = click_read_config(
     click_instance=click,
@@ -95,7 +95,7 @@ def replace_text(
     path: Path,
     str_to_match: str,
     replacement: str,
-    verbose: Union[bool, int, float],
+    verbose: bool | int | float,
 ) -> None:
 
     if verbose:
@@ -118,7 +118,7 @@ def replace_match_pairs_in_file(
     *,
     path: Path,
     match_pairs: tuple,
-    verbose: Union[bool, int, float],
+    verbose: bool | int | float,
 ) -> None:
     assert isinstance(match_pairs, tuple)
     for old_match, new_match in match_pairs:
@@ -135,7 +135,7 @@ def replace_match_pairs_in_file(
 
 def get_url_for_overlay(
     overlay: str,
-    verbose: Union[bool, int, float],
+    verbose: bool | int | float,
 ) -> str:
 
     command = sh.eselect("repository", "list")
@@ -171,7 +171,7 @@ def valid_branch(ctx, param, value):
 def find_edit_configs(
     *,
     apps_folder: Path,
-    verbose: Union[bool, int, float],
+    verbose: bool | int | float,
 ):
 
     edit_configs = []
@@ -297,7 +297,7 @@ def generate_app_template(
     *,
     language: str,
     append_files: Sequence[Path],
-    verbose: Union[bool, int, float],
+    verbose: bool | int | float,
 ) -> str:
 
     result = None
@@ -336,7 +336,7 @@ def rename_repo_at_app_path(
     app_group: str,
     hg: bool,
     local: bool,
-    verbose: Union[bool, int, float],
+    verbose: bool | int | float,
 ):
     ic(old_name, new_name)
     old_module_name = old_name.replace("-", "_")
@@ -443,7 +443,7 @@ def clone_repo(
     app_group: str,
     hg: bool,
     local: bool,
-    verbose: Union[bool, int, float],
+    verbose: bool | int | float,
 ):
 
     app_name, app_user, _, _ = parse_url(
@@ -497,7 +497,7 @@ def create_repo(
     app_path: Path,
     app_module_name: str,
     hg: bool,
-    verbose: Union[bool, int, float],
+    verbose: bool | int | float,
 ):
 
     if hg:
@@ -518,7 +518,7 @@ def remote_add_origin(
     app_name: str,
     app_user: str,
     hg: bool,
-    verbose: Union[bool, int, float],
+    verbose: bool | int | float,
 ):
 
     if hg:
@@ -559,7 +559,7 @@ def parse_url(
     repo_url: str,
     *,
     apps_folder: Path,
-    verbose: Union[bool, int, float],
+    verbose: bool | int | float,
     keep_underscore: bool = False,  # for rename
 ):
 
@@ -593,7 +593,7 @@ def parse_url(
 def write_url_sh(
     repo_url,
     *,
-    verbose: Union[bool, int, float],
+    verbose: bool | int | float,
 ):
     url_template = generate_url_template(url=repo_url)
     with open("url.sh", "x", encoding="utf8") as fh:
@@ -643,7 +643,7 @@ def write_pyproject_toml():
 @click.pass_context
 def cli(
     ctx,
-    verbose: Union[bool, int, float],
+    verbose: bool | int | float,
     verbose_inf: bool,
     dict_input: bool,
 ):
@@ -661,7 +661,7 @@ def cli(
 def get_overlay_url(
     ctx,
     overlay_name,
-    verbose: Union[bool, int, float],
+    verbose: bool | int | float,
     verbose_inf: bool,
     dict_input: bool,
 ):
@@ -679,7 +679,7 @@ def get_overlay_url(
 def nineify(
     ctx,
     app,
-    verbose: Union[bool, int, float],
+    verbose: bool | int | float,
     verbose_inf: bool,
     dict_input: bool,
 ):
@@ -711,7 +711,7 @@ def nineify(
 @click.pass_context
 def template_pylint(
     ctx,
-    verbose: Union[bool, int, float],
+    verbose: bool | int | float,
     verbose_inf: bool,
     dict_input: bool,
 ):
@@ -741,7 +741,7 @@ def template_pylint(
 def template_python(
     ctx,
     package_name: str,
-    verbose: Union[bool, int, float],
+    verbose: bool | int | float,
     verbose_inf: bool,
     dict_input: bool,
 ):
@@ -767,7 +767,7 @@ def template_python(
 def template_bash(
     ctx,
     package_name: str,
-    verbose: Union[bool, int, float],
+    verbose: bool | int | float,
     verbose_inf: bool,
     dict_input: bool,
 ):
@@ -793,7 +793,7 @@ def template_bash(
 def template_zig(
     ctx,
     package_name: str,
-    verbose: Union[bool, int, float],
+    verbose: bool | int | float,
     verbose_inf: bool,
     dict_input: bool,
 ):
@@ -832,7 +832,7 @@ def rename(
     gentoo_overlay_repo,
     github_user,
     local,
-    verbose: Union[bool, int, float],
+    verbose: bool | int | float,
     verbose_inf: bool,
     dict_input: bool,
     hg: bool,
@@ -1105,7 +1105,7 @@ def list_all(
     ctx,
     apps_folder: Path,
     ls_remote: bool,
-    verbose: Union[bool, int, float],
+    verbose: bool | int | float,
     verbose_inf: bool,
     dict_input: bool,
 ):
@@ -1175,7 +1175,7 @@ def list_all(
 def list_all_paths(
     ctx,
     apps_folder: Path,
-    verbose: Union[bool, int, float],
+    verbose: bool | int | float,
     verbose_inf: bool,
     dict_input: bool,
 ):
@@ -1227,7 +1227,7 @@ def check_all(
     apps_folder: Path,
     gentoo_overlay_repo: str,
     github_user: str,
-    verbose: Union[bool, int, float],
+    verbose: bool | int | float,
     verbose_inf: bool,
     dict_input: bool,
     local: bool,
@@ -1329,7 +1329,7 @@ def new(
     repo_url: str,
     group: str,
     branch: str,
-    rename: Optional[str],
+    rename: None | str,
     templates: Sequence[Path],
     dependencies: Sequence[str],
     apps_folder: str,
@@ -1341,7 +1341,7 @@ def new(
     description: str,
     local: bool,
     use_existing_repo: bool,
-    verbose: Union[bool, int, float],
+    verbose: bool | int | float,
     verbose_inf: bool,
     dict_input: bool,
     hg: bool,
@@ -1375,7 +1375,7 @@ def new(
     assert group in portage_categories()
     assert repo_url.startswith("https://")
 
-    template_repo_url: Optional[str] = None
+    template_repo_url: None | str = None
     if not repo_url.startswith(f"https://github.com/{github_user}/"):
         template_repo_url = repo_url
         _app_name, _app_user, _app_module_name, _app_path = parse_url(
@@ -1610,7 +1610,7 @@ def delete(
     apps_folder: str,
     gentoo_overlay_repo: str,
     github_user: str,
-    verbose: Union[bool, int, float],
+    verbose: bool | int | float,
     verbose_inf: bool,
     dict_input: bool,
 ):
