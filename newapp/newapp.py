@@ -465,9 +465,11 @@ def clone_repo(
         repo_to_clone_url = repo_url
 
     if hg:
-        sh.hg("clone", repo_to_clone_url, str(app_path))
+        sh.hg(
+            "clone", repo_to_clone_url, str(app_path), _out=sys.stdout, _err=sys.stderr
+        )
     else:
-        sh.git.clone(repo_to_clone_url, str(app_path))
+        sh.git.clone(repo_to_clone_url, str(app_path), _out=sys.stdout, _err=sys.stderr)
 
     if branch != "master":
         branch_cmd = "git checkout -b " + '"' + branch + '"'
