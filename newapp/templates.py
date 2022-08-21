@@ -149,20 +149,20 @@ logging.basicConfig(level=logging.INFO)
 signal(SIGPIPE, SIG_DFL)
 
 
-#@with_plugins(iter_entry_points('click_command_tree'))
-#@click.group(no_args_is_help=True, cls=AHGroup)
-#@click_add_options(click_global_options)
-#@click.pass_context
-#def cli(ctx,
-#        verbose: bool | int | float,
-#        verbose_inf: bool,
-#        dict_input: bool,
-#        ) -> None:
+# @with_plugins(iter_entry_points('click_command_tree'))
+# @click.group(no_args_is_help=True, cls=AHGroup)
+# @click_add_options(click_global_options)
+# @click.pass_context
+# def cli(ctx,
+#         verbose: bool | int | float,
+#         verbose_inf: bool,
+#         dict_input: bool,
+#         ) -> None:
 #
-#    tty, verbose = tv(ctx=ctx,
-#                      verbose=verbose,
-#                      verbose_inf=verbose_inf,
-#                      )
+#     tty, verbose = tv(ctx=ctx,
+#                       verbose=verbose,
+#                       verbose_inf=verbose_inf,
+#                       )
 
 
 # update setup.py if changing function name
