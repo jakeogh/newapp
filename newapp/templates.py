@@ -197,7 +197,7 @@ def cli(ctx,
     if paths:
         iterator = paths
     else:
-        iterator = unmp(valid_types=[bytes,], verbose=verbose)
+        iterator = unmp(valid_types=[dict, bytes,], verbose=verbose)
     del paths
 
     index = 0
