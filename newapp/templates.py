@@ -156,7 +156,7 @@ signal(SIGPIPE, SIG_DFL)
 # def cli(ctx,
 #         verbose: bool | int | float,
 #         verbose_inf: bool,
-#         dict_input: bool,
+#         dict_output: bool,
 #         ) -> None:
 #
 #     tty, verbose = tv(ctx=ctx,
@@ -186,7 +186,7 @@ def cli(ctx,
         ipython: bool,
         verbose: bool | int | float,
         verbose_inf: bool,
-        dict_input: bool,
+        dict_output: bool,
         ) -> None:
 
     tty, verbose = tv(ctx=ctx,
@@ -209,7 +209,7 @@ def cli(ctx,
         with open(path, 'rb') as fh:
             path_bytes_data = fh.read()
 
-        output(path, reason=None, dict_input=dict_input, tty=tty, verbose=verbose)
+        output(path, reason=None, dict_output=dict_output, tty=tty, verbose=verbose)
 
 #        if ipython:
 #            import IPython; IPython.embed()
