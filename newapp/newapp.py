@@ -647,7 +647,7 @@ def cli(
     ctx,
     verbose: bool | int | float,
     verbose_inf: bool,
-    dict_input: bool,
+    dict_output: bool,
 ):
     tty, verbose = tv(
         ctx=ctx,
@@ -665,7 +665,7 @@ def get_overlay_url(
     overlay_name,
     verbose: bool | int | float,
     verbose_inf: bool,
-    dict_input: bool,
+    dict_output: bool,
 ):
     url = get_url_for_overlay(
         overlay_name,
@@ -683,7 +683,7 @@ def nineify(
     app,
     verbose: bool | int | float,
     verbose_inf: bool,
-    dict_input: bool,
+    dict_output: bool,
 ):
 
     tty, verbose = tv(
@@ -715,7 +715,7 @@ def template_pylint(
     ctx,
     verbose: bool | int | float,
     verbose_inf: bool,
-    dict_input: bool,
+    dict_output: bool,
 ):
 
     tty, verbose = tv(
@@ -745,7 +745,7 @@ def template_python(
     package_name: str,
     verbose: bool | int | float,
     verbose_inf: bool,
-    dict_input: bool,
+    dict_output: bool,
 ):
 
     tty, verbose = tv(
@@ -759,7 +759,7 @@ def template_python(
         append_files=(),
         verbose=ctx.obj["verbose"],
     )
-    output(app_template, reason=None, dict_input=dict_input, tty=tty, verbose=verbose)
+    output(app_template, reason=None, dict_output=dict_output, tty=tty, verbose=verbose)
 
 
 @cli.command()
@@ -771,7 +771,7 @@ def template_bash(
     package_name: str,
     verbose: bool | int | float,
     verbose_inf: bool,
-    dict_input: bool,
+    dict_output: bool,
 ):
 
     tty, verbose = tv(
@@ -797,7 +797,7 @@ def template_zig(
     package_name: str,
     verbose: bool | int | float,
     verbose_inf: bool,
-    dict_input: bool,
+    dict_output: bool,
 ):
 
     tty, verbose = tv(
@@ -836,7 +836,7 @@ def rename(
     local,
     verbose: bool | int | float,
     verbose_inf: bool,
-    dict_input: bool,
+    dict_output: bool,
     hg: bool,
 ):
 
@@ -1109,7 +1109,7 @@ def list_all(
     ls_remote: bool,
     verbose: bool | int | float,
     verbose_inf: bool,
-    dict_input: bool,
+    dict_output: bool,
 ):
 
     tty, verbose = tv(
@@ -1146,7 +1146,7 @@ def list_all(
             output(
                 (return_code, config.parent.name),
                 reason=None,
-                dict_input=dict_input,
+                dict_output=dict_output,
                 tty=tty,
                 verbose=verbose,
             )
@@ -1154,7 +1154,7 @@ def list_all(
             output(
                 config.parent.name,
                 reason=None,
-                dict_input=dict_input,
+                dict_output=dict_output,
                 tty=tty,
                 verbose=verbose,
             )
@@ -1179,7 +1179,7 @@ def list_all_paths(
     apps_folder: Path,
     verbose: bool | int | float,
     verbose_inf: bool,
-    dict_input: bool,
+    dict_output: bool,
 ):
 
     tty, verbose = tv(
@@ -1201,7 +1201,7 @@ def list_all_paths(
         output(
             os.fsencode(config.parent.as_posix()),
             reason=None,
-            dict_input=dict_input,
+            dict_output=dict_output,
             tty=tty,
             verbose=verbose,
         )
@@ -1231,7 +1231,7 @@ def check_all(
     github_user: str,
     verbose: bool | int | float,
     verbose_inf: bool,
-    dict_input: bool,
+    dict_output: bool,
     local: bool,
 ):
 
@@ -1345,7 +1345,7 @@ def new(
     use_existing_repo: bool,
     verbose: bool | int | float,
     verbose_inf: bool,
-    dict_input: bool,
+    dict_output: bool,
     hg: bool,
 ):
 
@@ -1614,7 +1614,7 @@ def delete(
     github_user: str,
     verbose: bool | int | float,
     verbose_inf: bool,
-    dict_input: bool,
+    dict_output: bool,
 ):
 
     not_root()

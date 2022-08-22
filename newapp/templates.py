@@ -168,7 +168,6 @@ signal(SIGPIPE, SIG_DFL)
 # update setup.py if changing function name
 #@click.argument("slice_syntax", type=validate_slice, nargs=1)
 @click.command()
-@click.argument("paths", type=str, nargs=-1)
 @click.argument("sysskel",
                 type=click.Path(exists=False,
                                 dir_okay=True,
@@ -181,7 +180,6 @@ signal(SIGPIPE, SIG_DFL)
 @click_add_options(click_global_options)
 @click.pass_context
 def cli(ctx,
-        paths: Sequence[str],
         sysskel: Path,
         ipython: bool,
         verbose: bool | int | float,
@@ -194,22 +192,23 @@ def cli(ctx,
                       verbose_inf=verbose_inf,
                       )
 
-    if paths:
-        iterator = paths
-    else:
-        iterator = unmp(valid_types=[dict, bytes,], verbose=verbose)
-    del paths
+    iterator = unmp(valid_types=[dict, bytes,], verbose=verbose)
 
     index = 0
-    for index, _path in enumerate(iterator):
-        path = Path(os.fsdecode(_path)).resolve()
+    _k = None
+    for index, _mptype in enumerate(iterator):
+        if isinstance(mptype, dict):
+            for _k, _v in _mptype.items():
+                break   # assume single k:v dict
+        else:
+            _v = Path(os.fsdecode(_mptype)).resolve()
         if verbose:
-            ic(index, path)
+            ic(index, _v)
 
-        with open(path, 'rb') as fh:
+        with open(_v, 'rb') as fh:
             path_bytes_data = fh.read()
 
-        output(path, reason=None, dict_output=dict_output, tty=tty, verbose=verbose)
+        output(path, reason=_mptype, dict_output=dict_output, tty=tty, verbose=verbose)
 
 #        if ipython:
 #            import IPython; IPython.embed()
