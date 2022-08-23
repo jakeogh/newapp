@@ -93,26 +93,31 @@ import click
 import time
 import logging
 import sh
+from collections.abc import Sequence
 from clicktool import click_add_options, click_global_options
 from click_auto_help import AHGroup
 from signal import signal, SIGPIPE, SIG_DFL
 from pathlib import Path
-#from with_sshfs import sshfs
-#from with_chdir import chdir
 from mptool import output
 from clicktool import tv
 from asserttool import validate_slice
 from eprint import eprint
 from asserttool import ic
 from retry_on_exception import retry_on_exception
+from timetool import get_timestamp
+
+from unmp import unmp
+##from typing import Tuple
+#from typing import Generator
+#from typing import ByteString
+#from with_sshfs import sshfs
+#from with_chdir import chdir
 #from collections import defaultdict
 #from prettyprinter import cpprint
 #from prettyprinter import install_extras
 #install_extras(['attrs'])
-from timetool import get_timestamp
 #from configtool import click_read_config
 #from configtool import click_write_config_entry
-
 #from asserttool import not_root
 #from pathtool import path_is_block_special
 #from pathtool import write_line_to_file
@@ -120,12 +125,6 @@ from timetool import get_timestamp
 #from prettytable import PrettyTable
 #output_table = PrettyTable()
 
-from unmp import unmp
-##from typing import Tuple
-from collections.abc import Sequence
-#from typing import Generator
-from typing import Iterable
-#from typing import ByteString
 
 sh.mv = None  # use sh.busybox('mv'), coreutils ignores stdin read errors
 
@@ -197,7 +196,7 @@ def cli(ctx,
     index = 0
     _k = None
     for index, _mptype in enumerate(iterator):
-        if isinstance(mptype, dict):
+        if isinstance(_mptype, dict):
             for _k, _v in _mptype.items():
                 break   # assume single k:v dict
         else:
