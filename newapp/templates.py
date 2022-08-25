@@ -191,7 +191,7 @@ def cli(ctx,
                       verbose_inf=verbose_inf,
                       )
 
-    iterator = unmp(valid_types=[dict, bytes,], verbose=verbose)
+    iterator: Sequence[dict | bytes] = unmp(valid_types=[dict, bytes,], verbose=verbose)
 
     index = 0
     _k = None
