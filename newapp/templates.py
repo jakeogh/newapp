@@ -180,7 +180,7 @@ signal(SIGPIPE, SIG_DFL)
 @click_add_options(click_global_options)
 @click.pass_context
 def cli(ctx,
-        keys: None | Sequence[str]
+        keys: None | Sequence[str],
         sysskel: Path,
         ipython: bool,
         verbose: bool | int | float,
@@ -206,21 +206,21 @@ def cli(ctx,
             if first_type == dict:
                 key_count = len(list(_mpobject.keys()))
             else:
-                key_count = None ❯ F841 local variab
+                key_count = None
         if key_count:
             assert len(keys) > 0
         if isinstance(_mpobject, dict):
             for _k, _v in _mpobject.items():
                 break   # assume single k:v dict
         else:
-            _v = Path(os.fsdecode(_mptype)).resolve()
+            _v = Path(os.fsdecode(_mpobject)).resolve()
         if verbose:
             ic(index, _v)
 
         with open(_v, 'rb') as fh:
             path_bytes_data = fh.read()
 
-        output(path, reason=_mptype, dict_output=dict_output, tty=tty, verbose=verbose)
+        output(path, reason=_mpobject, dict_output=dict_output, tty=tty, verbose=verbose)
 
 #        if ipython:
 #            import IPython; IPython.embed()
