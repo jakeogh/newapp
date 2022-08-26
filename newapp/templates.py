@@ -208,7 +208,7 @@ def cli(ctx,
         #        key_count = len(list(_mpobject.keys()))
         #    else:
         #        key_count = None
-        if key_count:
+        if key_count > 1:
             assert len(keys) > 0
         if isinstance(_mpobject, dict):
             for _k, _v in _mpobject.items():
