@@ -193,11 +193,20 @@ def cli(ctx,
 
     iterator: Sequence[dict | bytes] = unmp(valid_types=[dict, bytes,], verbose=verbose)
 
+    # need to send a single key, or multiple keys, if multiple keys, keys need to specified on the commandline
+    # either way, the output is still a dict
+
     index = 0
     _k = None
-    for index, _mptype in enumerate(iterator):
-        if isinstance(_mptype, dict):
-            for _k, _v in _mptype.items():
+    for index, _mpobject in enumerate(iterator):
+        if index == 0:
+            first_type = type(_mpobject)
+            if first_type == dict:
+                key_count = len(list(_mpobject.keys()))
+            else:
+                key_count = None ❯ F841 local variab
+        if isinstance(_mpobject, dict):
+            for _k, _v in _mpobject.items():
                 break   # assume single k:v dict
         else:
             _v = Path(os.fsdecode(_mptype)).resolve()
