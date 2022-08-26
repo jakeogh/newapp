@@ -201,13 +201,13 @@ def cli(ctx,
 
     index = 0
     _k = None
-    for index, _mpobject in enumerate(iterator):
-        if index == 0:
-            first_type = type(_mpobject)
-            if first_type == dict:
-                key_count = len(list(_mpobject.keys()))
-            else:
-                key_count = None
+    for index, _mpobject, key_count in mpd_enumerate(iterator, verbose=verbose):
+        #if index == 0:
+        #    first_type = type(_mpobject)
+        #    if first_type == dict:
+        #        key_count = len(list(_mpobject.keys()))
+        #    else:
+        #        key_count = None
         if key_count:
             assert len(keys) > 0
         if isinstance(_mpobject, dict):
