@@ -205,6 +205,8 @@ def cli(ctx,
                 key_count = len(list(_mpobject.keys()))
             else:
                 key_count = None ❯ F841 local variab
+        if key_count:
+            assert len(keys) > 0
         if isinstance(_mpobject, dict):
             for _k, _v in _mpobject.items():
                 break   # assume single k:v dict
