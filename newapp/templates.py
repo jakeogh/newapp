@@ -180,7 +180,7 @@ signal(SIGPIPE, SIG_DFL)
 @click_add_options(click_global_options)
 @click.pass_context
 def cli(ctx,
-        keys: None | Sequence[str],
+        keys: Sequence[str],
         sysskel: Path,
         ipython: bool,
         verbose: bool | int | float,
