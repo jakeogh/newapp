@@ -167,6 +167,7 @@ signal(SIGPIPE, SIG_DFL)
 # update setup.py if changing function name
 #@click.argument("slice_syntax", type=validate_slice, nargs=1)
 @click.command()
+@click.argument('keys', type=str, nargs=-1)
 @click.argument("sysskel",
                 type=click.Path(exists=False,
                                 dir_okay=True,
@@ -179,6 +180,7 @@ signal(SIGPIPE, SIG_DFL)
 @click_add_options(click_global_options)
 @click.pass_context
 def cli(ctx,
+        keys: None | Sequence[str]
         sysskel: Path,
         ipython: bool,
         verbose: bool | int | float,
