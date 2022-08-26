@@ -99,6 +99,7 @@ from click_auto_help import AHGroup
 from signal import signal, SIGPIPE, SIG_DFL
 from pathlib import Path
 from mptool import output
+from mptool import mpd_enumerate
 from clicktool import tv
 from asserttool import validate_slice
 from eprint import eprint
