@@ -194,7 +194,7 @@ def cli(ctx,
                       verbose_inf=verbose_inf,
                       )
 
-    iterator: Sequence[dict | bytes] = unmp(valid_types=[dict, bytes,], verbose=verbose)
+    iterator: Sequence[dict | bytes | str] = unmp(valid_types=[dict, bytes, str], verbose=verbose)
 
     # need to send a single key, or multiple keys, if multiple keys, keys need to specified on the commandline
     # either way, the output is still a dict
