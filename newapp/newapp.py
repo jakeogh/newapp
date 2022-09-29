@@ -54,6 +54,7 @@ from with_chdir import chdir
 from .templates import autogenerate_readme
 from .templates import bash_app
 from .templates import depend_python
+from .templates import description_md
 from .templates import ebuild
 from .templates import echo_url
 from .templates import edit_config
@@ -329,6 +330,10 @@ def generate_url_template(url):
 
 def generate_init_template(package_name):
     return init.format(package_name=package_name)
+
+
+def generate_description_md_template(package_name):
+    return description_md.format(package_name=package_name)
 
 
 def rename_repo_at_app_path(
@@ -1521,6 +1526,8 @@ def new(
                     with open("__init__.py", "x") as fh:
                         fh.write(init_template)
                     sh.touch("py.typed")
+
+            generate_description_md_template(package_name=app_name)
 
             with chdir(
                 app_path,
