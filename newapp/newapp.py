@@ -51,6 +51,7 @@ from replace_text import replace_text_in_file
 from timetool import get_timestamp
 from with_chdir import chdir
 
+from .templates import autogenerate_readme
 from .templates import bash_app
 from .templates import depend_python
 from .templates import ebuild
@@ -108,7 +109,6 @@ def replace_text(
         output_fh=None,
         read_mode="rb",
         write_mode="wb",
-        stdout=False,
         remove_match=False,
         verbose=verbose,
     )
@@ -246,6 +246,10 @@ def generate_setup_py(
 
 def generate_src_install_dobin_template(app_name):
     return src_install_dobin.format(app_name=app_name)
+
+
+def generate_autogenerate_readme():
+    return autogenerate_readme
 
 
 def generate_ebuild_template(
@@ -601,6 +605,16 @@ def write_url_sh(
     with open("url.sh", "x", encoding="utf8") as fh:
         fh.write(url_template)
     sh.chmod("+x", "url.sh")
+
+
+def write_autogenerate_readme_sh(
+    *,
+    verbose: bool | int | float,
+):
+    autogenerate_readme_template = generate_autogenerate_readme()
+    with open(".autogenerate_readme.sh", "x", encoding="utf8") as fh:
+        fh.write(autogenerate_readme_template)
+    # sh.chmod("+x", ".autogenerate_readme.sh")
 
 
 def write_setup_py(
@@ -1478,6 +1492,11 @@ def new(
                 if not Path("url.sh").exists():
                     write_url_sh(
                         repo_url,
+                        verbose=verbose,
+                    )
+
+                if not Path(".autogenerate_readme.sh").exists():
+                    write_autogenerate_readme_sh(
                         verbose=verbose,
                     )
 

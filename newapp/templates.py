@@ -3,6 +3,8 @@
 
 from icecream import ic
 
+autogenerate_readme = "#!/bin/sh"
+
 init = """#from .{package_name} import {package_name}"""
 
 
