@@ -1527,8 +1527,6 @@ def new(
                         fh.write(init_template)
                     sh.touch("py.typed")
 
-            generate_description_md_template(package_name=app_name)
-
             with chdir(
                 app_path,
                 verbose=verbose,
@@ -1555,8 +1553,13 @@ def new(
                 app_user=app_user,
                 verbose=verbose,
             )
+
+            _description_md = generate_description_md_template(package_name=app_name)
+            with open(".description.md", "x") as fh:
+                fh.write(_description_md)
+
     else:
-        eprint("Not creating new app, {} already exists.".format(app_path))
+        eprint(f"Not creating new app, {app_path} already exists.")
 
     ebuild_path = Path(gentoo_overlay_repo) / Path(group) / Path(app_name)
     if not ebuild_path.exists():

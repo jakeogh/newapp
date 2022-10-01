@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-
 from icecream import ic
 
 description_md = """**{package_name}**:"""
@@ -13,6 +12,12 @@ init = """#from .{package_name} import {package_name}"""
 echo_url = '''#!/bin/sh
 echo "{url}"'''
 
+# description_md = """
+#'{package_name}'
+#'{package_group}'
+#'{short_package}'
+#'{remote}'
+# """
 
 edit_config = """#!/bin/sh
 short_package="{package_name}"
