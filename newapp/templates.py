@@ -138,7 +138,6 @@ from unmp import unmp
 
 sh.mv = None  # use sh.busybox('mv'), coreutils ignores stdin read errors
 
-logging.basicConfig(level=logging.INFO)
 
 # click-command-tree
 #from click_plugins import with_plugins
@@ -172,6 +171,8 @@ signal(SIGPIPE, SIG_DFL)
 #                       verbose=verbose,
 #                       verbose_inf=verbose_inf,
 #                       )
+#     if verbose:
+#         logging.basicConfig(level=logging.INFO)
 
 
 # update setup.py if changing function name
