@@ -53,6 +53,7 @@ from with_chdir import chdir
 
 from .templates import autogenerate_readme
 from .templates import bash_app
+from .templates import cee_app
 from .templates import depend_python
 from .templates import description_md
 from .templates import ebuild
@@ -314,6 +315,9 @@ def generate_app_template(
         result = bash_app.format(package_name=package_name, newline="\\n", null="\\x00")
     if language == "zig":
         result = zig_app.format(package_name=package_name, newline="\\n", null="\\x00")
+    if language == "c":
+        # result = cee_app.format(package_name=package_name, newline="\\n", null="\\x00")
+        result = cee_app
 
     if result:
         for file in append_files:

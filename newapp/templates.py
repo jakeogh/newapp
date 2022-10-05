@@ -40,6 +40,7 @@ pub fn main() !void {{
 }}
 """
 
+cee_app = "\\acomment"
 
 bash_app = """#!/usr/bin/env bash
 echo '{newline}' '{null}'
