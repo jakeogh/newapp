@@ -229,10 +229,10 @@ def cli(ctx,
         if verbose:
             ic(index, _v)
 
-        with open(_v, 'rb') as fh:
-            path_bytes_data = fh.read()
+        #with open(_v, 'rb') as fh:
+        #    path_bytes_data = fh.read()
 
-        output(path, reason=_mpobject, dict_output=dict_output, tty=tty, verbose=verbose)
+        output(_v, reason=_mpobject, dict_output=dict_output, tty=tty, verbose=verbose)
 
 #        if ipython:
 #            import IPython; IPython.embed()
