@@ -2,7 +2,8 @@
 
 from icecream import ic
 
-description_md = """**{package_name}**:"""
+description_md = """**{package_name}**:
+"""
 
 autogenerate_readme = "#!/bin/sh"
 

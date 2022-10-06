@@ -623,6 +623,7 @@ def write_autogenerate_readme_sh(
     autogenerate_readme_template = generate_autogenerate_readme()
     with open(".autogenerate_readme.sh", "x", encoding="utf8") as fh:
         fh.write(autogenerate_readme_template)
+    sh.git.add(".autogenerate_readme.sh")
     # sh.chmod("+x", ".autogenerate_readme.sh")
 
 
@@ -1553,6 +1554,7 @@ def new(
             _description_md = generate_description_md_template(package_name=app_name)
             with open(".description.md", "x") as fh:
                 fh.write(_description_md)
+            sh.git.add(".description.md")
 
     else:
         eprint(f"Not creating new app, {app_path} already exists.")
