@@ -294,8 +294,8 @@ def generate_ebuild_template(
     return result
 
 
-def generate_gitignore_template():
-    return gitignore.format()
+def generate_gitignore_template(*, ebuild_name):
+    return gitignore.format(ebuild_name=ebuild_name)
 
 
 def generate_app_template(
@@ -1490,14 +1490,6 @@ def new(
                         repo_url=repo_url,
                     )
 
-                gitignore_template = generate_gitignore_template()
-                if use_existing_repo:
-                    with open(".gitignore", "a") as fh:
-                        fh.write(gitignore_template)
-                else:
-                    with open(".gitignore", "x") as fh:
-                        fh.write(gitignore_template)
-
                 if not Path("url.sh").exists():
                     write_url_sh(
                         repo_url,
@@ -1618,6 +1610,17 @@ def new(
             sh.ln("-s", ebuild_path / ebuild_name, app_path / ebuild_name)
             sh.git.diff("--exit-code")
             # need to commit any pending ebuild changes here, but that's the wront git message, and it fails if it's unhanged
+
+            gitignore_template = generate_gitignore_template(ebuild_name=ebuild_name)
+            if use_existing_repo:
+                with open(".gitignore", "a") as fh:
+                    fh.write(gitignore_template)
+            else:
+                with open(".gitignore", "x") as fh:
+                    fh.write(gitignore_template)
+
+            sh.git.add(".gitignore")
+
             sh.git.commit("-m", "initial commit", _ok_code=[0, 1])
     else:
         eprint("Not creating new ebuild, {} already exists.".format(ebuild_path))
