@@ -296,6 +296,7 @@ src_install() {{
 
 gitignore = """.git
 .edit_config
+.push_enabled
 enable_github.sh
 {ebuild_name}
 """
