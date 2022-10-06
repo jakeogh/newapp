@@ -1558,6 +1558,7 @@ def new(
         eprint(f"Not creating new app, {app_path} already exists.")
 
     ebuild_path = Path(gentoo_overlay_repo) / Path(group) / Path(app_name)
+    ebuild_name = app_name + "-9999.ebuild"
     if not ebuild_path.exists():
         enable_go = False
         if language == "go":
@@ -1567,7 +1568,6 @@ def new(
             enable_python = True
 
         os.makedirs(ebuild_path, exist_ok=False)
-        ebuild_name = app_name + "-9999.ebuild"
 
         enable_dobin = False
         if language in ["bash", "go"]:
@@ -1611,6 +1611,10 @@ def new(
             sh.git.diff("--exit-code")
             # need to commit any pending ebuild changes here, but that's the wront git message, and it fails if it's unhanged
 
+        with chdir(
+            app_path,
+            verbose=verbose,
+        ):
             gitignore_template = generate_gitignore_template(ebuild_name=ebuild_name)
             if use_existing_repo:
                 with open(".gitignore", "a") as fh:
