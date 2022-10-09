@@ -61,6 +61,7 @@ from .templates import echo_url
 from .templates import edit_config
 from .templates import gitignore
 from .templates import init
+from .templates import install_md
 from .templates import pyproject_toml
 from .templates import python_app
 from .templates import setup_py
@@ -341,7 +342,7 @@ def generate_description_md_template(*, package_name, repo_url):
 
 
 def generate_install_md_template(*, package_name):
-    return description_md.format(package_name=package_name)
+    return install_md.format(package_name=package_name)
 
 
 def rename_repo_at_app_path(
