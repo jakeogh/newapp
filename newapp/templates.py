@@ -2,7 +2,19 @@
 
 from icecream import ic
 
-description_md = """**{package_name}**:
+description_md = """**{package_name}**: {repo_url}
+"""
+
+install_md = """### Installation:
+
+#### Debian 11
+
+    1. sudo apt-get install python3-pip -y
+
+    2. pip install --force-reinstall git+https://git@github.com/jakeogh/{package_name}
+
+    3. source ~/.profile
+
 """
 
 autogenerate_readme = "#!/bin/sh"

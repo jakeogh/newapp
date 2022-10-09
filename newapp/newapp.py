@@ -336,7 +336,11 @@ def generate_init_template(package_name):
     return init.format(package_name=package_name)
 
 
-def generate_description_md_template(package_name):
+def generate_description_md_template(*, package_name, repo_url):
+    return description_md.format(package_name=package_name, repo_url=repo_url)
+
+
+def generate_install_md_template(*, package_name):
     return description_md.format(package_name=package_name)
 
 
@@ -1551,10 +1555,17 @@ def new(
                 verbose=verbose,
             )
 
-            _description_md = generate_description_md_template(package_name=app_name)
+            _description_md = generate_description_md_template(
+                package_name=app_name, repo_url=repo_url
+            )
             with open(".description.md", "x") as fh:
                 fh.write(_description_md)
             sh.git.add(".description.md")
+
+            _install_md = generate_install_md_template(package_name=app_name)
+            with open(".install.md", "x") as fh:
+                fh.write(_install_md)
+            sh.git.add(".install.md")
 
     else:
         eprint(f"Not creating new app, {app_path} already exists.")
