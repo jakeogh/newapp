@@ -1060,6 +1060,7 @@ def rename(
                 _err=sys.stderr,
             )
             new_ebuild_path = Path(new_app_name / new_ebuild_name).resolve()
+            sh.git.add("-u")
             sh.git.commit(
                 "-m",
                 "rename",
