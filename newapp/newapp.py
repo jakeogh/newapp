@@ -345,6 +345,7 @@ def generate_install_md_template(*, package_name):
     return install_md.format(package_name=package_name)
 
 
+# bug, this renames module names from _ to - which is not valid py
 def rename_repo_at_app_path(
     *,
     app_path: Path,
