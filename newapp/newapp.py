@@ -1527,7 +1527,7 @@ def new(
 
                 if language == "python":
                     init_template = generate_init_template(package_name=app_module_name)
-                    with open("__init__.py", "x") as fh:
+                    with open("__init__.py", "x", encoding="utf8") as fh:
                         fh.write(init_template)
                     sh.touch("py.typed")
 
@@ -1542,7 +1542,7 @@ def new(
             app_path,
             verbose=verbose,
         ):
-            with open(".edit_config", "x") as fh:
+            with open(".edit_config", "x", encoding="utf8") as fh:
                 fh.write(
                     generate_edit_config(
                         package_name=app_name, package_group=group, local=local
@@ -1561,12 +1561,12 @@ def new(
             _description_md = generate_description_md_template(
                 package_name=app_name, repo_url=repo_url
             )
-            with open(".description.md", "x") as fh:
+            with open(".description.md", "x", encoding="utf8") as fh:
                 fh.write(_description_md)
             sh.git.add(".description.md")
 
             _install_md = generate_install_md_template(package_name=app_name)
-            with open(".install.md", "x") as fh:
+            with open(".install.md", "x", encoding="utf8") as fh:
                 fh.write(_install_md)
             sh.git.add(".install.md")
 
@@ -1611,10 +1611,10 @@ def new(
             sh.git.add(
                 "-u"
             )  # add any unstaged changes (like some other ebuild was deleted)
-            os.system("git commit -m 'newapp {}'".format(app_name))
+            os.system(f"git commit -m 'newapp {app_name}'")
             os.system("git push")
             os.system("sudo emaint sync -A")
-            accept_keyword = "={}/{}-9999 **\n".format(group, app_name)
+            accept_keyword = f"={group}/{app_name}-9999 **\n"
             accept_keywords = accept_keywords_path(group=group, app_name=app_name)
             write_line_to_file(
                 path=accept_keywords,
@@ -1635,15 +1635,20 @@ def new(
             if use_existing_repo:
                 with open(".gitignore", "a") as fh:
                     fh.write(gitignore_template)
-            else:
-                with open(".gitignore", "x") as fh:
-                    fh.write(gitignore_template)
+            else:  # could be a cloned repo, not a new one...
+                try:
+                    with open(".gitignore", "x") as fh:
+                        fh.write(gitignore_template)
+                except FileExistsError as e:
+                    ic(e)
+                    with open(".gitignore", "a") as fh:
+                        fh.write(gitignore_template)
 
             sh.git.add(".gitignore")
 
             sh.git.commit("-m", "initial commit", _ok_code=[0, 1])
     else:
-        eprint("Not creating new ebuild, {} already exists.".format(ebuild_path))
+        eprint(f"Not creating new ebuild, {ebuild_path} already exists.")
 
     ic(app_path)
     ic(app_module_name)
