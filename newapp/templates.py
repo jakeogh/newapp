@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from icecream import ic
+from asserttool import ic
 
 description_md = """**{package_name}**: {repo_url}
 """
