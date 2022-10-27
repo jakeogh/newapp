@@ -26,7 +26,6 @@ import shutil
 import sys
 from collections.abc import Sequence
 from datetime import date
-from math import inf
 from pathlib import Path
 from urllib.parse import urlparse
 
