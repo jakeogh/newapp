@@ -260,9 +260,7 @@ if __name__ == '__main__':
 depend_python = """
 RDEPEND="
 	dev-python/click[${PYTHON_USEDEP}]
-	dev-python/sh[${PYTHON_USEDEP}]
 	dev-python/asserttool[${PYTHON_USEDEP}]
-	dev-python/pathtool[${PYTHON_USEDEP}]
 "
 
 DEPEND="${RDEPEND}"
@@ -272,7 +270,7 @@ DEPEND="${RDEPEND}"
 ebuild = """# Copyright 1999-{year} Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 PYTHON_COMPAT=( python3_{{8..10}} )
 
 inherit git-r3
