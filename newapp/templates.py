@@ -80,6 +80,7 @@ python_app = """#!/usr/bin/env python3
 # pylint: disable=too-many-arguments              # [R0913]
 # pylint: disable=too-many-nested-blocks          # [R1702]
 # pylint: disable=too-many-locals                 # [R0914]
+# pylint: disable=too-many-public-methods         # [R0904]
 # pylint: disable=too-few-public-methods          # [R0903]
 # pylint: disable=no-member                       # [E1101] no member for base
 # pylint: disable=attribute-defined-outside-init  # [W0201]
