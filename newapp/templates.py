@@ -177,9 +177,9 @@ signal(SIGPIPE, SIG_DFL)
 # @click_add_options(click_global_options)
 # @click.pass_context
 # def cli(ctx,
-#         verbose: bool | int | float,
 #         verbose_inf: bool,
 #         dict_output: bool,
+#         verbose: bool | int | float = False,
 #         ) -> None:
 #
 #     tty, verbose = tv(ctx=ctx,
@@ -209,9 +209,9 @@ def cli(ctx,
         keys: Sequence[str],
         sysskel: Path,
         ipython: bool,
-        verbose: bool | int | float,
         verbose_inf: bool,
         dict_output: bool,
+        verbose: bool | int | float = False,
         ) -> None:
 
     tty, verbose = tv(ctx=ctx,
