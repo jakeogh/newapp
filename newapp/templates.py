@@ -226,7 +226,7 @@ def cli(ctx,
 
     index = 0
     _k = None
-    for index, _mpobject, key_count in mpd_enumerate(iterator, verbose=verbose):
+    for index, _mpobject, key_count in mpd_enumerate(iterator):
         #if index == 0:
         #    first_type = type(_mpobject)
         #    if first_type == dict:
