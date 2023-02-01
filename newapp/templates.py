@@ -188,6 +188,7 @@ signal(SIGPIPE, SIG_DFL)
 #                       )
 #     if verbose:
 #         logging.basicConfig(level=logging.INFO)
+#         ic.disable()
 
 
 # update setup.py if changing function name
@@ -240,8 +241,7 @@ def cli(ctx,
                 break   # assume single k:v dict
         else:
             _v = Path(os.fsdecode(_mpobject)).resolve()
-        if verbose:
-            ic(index, _v)
+        ic(index, _v)
 
         #with open(_v, 'rb') as fh:
         #    path_bytes_data = fh.read()
