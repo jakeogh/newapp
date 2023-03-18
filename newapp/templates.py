@@ -188,7 +188,7 @@ signal(SIGPIPE, SIG_DFL)
 #                       verbose_inf=verbose_inf,
 #                       )
 #     if verbose:
-#         logging.basicConfig(level=logging.INFO)
+#         #logging.basicConfig(level=logging.INFO)
 #         ic.disable()
 
 
@@ -273,6 +273,7 @@ ebuild = """# Copyright 1999-{year} Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
+DISTUTILS_USE_PEP517=setuptools
 PYTHON_COMPAT=( python3_{{8..10}} )
 
 inherit git-r3
