@@ -128,6 +128,7 @@ from clicktool import tv
 from asserttool import validate_slice
 from eprint import eprint
 from asserttool import ic
+from asserttool import icp
 from retry_on_exception import retry_on_exception
 from timetool import get_timestamp
 from rich import print as pprint
