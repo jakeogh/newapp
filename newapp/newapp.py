@@ -98,9 +98,8 @@ def replace_text(
     path: Path,
     str_to_match: str,
     replacement: str,
-    verbose: bool | int | float,
+    verbose: bool | int | float = False,
 ) -> None:
-
     if verbose:
         ic(str_to_match, replacement)
 
@@ -120,7 +119,7 @@ def replace_match_pairs_in_file(
     *,
     path: Path,
     match_pairs: tuple,
-    verbose: bool | int | float,
+    verbose: bool | int | float = False,
 ) -> None:
     assert isinstance(match_pairs, tuple)
     for old_match, new_match in match_pairs:
@@ -137,9 +136,8 @@ def replace_match_pairs_in_file(
 
 def get_url_for_overlay(
     overlay: str,
-    verbose: bool | int | float,
+    verbose: bool | int | float = False,
 ) -> str:
-
     command = sh.eselect("repository", "list")
     command_output = command.stdout.split("\n")
     if verbose:
@@ -173,9 +171,8 @@ def valid_branch(ctx, param, value):
 def find_edit_configs(
     *,
     apps_folder: Path,
-    verbose: bool | int | float,
+    verbose: bool | int | float = False,
 ):
-
     edit_configs = []
     for path in files_pathlib(
         apps_folder,
@@ -195,7 +192,6 @@ def generate_edit_config(
     package_group: str,
     local: bool,
 ):
-
     if local:
         remote = "#"
     else:
@@ -224,7 +220,6 @@ def generate_setup_py(
     description: str,
     dependencies: Sequence[str],
 ) -> str:
-
     ic(
         url,
         package_name,
@@ -265,7 +260,6 @@ def generate_ebuild_template(
     app_name: str,
     dependencies: Sequence[str],
 ) -> str:
-
     ic(enable_python)
     inherit_python = ""
     rdepend_python = ""
@@ -303,9 +297,8 @@ def generate_app_template(
     *,
     language: str,
     append_files: Sequence[Path],
-    verbose: bool | int | float,
+    verbose: bool | int | float = False,
 ) -> str:
-
     result = None
     if language == "python":
         result = python_app.format(
@@ -354,7 +347,7 @@ def rename_repo_at_app_path(
     app_group: str,
     hg: bool,
     local: bool,
-    verbose: bool | int | float,
+    verbose: bool | int | float = False,
 ):
     ic(old_name, new_name)
     old_module_name = old_name.replace("-", "_")
@@ -461,9 +454,8 @@ def clone_repo(
     app_group: str,
     hg: bool,
     local: bool,
-    verbose: bool | int | float,
+    verbose: bool | int | float = False,
 ):
-
     app_name, app_user, _, _ = parse_url(
         repo_url,
         apps_folder=apps_folder,
@@ -517,9 +509,8 @@ def create_repo(
     app_path: Path,
     app_module_name: str,
     hg: bool,
-    verbose: bool | int | float,
+    verbose: bool | int | float = False,
 ):
-
     if hg:
         raise NotImplementedError("hg")
     os.makedirs(app_path, exist_ok=False)
@@ -538,9 +529,8 @@ def remote_add_origin(
     app_name: str,
     app_user: str,
     hg: bool,
-    verbose: bool | int | float,
+    verbose: bool | int | float = False,
 ):
-
     if hg:
         raise NotImplementedError("hg")
 
@@ -579,10 +569,9 @@ def parse_url(
     repo_url: str,
     *,
     apps_folder: Path,
-    verbose: bool | int | float,
+    verbose: bool | int | float = False,
     keep_underscore: bool = False,  # for rename
 ):
-
     if verbose:
         ic(repo_url)
 
@@ -613,7 +602,7 @@ def parse_url(
 def write_url_sh(
     repo_url,
     *,
-    verbose: bool | int | float,
+    verbose: bool | int | float = False,
 ):
     url_template = generate_url_template(url=repo_url)
     with open("url.sh", "x", encoding="utf8") as fh:
@@ -623,7 +612,7 @@ def write_url_sh(
 
 def write_autogenerate_readme_sh(
     *,
-    verbose: bool | int | float,
+    verbose: bool | int | float = False,
 ):
     autogenerate_readme_template = generate_autogenerate_readme()
     with open(".autogenerate_readme.sh", "x", encoding="utf8") as fh:
@@ -644,7 +633,6 @@ def write_setup_py(
     license: str,
     repo_url: str,
 ):
-
     if use_existing_repo:
         if Path("setup.py").exists():
             return
@@ -674,7 +662,7 @@ def write_pyproject_toml():
 @click.pass_context
 def cli(
     ctx,
-    verbose: bool | int | float,
+    verbose: bool | int | float = False,
     verbose_inf: bool,
     dict_output: bool,
 ):
@@ -692,7 +680,7 @@ def cli(
 def get_overlay_url(
     ctx,
     overlay_name,
-    verbose: bool | int | float,
+    verbose: bool | int | float = False,
     verbose_inf: bool,
     dict_output: bool,
 ):
@@ -710,11 +698,10 @@ def get_overlay_url(
 def nineify(
     ctx,
     app,
-    verbose: bool | int | float,
+    verbose: bool | int | float = False,
     verbose_inf: bool,
     dict_output: bool,
 ):
-
     tty, verbose = tv(
         ctx=ctx,
         verbose=verbose,
@@ -742,11 +729,10 @@ def nineify(
 @click.pass_context
 def template_pylint(
     ctx,
-    verbose: bool | int | float,
+    verbose: bool | int | float = False,
     verbose_inf: bool,
     dict_output: bool,
 ):
-
     tty, verbose = tv(
         ctx=ctx,
         verbose=verbose,
@@ -772,11 +758,10 @@ def template_pylint(
 def template_python(
     ctx,
     package_name: str,
-    verbose: bool | int | float,
+    verbose: bool | int | float = False,
     verbose_inf: bool,
     dict_output: bool,
 ):
-
     tty, verbose = tv(
         ctx=ctx,
         verbose=verbose,
@@ -798,11 +783,10 @@ def template_python(
 def template_bash(
     ctx,
     package_name: str,
-    verbose: bool | int | float,
+    verbose: bool | int | float = False,
     verbose_inf: bool,
     dict_output: bool,
 ):
-
     tty, verbose = tv(
         ctx=ctx,
         verbose=verbose,
@@ -824,11 +808,10 @@ def template_bash(
 def template_zig(
     ctx,
     package_name: str,
-    verbose: bool | int | float,
+    verbose: bool | int | float = False,
     verbose_inf: bool,
     dict_output: bool,
 ):
-
     tty, verbose = tv(
         ctx=ctx,
         verbose=verbose,
@@ -863,12 +846,11 @@ def rename(
     gentoo_overlay_repo,
     github_user,
     local,
-    verbose: bool | int | float,
+    verbose: bool | int | float = False,
     verbose_inf: bool,
     dict_output: bool,
     hg: bool,
 ):
-
     not_root()
     tty, verbose = tv(
         ctx=ctx,
@@ -1137,11 +1119,10 @@ def list_all(
     ctx,
     apps_folder: Path,
     ls_remote: bool,
-    verbose: bool | int | float,
+    verbose: bool | int | float = False,
     verbose_inf: bool,
     dict_output: bool,
 ):
-
     tty, verbose = tv(
         ctx=ctx,
         verbose=verbose,
@@ -1207,11 +1188,10 @@ def list_all(
 def list_all_paths(
     ctx,
     apps_folder: Path,
-    verbose: bool | int | float,
+    verbose: bool | int | float = False,
     verbose_inf: bool,
     dict_output: bool,
 ):
-
     tty, verbose = tv(
         ctx=ctx,
         verbose=verbose,
@@ -1259,12 +1239,11 @@ def check_all(
     apps_folder: Path,
     gentoo_overlay_repo: str,
     github_user: str,
-    verbose: bool | int | float,
+    verbose: bool | int | float = False,
     verbose_inf: bool,
     dict_output: bool,
     local: bool,
 ):
-
     not_root()
     tty, verbose = tv(
         ctx=ctx,
@@ -1373,12 +1352,11 @@ def new(
     description: str,
     local: bool,
     use_existing_repo: bool,
-    verbose: bool | int | float,
+    verbose: bool | int | float = False,
     verbose_inf: bool,
     dict_output: bool,
     hg: bool,
 ):
-
     not_root()
     tty, verbose = tv(
         ctx=ctx,
@@ -1672,11 +1650,10 @@ def delete(
     apps_folder: str,
     gentoo_overlay_repo: str,
     github_user: str,
-    verbose: bool | int | float,
+    verbose: bool | int | float = False,
     verbose_inf: bool,
     dict_output: bool,
 ):
-
     not_root()
     tty, verbose = tv(
         ctx=ctx,

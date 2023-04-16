@@ -209,7 +209,7 @@ signal(SIGPIPE, SIG_DFL)
 @click_add_options(click_global_options)
 @click.pass_context
 def cli(ctx,
-        keys: Sequence[str],
+        keys: tuple[str, ...],
         sysskel: Path,
         ipython: bool,
         verbose_inf: bool,
