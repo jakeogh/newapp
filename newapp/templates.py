@@ -60,7 +60,6 @@ echo '{newline}' '{null}'
 exit 1
 """
 
-
 python_app = """#!/usr/bin/env python3
 # -*- coding: utf8 -*-
 # tab-width:4
