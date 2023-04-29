@@ -478,7 +478,13 @@ def clone_repo(
             "clone", repo_to_clone_url, str(app_path), _out=sys.stdout, _err=sys.stderr
         )
     else:
-        sh.git.clone(repo_to_clone_url, str(app_path), _out=sys.stdout, _err=sys.stderr)
+        sh.git.clone(
+            repo_to_clone_url,
+            "--recurse-submodules",
+            str(app_path),
+            _out=sys.stdout,
+            _err=sys.stderr,
+        )
 
     if branch != "master":
         branch_cmd = "git checkout -b " + '"' + branch + '"'
