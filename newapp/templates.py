@@ -274,7 +274,7 @@ ebuild = """# Copyright 1999-{year} Gentoo Authors
 
 EAPI=8
 DISTUTILS_USE_PEP517=setuptools
-PYTHON_COMPAT=( python3_{{8..10}} )
+PYTHON_COMPAT=( python3_{{10..11}} )
 
 inherit git-r3
 {inherit_python}
