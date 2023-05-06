@@ -216,6 +216,8 @@ def cli(ctx,
         verbose: bool | int | float = False,
         ) -> None:
 
+    if not verbose:
+        ic.disable()
     tty, verbose = tv(ctx=ctx,
                       verbose=verbose,
                       verbose_inf=verbose_inf,
