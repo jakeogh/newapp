@@ -1381,6 +1381,8 @@ def new(
             for dependency in dependencies
         ]
 
+    original_repo_url = repo_url
+
     if repo_url.startswith("https://github.com/"):
         if repo_url.endswith(".git"):
             repo_url = repo_url[:-4]
@@ -1582,7 +1584,7 @@ def new(
                         enable_python=enable_python,
                         enable_go=enable_go,
                         enable_dobin=enable_dobin,
-                        homepage=repo_url,
+                        homepage=original_repo_url,
                         dependencies=dependencies,
                         app_path=app_path,
                     )
