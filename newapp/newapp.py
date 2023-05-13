@@ -1465,6 +1465,7 @@ def new(
                 os.makedirs(app_module_name, exist_ok=True)
 
         if not template_repo_url:
+            ic(template_repo_url)
             with chdir(
                 app_path,
                 verbose=verbose,
@@ -1520,7 +1521,7 @@ def new(
                 verbose=verbose,
             ):
                 sh.git.add("--all")
-                sh.git.commit("-m", "autocomit")
+                sh.git.commit("-m", "initial autocomit")
 
         with chdir(
             app_path,
