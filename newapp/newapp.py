@@ -1291,6 +1291,16 @@ def check_all(
         del app_name, app_user, app_module_name, app_path
 
 
+def write_edit_config(*, package_name: str, package_group: str, local):
+    ic(package_name, package_group, local)
+    with open(".edit_config", "x", encoding="utf8") as fh:
+        fh.write(
+            generate_edit_config(
+                package_name=package_name, package_group=package_group, local=local
+            )
+        )
+
+
 @cli.command()
 @click.argument(
     "language", type=click.Choice(["python", "bash", "sh", "zig", "c", "go"]), nargs=1
@@ -1447,6 +1457,7 @@ def new(
             verbose=verbose,
         )
 
+    ic(app_path.exists(), use_existing_repo)
     if (not app_path.exists()) or use_existing_repo:
         if not use_existing_repo:
             create_repo(
@@ -1464,8 +1475,8 @@ def new(
             ):
                 os.makedirs(app_module_name, exist_ok=True)
 
+        ic(template_repo_url)
         if not template_repo_url:
-            ic(template_repo_url)
             with chdir(
                 app_path,
                 verbose=verbose,
@@ -1527,12 +1538,13 @@ def new(
             app_path,
             verbose=verbose,
         ):
-            with open(".edit_config", "x", encoding="utf8") as fh:
-                fh.write(
-                    generate_edit_config(
-                        package_name=app_name, package_group=group, local=local
-                    )
-                )
+            write_edit_config(package_name=app_name, package_group=group, local=local)
+            # with open(".edit_config", "x", encoding="utf8") as fh:
+            #    fh.write(
+            #        generate_edit_config(
+            #            package_name=app_name, package_group=group, local=local
+            #        )
+            #    )
 
             remote_add_origin(
                 hg=hg,
