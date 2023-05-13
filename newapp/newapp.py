@@ -1538,7 +1538,7 @@ def new(
             app_path,
             verbose=verbose,
         ):
-            write_edit_config(package_name=app_name, package_group=group, local=local)
+            # write_edit_config(package_name=app_name, package_group=group, local=local)
             # with open(".edit_config", "x", encoding="utf8") as fh:
             #    fh.write(
             #        generate_edit_config(
@@ -1570,6 +1570,7 @@ def new(
     else:
         eprint(f"Not creating new app, {app_path} already exists.")
 
+    write_edit_config(package_name=app_name, package_group=group, local=local)
     ebuild_path = Path(gentoo_overlay_repo) / Path(group) / Path(app_name)
     ebuild_name = app_name + "-9999.ebuild"
     if not ebuild_path.exists():
