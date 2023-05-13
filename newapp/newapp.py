@@ -1570,7 +1570,12 @@ def new(
     else:
         eprint(f"Not creating new app, {app_path} already exists.")
 
-    write_edit_config(package_name=app_name, package_group=group, local=local)
+    with chdir(
+        app_path,
+        verbose=verbose,
+    ):
+        write_edit_config(package_name=app_name, package_group=group, local=local)
+
     ebuild_path = Path(gentoo_overlay_repo) / Path(group) / Path(app_name)
     ebuild_name = app_name + "-9999.ebuild"
     if not ebuild_path.exists():
@@ -1642,7 +1647,7 @@ def new(
                     with open(".gitignore", "a") as fh:
                         fh.write(gitignore_template)
 
-            sh.git.add(".gitignore")
+            # sh.git.add(".gitignore")
 
             sh.git.commit("-m", "initial commit", _ok_code=[0, 1])
     else:
