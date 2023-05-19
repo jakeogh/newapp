@@ -128,6 +128,7 @@ from asserttool import validate_slice
 from eprint import eprint
 from asserttool import ic
 from asserttool import icp
+from asserttool import gvd
 from retry_on_exception import retry_on_exception
 from timetool import get_timestamp
 from rich import print as pprint
@@ -222,6 +223,9 @@ def cli(ctx,
                       verbose=verbose,
                       verbose_inf=verbose_inf,
                       )
+
+    if verbose_inf:
+        gvd.enable()
 
     iterator: Sequence[dict | bytes | str] = unmp(valid_types=[dict, bytes, str], verbose=verbose)
 
