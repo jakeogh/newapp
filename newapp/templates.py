@@ -184,12 +184,14 @@ signal(SIGPIPE, SIG_DFL)
 #         verbose: bool | int | float = False,
 #         ) -> None:
 #
+#     if verbose_inf:
+#         verbose = True
+#         gvd.enable()
 #     tty, verbose = tv(ctx=ctx,
 #                       verbose=verbose,
 #                       verbose_inf=verbose_inf,
 #                       )
-#     if verbose:
-#         #logging.basicConfig(level=logging.INFO)
+#     if not verbose:
 #         ic.disable()
 
 
@@ -224,7 +226,7 @@ def cli(ctx,
                       verbose_inf=verbose_inf,
                       )
 
-    if verbose_inf:
+    if not verbose_inf:
         gvd.enable()
 
     iterator: Sequence[dict | bytes | str] = unmp(valid_types=[dict, bytes, str], verbose=verbose)
