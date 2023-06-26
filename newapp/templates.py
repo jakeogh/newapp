@@ -229,7 +229,7 @@ def cli(ctx,
     if verbose_inf:
         gvd.enable()
 
-    iterator: Sequence[dict | bytes | str] = unmp(valid_types=[dict, bytes, str], verbose=verbose)
+    iterator: Sequence[dict | bytes | str] = unmp(valid_types=[dict, bytes, str],)
 
     # need to send a single key, or multiple keys, if multiple keys, keys need to specified on the commandline
     # either way, the output is still a dict
@@ -255,7 +255,7 @@ def cli(ctx,
         #with open(_v, 'rb') as fh:
         #    path_bytes_data = fh.read()
 
-        output(_v, reason=_mpobject, dict_output=dict_output, tty=tty, verbose=verbose)
+        output(_v, reason=_mpobject, dict_output=dict_output, tty=tty,)
 
 #        if ipython:
 #            import IPython; IPython.embed()
