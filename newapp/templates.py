@@ -188,11 +188,13 @@ signal(SIGPIPE, SIG_DFL)
 #                       verbose=verbose,
 #                       verbose_inf=verbose_inf,
 #                       )
-#     if not verbose:
-#         ic.disable()
+#    if not verbose:
+#        ic.disable()
+#    else:
+#        ic.enable()
 #
-#     if verbose_inf:
-#         gvd.enable()
+#    if verbose_inf:
+#        gvd.enable()
 
 
 # update setup.py if changing function name
@@ -223,8 +225,11 @@ def cli(ctx,
                       verbose=verbose,
                       verbose_inf=verbose_inf,
                       )
+
     if not verbose:
         ic.disable()
+    else:
+        ic.enable()
 
     if verbose_inf:
         gvd.enable()
