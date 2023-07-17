@@ -152,7 +152,7 @@ from unmp import unmp
 #from prettytable import PrettyTable
 #output_table = PrettyTable()
 
-
+logging.basicConfig(level=logging.INFO)
 sh.mv = None  # use sh.busybox('mv'), coreutils ignores stdin read errors
 
 
