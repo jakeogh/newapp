@@ -315,7 +315,7 @@ KEYWORDS=""
 
 src_install_dobin = """
 src_install() {{
-        dobin ${{app_name}}
+    dobin ${{PN}}
 }}"""
 
 
