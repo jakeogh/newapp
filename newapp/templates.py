@@ -175,29 +175,28 @@ signal(SIGPIPE, SIG_DFL)
 
 
 # @with_plugins(iter_entry_points('click_command_tree'))
-# @click.group(no_args_is_help=True, cls=AHGroup)
-# @click_add_options(click_global_options)
-# @click.pass_context
-# def cli(ctx,
-#         verbose_inf: bool,
-#         dict_output: bool,
-#         verbose: bool | int | float = False,
-#         ) -> None:
-#
-#     tty, verbose = tv(ctx=ctx,
-#                       verbose=verbose,
-#                       verbose_inf=verbose_inf,
-#                       )
-#    if not verbose:
-#        ic.disable()
-#    else:
-#        ic.enable()
-#
-#    if verbose_inf:
-#        gvd.enable()
+@click.group(no_args_is_help=True, cls=AHGroup)
+@click_add_options(click_global_options)
+@click.pass_context
+def cli(ctx,
+        verbose_inf: bool,
+        dict_output: bool,
+        verbose: bool | int | float = False,
+        ) -> None:
+
+    tty, verbose = tv(ctx=ctx,
+                      verbose=verbose,
+                      verbose_inf=verbose_inf,
+                      )
+    if not verbose:
+        ic.disable()
+    else:
+        ic.enable()
+
+    if verbose_inf:
+        gvd.enable()
 
 
-# update setup.py if changing function name
 #@click.argument("slice_syntax", type=validate_slice, nargs=1)
 @click.command()
 @click.argument('keys', type=str, nargs=-1)
@@ -212,7 +211,7 @@ signal(SIGPIPE, SIG_DFL)
 @click.option('--ipython', is_flag=True)
 @click_add_options(click_global_options)
 @click.pass_context
-def cli(ctx,
+def thing(ctx,
         keys: tuple[str, ...],
         sysskel: Path,
         ipython: bool,
