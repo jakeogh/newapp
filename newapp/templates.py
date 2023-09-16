@@ -198,7 +198,7 @@ def cli(ctx,
 
 
 #@click.argument("slice_syntax", type=validate_slice, nargs=1)
-@click.command()
+@cli.command()
 @click.argument('keys', type=str, nargs=-1)
 @click.argument("sysskel",
                 type=click.Path(exists=False,
