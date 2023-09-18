@@ -181,7 +181,7 @@ signal(SIGPIPE, SIG_DFL)
 def cli(ctx,
         verbose_inf: bool,
         dict_output: bool,
-        verbose: bool | int | float = False,
+        verbose: bool = False,
         ) -> None:
 
     tty, verbose = tv(ctx=ctx,
@@ -217,7 +217,7 @@ def thing(ctx,
         ipython: bool,
         verbose_inf: bool,
         dict_output: bool,
-        verbose: bool | int | float = False,
+        verbose: bool = False,
         ) -> None:
 
     tty, verbose = tv(ctx=ctx,
