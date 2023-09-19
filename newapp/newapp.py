@@ -97,7 +97,7 @@ def replace_text(
     path: Path,
     str_to_match: str,
     replacement: str,
-    verbose: bool | int | float = False,
+    verbose: bool = False,
 ) -> None:
     if verbose:
         ic(str_to_match, replacement)
@@ -110,7 +110,6 @@ def replace_text(
         read_mode="rb",
         write_mode="wb",
         remove_match=False,
-        verbose=verbose,
     )
 
 
@@ -118,7 +117,7 @@ def replace_match_pairs_in_file(
     *,
     path: Path,
     match_pairs: tuple,
-    verbose: bool | int | float = False,
+    verbose: bool = False,
 ) -> None:
     assert isinstance(match_pairs, tuple)
     for old_match, new_match in match_pairs:
@@ -135,7 +134,7 @@ def replace_match_pairs_in_file(
 
 def get_url_for_overlay(
     overlay: str,
-    verbose: bool | int | float = False,
+    verbose: bool = False,
 ) -> str:
     command = sh.eselect("repository", "list")
     command_output = command.stdout.split("\n")
@@ -170,7 +169,7 @@ def valid_branch(ctx, param, value):
 def find_edit_configs(
     *,
     apps_folder: Path,
-    verbose: bool | int | float = False,
+    verbose: bool = False,
 ):
     edit_configs = []
     for path in files_pathlib(
@@ -296,7 +295,7 @@ def generate_app_template(
     *,
     language: str,
     append_files: tuple[Path, ...],
-    verbose: bool | int | float = False,
+    verbose: bool = False,
 ) -> str:
     result = None
     if language == "python":
@@ -346,7 +345,7 @@ def rename_repo_at_app_path(
     app_group: str,
     hg: bool,
     local: bool,
-    verbose: bool | int | float = False,
+    verbose: bool = False,
 ):
     ic(old_name, new_name)
     old_module_name = old_name.replace("-", "_")
@@ -453,7 +452,7 @@ def clone_repo(
     app_group: str,
     hg: bool,
     local: bool,
-    verbose: bool | int | float = False,
+    verbose: bool = False,
 ):
     app_name, app_user, _, _ = parse_url(
         repo_url,
@@ -514,7 +513,7 @@ def create_repo(
     app_path: Path,
     app_module_name: str,
     hg: bool,
-    verbose: bool | int | float = False,
+    verbose: bool = False,
 ):
     if hg:
         raise NotImplementedError("hg")
@@ -534,7 +533,7 @@ def remote_add_origin(
     app_name: str,
     app_user: str,
     hg: bool,
-    verbose: bool | int | float = False,
+    verbose: bool = False,
 ):
     if hg:
         raise NotImplementedError("hg")
@@ -561,7 +560,7 @@ def remote_add_origin(
         f"hub create {app_user}/{app_name}",
         str(repo_config_command),
         "git push --set-upstream origin master",
-        "touch .push_enabled",
+        "touch .push",
         "\n",
     ]
     enable_github = "\n".join(enable_github)
@@ -575,7 +574,7 @@ def parse_url(
     *,
     apps_folder: Path,
     keep_underscore: bool = False,  # for rename
-    verbose: bool | int | float = False,
+    verbose: bool = False,
 ):
     if verbose:
         ic(repo_url)
@@ -607,7 +606,7 @@ def parse_url(
 def write_url_sh(
     repo_url,
     *,
-    verbose: bool | int | float = False,
+    verbose: bool = False,
 ):
     url_template = generate_url_template(url=repo_url)
     with open("url.sh", "x", encoding="utf8") as fh:
@@ -617,7 +616,7 @@ def write_url_sh(
 
 def write_autogenerate_readme_sh(
     *,
-    verbose: bool | int | float = False,
+    verbose: bool = False,
 ):
     autogenerate_readme_template = generate_autogenerate_readme()
     with open(".autogenerate_readme.sh", "x", encoding="utf8") as fh:
@@ -669,7 +668,7 @@ def cli(
     ctx,
     verbose_inf: bool,
     dict_output: bool,
-    verbose: bool | int | float = False,
+    verbose: bool = False,
 ):
     tty, verbose = tv(
         ctx=ctx,
@@ -687,7 +686,7 @@ def get_overlay_url(
     overlay_name,
     verbose_inf: bool,
     dict_output: bool,
-    verbose: bool | int | float = False,
+    verbose: bool = False,
 ):
     url = get_url_for_overlay(
         overlay_name,
@@ -705,7 +704,7 @@ def nineify(
     app,
     verbose_inf: bool,
     dict_output: bool,
-    verbose: bool | int | float = False,
+    verbose: bool = False,
 ):
     tty, verbose = tv(
         ctx=ctx,
@@ -736,7 +735,7 @@ def template_pylint(
     ctx,
     verbose_inf: bool,
     dict_output: bool,
-    verbose: bool | int | float = False,
+    verbose: bool = False,
 ):
     tty, verbose = tv(
         ctx=ctx,
@@ -765,7 +764,7 @@ def template_python(
     package_name: str,
     verbose_inf: bool,
     dict_output: bool,
-    verbose: bool | int | float = False,
+    verbose: bool = False,
 ):
     tty, verbose = tv(
         ctx=ctx,
@@ -790,7 +789,7 @@ def template_bash(
     package_name: str,
     verbose_inf: bool,
     dict_output: bool,
-    verbose: bool | int | float = False,
+    verbose: bool = False,
 ):
     tty, verbose = tv(
         ctx=ctx,
@@ -815,7 +814,7 @@ def template_zig(
     package_name: str,
     verbose_inf: bool,
     dict_output: bool,
-    verbose: bool | int | float = False,
+    verbose: bool = False,
 ):
     tty, verbose = tv(
         ctx=ctx,
@@ -854,7 +853,7 @@ def rename(
     verbose_inf: bool,
     dict_output: bool,
     hg: bool,
-    verbose: bool | int | float = False,
+    verbose: bool = False,
 ):
     not_root()
     tty, verbose = tv(
@@ -1126,7 +1125,7 @@ def list_all(
     ls_remote: bool,
     verbose_inf: bool,
     dict_output: bool,
-    verbose: bool | int | float = False,
+    verbose: bool = False,
 ):
     tty, verbose = tv(
         ctx=ctx,
@@ -1195,7 +1194,7 @@ def list_all_paths(
     apps_folder: Path,
     verbose_inf: bool,
     dict_output: bool,
-    verbose: bool | int | float = False,
+    verbose: bool = False,
 ):
     tty, verbose = tv(
         ctx=ctx,
@@ -1247,7 +1246,7 @@ def check_all(
     verbose_inf: bool,
     dict_output: bool,
     local: bool,
-    verbose: bool | int | float = False,
+    verbose: bool = False,
 ):
     not_root()
     tty, verbose = tv(
@@ -1370,7 +1369,7 @@ def new(
     verbose_inf: bool,
     dict_output: bool,
     hg: bool,
-    verbose: bool | int | float = False,
+    verbose: bool = False,
 ):
     not_root()
     tty, verbose = tv(
@@ -1678,7 +1677,7 @@ def delete(
     github_user: str,
     verbose_inf: bool,
     dict_output: bool,
-    verbose: bool | int | float = False,
+    verbose: bool = False,
 ):
     not_root()
     tty, verbose = tv(
