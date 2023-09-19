@@ -1531,7 +1531,7 @@ def new(
                 verbose=verbose,
             ):
                 sh.git.add("--all")
-                sh.git.commit("-m", "initial autocomit")
+                sh.git.commit("-m", "initial auto-commit")
 
         with chdir(
             app_path,
