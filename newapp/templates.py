@@ -117,13 +117,14 @@ import time
 import logging
 import sh
 from collections.abc import Sequence
-from clicktool import click_add_options, click_global_options
+from clicktool import click_add_options, click_global_options, CONTEXT_SETTINGS
 from click_auto_help import AHGroup
 from signal import signal, SIGPIPE, SIG_DFL
 from pathlib import Path
 from mptool import output
 from mptool import mpd_enumerate
 from clicktool import tv
+from clicktool import CONTEXT_SETTINGS
 from asserttool import validate_slice
 from eprint import eprint
 from asserttool import ic
@@ -175,7 +176,7 @@ signal(SIGPIPE, SIG_DFL)
 
 
 # @with_plugins(iter_entry_points('click_command_tree'))
-@click.group(no_args_is_help=True, cls=AHGroup)
+@click.group(context_settings=CONTEXT_SETTINGS, no_args_is_help=True, cls=AHGroup)
 @click_add_options(click_global_options)
 @click.pass_context
 def cli(ctx,
