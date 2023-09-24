@@ -46,7 +46,7 @@ from pathtool import write_line_to_file
 from portagetool import portage_categories
 from portagetool import resolve_package_name
 from replace_text import replace_text_in_file
-from timetool import get_timestamp
+from timestamptool import get_timestamp
 from with_chdir import chdir
 
 from .templates import autogenerate_readme
