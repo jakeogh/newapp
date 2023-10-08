@@ -72,7 +72,6 @@ logging.basicConfig(level=logging.INFO)
 CFG, CONFIG_MTIME = click_read_config(
     click_instance=click,
     app_name="newapp",
-    verbose=False,
 )
 
 
