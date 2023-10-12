@@ -123,7 +123,7 @@ from signal import signal, SIGPIPE, SIG_DFL
 from pathlib import Path
 from mptool import output
 from mptool import mpd_enumerate
-from clicktool import tv
+from clicktool import tvicgvd
 from clicktool import CONTEXT_SETTINGS
 from asserttool import validate_slice
 from eprint import eprint
@@ -185,18 +185,13 @@ def cli(ctx,
         verbose: bool = False,
         ) -> None:
 
-    tty, verbose = tv(ctx=ctx,
-                      verbose=verbose,
-                      verbose_inf=verbose_inf,
-                      )
-    if not verbose:
-        ic.disable()
-    else:
-        ic.enable()
-
-    if verbose_inf:
-        gvd.enable()
-
+    tty, verbose = tvicgvd(
+        ctx=ctx,
+        verbose=verbose,
+        verbose_inf=verbose_inf,
+        ic=ic,
+        gvd=gvd,
+    )
 
 #@click.argument("slice_syntax", type=validate_slice, nargs=1)
 @cli.command()
@@ -221,18 +216,13 @@ def thing(ctx,
         verbose: bool = False,
         ) -> None:
 
-    tty, verbose = tv(ctx=ctx,
-                      verbose=verbose,
-                      verbose_inf=verbose_inf,
-                      )
-
-    if not verbose:
-        ic.disable()
-    else:
-        ic.enable()
-
-    if verbose_inf:
-        gvd.enable()
+    tty, verbose = tvicgvd(
+        ctx=ctx,
+        verbose=verbose,
+        verbose_inf=verbose_inf,
+        ic=ic,
+        gvd=gvd,
+    )
 
     iterator: Sequence[dict | bytes | str] = unmp(valid_types=[dict, bytes, str],)
 
