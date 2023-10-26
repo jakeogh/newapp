@@ -18,6 +18,7 @@
 # pylint: disable=attribute-defined-outside-init  # [W0201]
 # pylint: disable=too-many-boolean-expressions    # [R0916] in if statement
 # pylint: disable=C0305  # Trailing newlines
+
 from __future__ import annotations
 
 import logging
@@ -34,12 +35,13 @@ from asserttool import ic
 from asserttool import not_root
 from clicktool import click_add_options
 from clicktool import click_global_options
-from clicktool import tv
+from clicktool import tvicgvd
 from configtool import click_read_config
 from eprint import eprint
 from getdents import files
 from getdents import files_pathlib
 from getdents import paths
+from globalverbose import gvd
 from licenseguesser import license_list
 from mptool import output
 from pathtool import write_line_to_file
@@ -98,8 +100,7 @@ def replace_text(
     replacement: str,
     verbose: bool = False,
 ) -> None:
-    if verbose:
-        ic(str_to_match, replacement)
+    ic(str_to_match, replacement)
 
     replace_text_in_file(
         path=path,
@@ -127,7 +128,6 @@ def replace_match_pairs_in_file(
             path=path,
             str_to_match=old_match,
             replacement=new_match,
-            verbose=verbose,
         )
 
 
@@ -137,12 +137,10 @@ def get_url_for_overlay(
 ) -> str:
     command = sh.eselect("repository", "list")
     command_output = command.stdout.split("\n")
-    if verbose:
-        ic(type(command_output), command_output)
+    ic(type(command_output), command_output)
 
     for line in command_output[1:]:
-        if verbose:
-            ic(line)
+        ic(line)
         try:
             index, repo_name, repo_url = [item for item in line.split() if item]
         except ValueError:
@@ -150,8 +148,7 @@ def get_url_for_overlay(
 
         repo_url = repo_url.split("(")[-1].split(")")[0]
         if repo_name == overlay:
-            if verbose:
-                ic(repo_url)
+            ic(repo_url)
             return repo_url
 
     raise ValueError(f"unknown repo {overlay}")
@@ -173,7 +170,6 @@ def find_edit_configs(
     edit_configs = []
     for path in files_pathlib(
         apps_folder,
-        verbose=verbose,
         max_depth=1,
     ):
         if path.name == ".edit_config":
@@ -352,7 +348,6 @@ def rename_repo_at_app_path(
 
     with chdir(
         app_path,
-        verbose=verbose,
     ):
         if Path(old_name).exists():  # not all apps have a dir here
             sh.git.mv(old_name, new_name)
@@ -375,13 +370,11 @@ def rename_repo_at_app_path(
             local=local,
             app_name=new_name,
             app_user=app_user,
-            verbose=verbose,
         )
 
         all_paths = list(
             paths(
                 app_path,
-                verbose=verbose,
             )
         )
         exclude_path = app_path / Path(".git")
@@ -415,7 +408,6 @@ def rename_repo_at_app_path(
         all_files = list(
             files(
                 app_path,
-                verbose=verbose,
             )
         )
         exclude_path = app_path / Path(".git")
@@ -435,7 +427,6 @@ def rename_repo_at_app_path(
                     (old_name, new_name),
                     (old_module_name, new_module_name),
                 ),
-                verbose=verbose,
             )
         sh.git.add("-u")
         sh.git.commit("-m rename")
@@ -456,14 +447,12 @@ def clone_repo(
     app_name, app_user, _, _ = parse_url(
         repo_url,
         apps_folder=apps_folder,
-        verbose=verbose,
     )
     rename_cloned_repo = False
     if template_repo_url:
         template_app_name, template_app_user, _, _ = parse_url(
             template_repo_url,
             apps_folder=apps_folder,
-            verbose=verbose,
         )
         repo_to_clone_url = template_repo_url
         if template_app_name != app_name:
@@ -479,6 +468,7 @@ def clone_repo(
         sh.git.clone(
             repo_to_clone_url,
             "--recurse-submodules",
+            "--recursive",
             str(app_path),
             _out=sys.stdout,
             _err=sys.stderr,
@@ -503,7 +493,6 @@ def clone_repo(
             hg=hg,
             old_name=template_app_name,
             new_name=app_name,
-            verbose=verbose,
         )
 
 
@@ -519,7 +508,6 @@ def create_repo(
     os.makedirs(app_path, exist_ok=False)
     with chdir(
         app_path,
-        verbose=verbose,
     ):
         os.makedirs(app_module_name, exist_ok=False)
         os.system("git init")
@@ -547,7 +535,6 @@ def remote_add_origin(
     if not local:
         with chdir(
             app_path,
-            verbose=verbose,
         ):
             # os.system(repo_config_command)
             repo_config_command()
@@ -575,16 +562,14 @@ def parse_url(
     keep_underscore: bool = False,  # for rename
     verbose: bool = False,
 ):
-    if verbose:
-        ic(repo_url)
+    ic(repo_url)
 
     if repo_url.startswith("git:github.com:"):
         app_name = repo_url.split(":")[-1].split(".git")[0]
         app_user = repo_url.split(":")[-1].split("/")[0]
     else:
         url_parsed = urlparse(repo_url)
-        if verbose:
-            ic(url_parsed)
+        ic(url_parsed)
 
         repo_url_path = Path(url_parsed.path)
         app_name = repo_url_path.parts[-1]
@@ -669,10 +654,12 @@ def cli(
     dict_output: bool,
     verbose: bool = False,
 ):
-    tty, verbose = tv(
+    tty, verbose = tvicgvd(
         ctx=ctx,
         verbose=verbose,
         verbose_inf=verbose_inf,
+        ic=ic,
+        gvd=gvd,
     )
 
 
@@ -705,10 +692,12 @@ def nineify(
     dict_output: bool,
     verbose: bool = False,
 ):
-    tty, verbose = tv(
+    tty, verbose = tvicgvd(
         ctx=ctx,
         verbose=verbose,
         verbose_inf=verbose_inf,
+        ic=ic,
+        gvd=gvd,
     )
     not_root()
     assert "/" in app
@@ -736,10 +725,12 @@ def template_pylint(
     dict_output: bool,
     verbose: bool = False,
 ):
-    tty, verbose = tv(
+    tty, verbose = tvicgvd(
         ctx=ctx,
         verbose=verbose,
         verbose_inf=verbose_inf,
+        ic=ic,
+        gvd=gvd,
     )
     app_template = generate_app_template(
         "TEMP",
@@ -765,10 +756,12 @@ def template_python(
     dict_output: bool,
     verbose: bool = False,
 ):
-    tty, verbose = tv(
+    tty, verbose = tvicgvd(
         ctx=ctx,
         verbose=verbose,
         verbose_inf=verbose_inf,
+        ic=ic,
+        gvd=gvd,
     )
     app_template = generate_app_template(
         package_name,
@@ -776,7 +769,12 @@ def template_python(
         append_files=(),
         verbose=ctx.obj["verbose"],
     )
-    output(app_template, reason=None, dict_output=dict_output, tty=tty, verbose=verbose)
+    output(
+        app_template,
+        reason=None,
+        dict_output=dict_output,
+        tty=tty,
+    )
 
 
 @cli.command()
@@ -790,10 +788,12 @@ def template_bash(
     dict_output: bool,
     verbose: bool = False,
 ):
-    tty, verbose = tv(
+    tty, verbose = tvicgvd(
         ctx=ctx,
         verbose=verbose,
         verbose_inf=verbose_inf,
+        ic=ic,
+        gvd=gvd,
     )
     app_template = generate_app_template(
         package_name,
@@ -815,10 +815,12 @@ def template_zig(
     dict_output: bool,
     verbose: bool = False,
 ):
-    tty, verbose = tv(
+    tty, verbose = tvicgvd(
         ctx=ctx,
         verbose=verbose,
         verbose_inf=verbose_inf,
+        ic=ic,
+        gvd=gvd,
     )
     app_template = generate_app_template(
         package_name,
@@ -855,10 +857,12 @@ def rename(
     verbose: bool = False,
 ):
     not_root()
-    tty, verbose = tv(
+    tty, verbose = tvicgvd(
         ctx=ctx,
         verbose=verbose,
         verbose_inf=verbose_inf,
+        ic=ic,
+        gvd=gvd,
     )
 
     apps_folder = Path(apps_folder)
@@ -868,12 +872,10 @@ def rename(
         old_repo_url,
         apps_folder=apps_folder,
         keep_underscore=True,
-        verbose=verbose,
     )
     new_app_name, new_app_user, new_app_module_name, new_app_path = parse_url(
         new_repo_url,
         apps_folder=apps_folder,
-        verbose=verbose,
     )
     assert old_app_user == new_app_user
 
@@ -884,7 +886,6 @@ def rename(
 
     with chdir(
         old_app_path,
-        verbose=verbose,
     ):
         old_setup_py = old_app_path / Path("setup.py")
         replace_match_pairs_in_file(
@@ -893,7 +894,6 @@ def rename(
                 (old_app_name, new_app_name),
                 (old_app_module_name, new_app_module_name),
             ),
-            verbose=verbose,
         )
         sh.git.add(old_setup_py)
         del old_setup_py
@@ -906,7 +906,6 @@ def rename(
                     (old_app_name, new_app_name),
                     (old_app_module_name, new_app_module_name),
                 ),
-                verbose=verbose,
             )
         except FileNotFoundError as e:
             ic(e)
@@ -920,12 +919,10 @@ def rename(
                 path=old_url_sh,
                 str_to_match=old_app_name,
                 replacement=new_app_name,
-                verbose=verbose,
             )
         except Exception as e:
             write_url_sh(
                 new_repo_url,
-                verbose=verbose,
             )
         sh.git.add(old_url_sh)
         del old_url_sh
@@ -935,7 +932,6 @@ def rename(
             path=old_edit_config,
             str_to_match=old_app_name,
             replacement=new_app_name,
-            verbose=verbose,
         )
         # sh.git.add(old_edit_config)
         del old_edit_config
@@ -946,7 +942,6 @@ def rename(
                 path=enable_github_sh,
                 str_to_match=old_app_name,
                 replacement=new_app_name,
-                verbose=verbose,
             )
             # sh.git.add(enable_github_sh)
         del enable_github_sh
@@ -960,7 +955,6 @@ def rename(
                 (old_app_name, new_app_name),
                 (old_app_module_name, new_app_module_name),
             ),
-            verbose=verbose,
         )
         sh.git.add(old_app_py)
         # del old_app_py
@@ -970,7 +964,6 @@ def rename(
             path=old_app_init_py,
             str_to_match=old_app_module_name,
             replacement=new_app_module_name,
-            verbose=verbose,
         )
         sh.git.add(old_app_init_py)
         del old_app_init_py
@@ -1008,7 +1001,6 @@ def rename(
     if old_ebuild_symlink.exists():
         with chdir(
             old_ebuild_dir,
-            verbose=verbose,
         ):
             # in ebuild folder
             old_ebuild_path = Path(old_app_name + "-9999.ebuild").resolve()
@@ -1016,7 +1008,6 @@ def rename(
                 path=old_ebuild_path,
                 str_to_match=old_app_module_name,
                 replacement=new_app_module_name,
-                verbose=verbose,
             )
             sh.git.add(old_ebuild_path)
             new_ebuild_name = Path(new_app_name + "-9999.ebuild")
@@ -1033,7 +1024,6 @@ def rename(
 
         with chdir(
             old_ebuild_dir.parent,
-            verbose=verbose,
         ):
             # in ebuild parent folder
             sh.busybox.mv(
@@ -1056,7 +1046,6 @@ def rename(
 
         with chdir(
             old_app_path,
-            verbose=verbose,
         ):
             print(sh.ls())
             sh.rm(old_ebuild_symlink.name)
@@ -1072,7 +1061,6 @@ def rename(
 
     with chdir(
         apps_folder,
-        verbose=verbose,
     ):
         sh.busybox.mv(
             "-v",
@@ -1099,7 +1087,6 @@ def rename(
         path=new_accept_keywords,
         str_to_match="/" + old_app_module_name + "-",
         replacement="/" + new_app_module_name + "-",
-        verbose=verbose,
     )
 
 
@@ -1126,10 +1113,12 @@ def list_all(
     dict_output: bool,
     verbose: bool = False,
 ):
-    tty, verbose = tv(
+    tty, verbose = tvicgvd(
         ctx=ctx,
         verbose=verbose,
         verbose_inf=verbose_inf,
+        ic=ic,
+        gvd=gvd,
     )
 
     apps_folder = Path(apps_folder)
@@ -1137,19 +1126,15 @@ def list_all(
 
     edit_configs = find_edit_configs(
         apps_folder=apps_folder,
-        verbose=verbose,
     )
     for config in edit_configs:
-        if verbose:
-            ic(config)
+        ic(config)
         if ls_remote:
             project_dir = config.parent
             return_code = None
-            if verbose:
-                ic(project_dir)
+            ic(project_dir)
             with chdir(
                 project_dir,
-                verbose=verbose,
             ):
                 try:
                     sh.git("ls-remote")
@@ -1162,7 +1147,6 @@ def list_all(
                 reason=None,
                 dict_output=dict_output,
                 tty=tty,
-                verbose=verbose,
             )
         else:
             output(
@@ -1170,7 +1154,6 @@ def list_all(
                 reason=None,
                 dict_output=dict_output,
                 tty=tty,
-                verbose=verbose,
             )
 
 
@@ -1195,10 +1178,12 @@ def list_all_paths(
     dict_output: bool,
     verbose: bool = False,
 ):
-    tty, verbose = tv(
+    tty, verbose = tvicgvd(
         ctx=ctx,
         verbose=verbose,
         verbose_inf=verbose_inf,
+        ic=ic,
+        gvd=gvd,
     )
 
     apps_folder = Path(apps_folder)
@@ -1206,17 +1191,14 @@ def list_all_paths(
 
     edit_configs = find_edit_configs(
         apps_folder=apps_folder,
-        verbose=verbose,
     )
     for config in edit_configs:
-        if verbose:
-            ic(config)
+        ic(config)
         output(
             os.fsencode(config.parent.as_posix()),
             reason=None,
             dict_output=dict_output,
             tty=tty,
-            verbose=verbose,
         )
 
 
@@ -1248,30 +1230,29 @@ def check_all(
     verbose: bool = False,
 ):
     not_root()
-    tty, verbose = tv(
+    tty, verbose = tvicgvd(
         ctx=ctx,
         verbose=verbose,
         verbose_inf=verbose_inf,
+        ic=ic,
+        gvd=gvd,
     )
 
     ic(apps_folder)
 
     edit_configs = find_edit_configs(
         apps_folder=apps_folder,
-        verbose=verbose,
     )
 
     for edit_config_path in edit_configs:
         ic(edit_config_path)
         with chdir(
             edit_config_path.parent,
-            verbose=verbose,
         ):
             remote = str(sh.git.remote("get-url", "origin")).strip()
             app_name, app_user, app_module_name, app_path = parse_url(
                 remote,
                 apps_folder=apps_folder,
-                verbose=verbose,
             )
             if not remote.startswith("git@github.com:"):
                 if app_user == github_user:
@@ -1371,10 +1352,12 @@ def new(
     verbose: bool = False,
 ):
     not_root()
-    tty, verbose = tv(
+    tty, verbose = tvicgvd(
         ctx=ctx,
         verbose=verbose,
         verbose_inf=verbose_inf,
+        ic=ic,
+        gvd=gvd,
     )
 
     apps_folder = Path(apps_folder)
@@ -1385,7 +1368,9 @@ def new(
 
     if dependencies:
         dependencies = [
-            resolve_package_name(dependency, verbose=verbose)
+            resolve_package_name(
+                dependency,
+            )
             for dependency in dependencies
         ]
 
@@ -1406,7 +1391,6 @@ def new(
         _app_name, _app_user, _app_module_name, _app_path = parse_url(
             repo_url,
             apps_folder=apps_folder,
-            verbose=verbose,
         )
         if rename:
             _app_name = rename
@@ -1418,7 +1402,6 @@ def new(
     app_name, app_user, app_module_name, app_path = parse_url(
         repo_url,
         apps_folder=apps_folder,
-        verbose=verbose,
     )
     ic(app_name)
     ic(app_user)
@@ -1452,7 +1435,6 @@ def new(
             app_path=app_path,
             app_group=group,
             local=local,
-            verbose=verbose,
         )
 
     ic(app_path.exists(), use_existing_repo)
@@ -1462,14 +1444,12 @@ def new(
                 hg=hg,
                 app_path=app_path,
                 app_module_name=app_module_name,
-                verbose=verbose,
             )
         else:
             assert app_path.is_dir()
             assert Path(app_path / Path(".git")).exists()
             with chdir(
                 app_path,
-                verbose=verbose,
             ):
                 os.makedirs(app_module_name, exist_ok=True)
 
@@ -1477,7 +1457,6 @@ def new(
         if not template_repo_url:
             with chdir(
                 app_path,
-                verbose=verbose,
             ):
                 if language == "python":
                     write_setup_py(
@@ -1495,20 +1474,16 @@ def new(
                 if not Path("url.sh").exists():
                     write_url_sh(
                         repo_url,
-                        verbose=verbose,
                     )
 
                 if not Path(".autogenerate_readme.sh").exists():
-                    write_autogenerate_readme_sh(
-                        verbose=verbose,
-                    )
+                    write_autogenerate_readme_sh()
 
                 if language == "python":
                     os.system("fastep")
 
             with chdir(
                 app_path / app_module_name,
-                verbose=verbose,
             ):
                 app_template = generate_app_template(
                     package_name=app_module_name,
@@ -1527,14 +1502,12 @@ def new(
 
             with chdir(
                 app_path,
-                verbose=verbose,
             ):
                 sh.git.add("--all")
                 sh.git.commit("-m", "initial auto-commit")
 
         with chdir(
             app_path,
-            verbose=verbose,
         ):
             # write_edit_config(package_name=app_name, package_group=group, local=local)
             # with open(".edit_config", "x", encoding="utf8") as fh:
@@ -1550,7 +1523,6 @@ def new(
                 local=local,
                 app_name=app_name,
                 app_user=app_user,
-                verbose=verbose,
             )
 
             _description_md = generate_description_md_template(
@@ -1570,7 +1542,6 @@ def new(
 
     with chdir(
         app_path,
-        verbose=verbose,
     ):
         write_edit_config(package_name=app_name, package_group=group, local=local)
 
@@ -1591,7 +1562,6 @@ def new(
             enable_dobin = True
         with chdir(
             ebuild_path,
-            verbose=verbose,
         ):
             with open(ebuild_name, "w") as fh:
                 fh.write(
@@ -1622,7 +1592,6 @@ def new(
                 line=accept_keyword,
                 unique=True,
                 make_new_if_necessary=True,
-                verbose=verbose,
             )
             sh.ln("-s", ebuild_path / ebuild_name, app_path / ebuild_name)
             sh.git.diff("--exit-code")
@@ -1630,7 +1599,6 @@ def new(
 
         with chdir(
             app_path,
-            verbose=verbose,
         ):
             gitignore_template = generate_gitignore_template(ebuild_name=ebuild_name)
             if use_existing_repo:
@@ -1679,10 +1647,12 @@ def delete(
     verbose: bool = False,
 ):
     not_root()
-    tty, verbose = tv(
+    tty, verbose = tvicgvd(
         ctx=ctx,
         verbose=verbose,
         verbose_inf=verbose_inf,
+        ic=ic,
+        gvd=gvd,
     )
 
     apps_folder = Path(apps_folder)
@@ -1691,7 +1661,6 @@ def delete(
     app_name, app_user, app_module_name, app_path = parse_url(
         repo_url,
         apps_folder=apps_folder,
-        verbose=verbose,
     )
     ic(app_name, app_user, app_module_name, app_path)
     assert app_user == github_user
@@ -1705,7 +1674,6 @@ def delete(
     ic(recycle_bin)
     with chdir(
         recycle_bin,
-        verbose=verbose,
     ):
         group_path = Path(group)
         group_path.mkdir(exist_ok=False)
