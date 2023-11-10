@@ -1554,6 +1554,8 @@ def new(
         enable_python = False
         if Path(app_path / Path("setup.py")).exists():
             enable_python = True
+        if Path(app_path / Path("setup.cfg")).exists():
+            enable_python = True
 
         os.makedirs(ebuild_path, exist_ok=False)
 
