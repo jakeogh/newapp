@@ -228,7 +228,7 @@ def thing(ctx,
     if keys:
         iterator = keys
     else:
-        iterator: Sequence[dict | bytes | str] = unmp(valid_types=[dict, bytes, str],)
+        iterator: Sequence[dict | str] = unmp(valid_types=[dict, str],)
 
     # need to send a single key, or multiple keys, if multiple keys, keys need to specified on the commandline
     # either way, the output is still a dict
