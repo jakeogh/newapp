@@ -117,14 +117,15 @@ import time
 import logging
 import sh
 from collections.abc import Sequence
-from clicktool import click_add_options, click_global_options, CONTEXT_SETTINGS
+from clicktool import click_add_options
+from clicktool import click_global_options
+from clicktool import tvicgvd
+from clicktool import CONTEXT_SETTINGS
 from click_auto_help import AHGroup
 from signal import signal, SIGPIPE, SIG_DFL
 from pathlib import Path
 from mptool import output
 from mptool import mpd_enumerate
-from clicktool import tvicgvd
-from clicktool import CONTEXT_SETTINGS
 from asserttool import validate_slice
 from eprint import eprint
 from asserttool import ic
