@@ -1682,8 +1682,10 @@ def delete(
     ):
         group_path = Path(group)
         group_path.mkdir(exist_ok=False)
-        sh.busybox.mv(ebuild_path, group_path, _close_stderr=True)
-        sh.busybox.mv(app_path, ".", _close_stderr=True)
+        # sh.busybox.mv(ebuild_path, group_path, _close_stderr=True)
+        # sh.busybox.mv(app_path, ".", _close_stderr=True)
+        sh.busybox.mv(ebuild_path, group_path)
+        sh.busybox.mv(app_path, ".")
 
 
 ##http://liw.fi/cmdtest/
