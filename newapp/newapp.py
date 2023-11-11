@@ -32,6 +32,7 @@ from urllib.parse import urlparse
 import click
 import sh
 from asserttool import ic
+from asserttool import icp
 from asserttool import not_root
 from clicktool import click_add_options
 from clicktool import click_global_options
@@ -1676,7 +1677,7 @@ def delete(
     ic(ebuild_path)
     recycle_bin = Path("/delme") / Path("deleted_apps") / Path(get_timestamp())
     recycle_bin.mkdir(parents=True, exist_ok=False)
-    ic(recycle_bin)
+    icp(recycle_bin)
     with chdir(
         recycle_bin,
     ):
@@ -1686,6 +1687,13 @@ def delete(
         # sh.busybox.mv(app_path, ".", _close_stderr=True)
         sh.busybox.mv(ebuild_path, group_path)
         sh.busybox.mv(app_path, ".")
+    with chdir(
+        ebuild_path.parent,
+    ):
+        sh.git.add("-u")
+        sh.git.commit("-m", "auto-commit")
+        sh.git.push()
+        os.system("sudo emaint sync -A")
 
 
 ##http://liw.fi/cmdtest/
