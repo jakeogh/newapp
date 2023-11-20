@@ -254,7 +254,7 @@ def thing(ctx,
         #with open(_v, 'rb') as fh:
         #    path_bytes_data = fh.read()
 
-        output(_v, reason=_mpobject, dict_output=dict_output, tty=tty,)
+        output(_v, reason=_mpobject, dict_output=dict_output, tty=tty, verbose=gvd,)
 
 #        if ipython:
 #            import IPython; IPython.embed()
