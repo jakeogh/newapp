@@ -1597,7 +1597,7 @@ def new(
                     unique=True,
                     make_new_if_necessary=True,
                 )
-            except Exception as e:
+            except PermissionError as e:
                 icp(e)
                 raise e
             sh.ln("-s", ebuild_path / ebuild_name, app_path / ebuild_name)
