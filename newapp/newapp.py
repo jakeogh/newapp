@@ -1081,7 +1081,7 @@ def rename(
         new_accept_keywords.as_posix(),
         _out=sys.stdout,
         _err=sys.stderr,
-        _close_stderr=True,
+        # _close_stderr=True,
     )
 
     replace_text(
