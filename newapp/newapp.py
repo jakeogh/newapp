@@ -1590,12 +1590,16 @@ def new(
             os.system("sudo emaint sync -A")
             accept_keyword = f"={group}/{app_name}-9999 **\n"
             accept_keywords = accept_keywords_path(group=group, app_name=app_name)
-            write_line_to_file(
-                path=accept_keywords,
-                line=accept_keyword,
-                unique=True,
-                make_new_if_necessary=True,
-            )
+            try:
+                write_line_to_file(
+                    path=accept_keywords,
+                    line=accept_keyword,
+                    unique=True,
+                    make_new_if_necessary=True,
+                )
+            except Exception as e:
+                icp(e)
+                raise e
             sh.ln("-s", ebuild_path / ebuild_name, app_path / ebuild_name)
             sh.git.diff("--exit-code")
             # need to commit any pending ebuild changes here, but that's the wront git message, and it fails if it's unhanged
