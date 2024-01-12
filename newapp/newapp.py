@@ -1418,7 +1418,7 @@ def new(
         ext = ".sh"
     elif language == "zig":
         ext = ".zig"
-        assert group == "dev-zig"
+        # assert group == "dev-zig"  # sys-fs/ncdu
     elif language == "c":
         ext = ".c"
     elif language == "go":
@@ -1609,15 +1609,15 @@ def new(
         ):
             gitignore_template = generate_gitignore_template(ebuild_name=ebuild_name)
             if use_existing_repo:
-                with open(".gitignore", "a") as fh:
+                with open(".gitignore", "a", encoding="utf8") as fh:
                     fh.write(gitignore_template)
             else:  # could be a cloned repo, not a new one...
                 try:
-                    with open(".gitignore", "x") as fh:
+                    with open(".gitignore", "x", encoding="utf8") as fh:
                         fh.write(gitignore_template)
                 except FileExistsError as e:
                     ic(e)
-                    with open(".gitignore", "a") as fh:
+                    with open(".gitignore", "a", encoding="utf8") as fh:
                         fh.write(gitignore_template)
 
             # sh.git.add(".gitignore")
