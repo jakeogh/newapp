@@ -41,6 +41,7 @@ package="${{group}}/${{short_package}}"
 test_command_arg="--help"
 pre_lint_command=""
 dont_unmerge=""
+skip_test=""
 """
 
 
