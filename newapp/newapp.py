@@ -1579,6 +1579,9 @@ def new(
                         app_path=app_path,
                     )
                 )
+            # do this first, so we have the current remote HEAD ref before trying to push
+            # still a race conditon obviously
+            os.system("sudo emaint sync -A")
             sh.git.add(ebuild_name)
             sh.ebuild(ebuild_name, "manifest")
             sh.git.add("*")
