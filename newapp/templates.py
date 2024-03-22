@@ -229,6 +229,7 @@ def thing(ctx,
     if keys:
         iterator = keys
     else:
+        # bug, a dict can sneak in other types
         iterator: Sequence[dict | str] = unmp(valid_types=[dict, str],)
 
     # need to send a single key, or multiple keys, if multiple keys, keys need to specified on the commandline
