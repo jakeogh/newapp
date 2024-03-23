@@ -95,11 +95,27 @@ def accept_keywords_path(group: str, app_name: str):
     return accept_keywords
 
 
+def get_extension(language: str) -> str:
+    if language == "python":
+        ext = ".py"
+    elif language == "bash":
+        ext = ".sh"
+    elif language == "zig":
+        ext = ".zig"
+        # assert group == "dev-zig"  # sys-fs/ncdu
+    elif language == "c":
+        ext = ".c"
+    elif language == "go":
+        ext = ".go"
+    else:
+        raise ValueError("unsupported language: " + language)
+    return ext
+
+
 def replace_text(
     path: Path,
     str_to_match: str,
     replacement: str,
-    verbose: bool = False,
 ) -> None:
     ic(str_to_match, replacement)
 
@@ -118,7 +134,6 @@ def replace_match_pairs_in_file(
     *,
     path: Path,
     match_pairs: tuple,
-    verbose: bool = False,
 ) -> None:
     assert isinstance(match_pairs, tuple)
     for old_match, new_match in match_pairs:
@@ -134,7 +149,6 @@ def replace_match_pairs_in_file(
 
 def get_url_for_overlay(
     overlay: str,
-    verbose: bool = False,
 ) -> str:
     command = sh.eselect("repository", "list")
     command_output = command.stdout.split("\n")
@@ -166,7 +180,6 @@ def valid_branch(ctx, param, value):
 def find_edit_configs(
     *,
     apps_folder: Path,
-    verbose: bool = False,
 ):
     edit_configs = []
     for path in files_pathlib(
@@ -291,7 +304,6 @@ def generate_app_template(
     *,
     language: str,
     append_files: tuple[Path, ...],
-    verbose: bool = False,
 ) -> str:
     result = None
     if language == "python":
@@ -341,7 +353,6 @@ def rename_repo_at_app_path(
     app_group: str,
     hg: bool,
     local: bool,
-    verbose: bool = False,
 ):
     ic(old_name, new_name)
     old_module_name = old_name.replace("-", "_")
@@ -443,7 +454,6 @@ def clone_repo(
     app_group: str,
     hg: bool,
     local: bool,
-    verbose: bool = False,
 ):
     app_name, app_user, _, _ = parse_url(
         repo_url,
@@ -502,7 +512,6 @@ def create_repo(
     app_path: Path,
     app_module_name: str,
     hg: bool,
-    verbose: bool = False,
 ):
     if hg:
         raise NotImplementedError("hg")
@@ -521,7 +530,6 @@ def remote_add_origin(
     app_name: str,
     app_user: str,
     hg: bool,
-    verbose: bool = False,
 ):
     if hg:
         raise NotImplementedError("hg")
@@ -561,7 +569,6 @@ def parse_url(
     *,
     apps_folder: Path,
     keep_underscore: bool = False,  # for rename
-    verbose: bool = False,
 ):
     ic(repo_url)
 
@@ -588,21 +595,14 @@ def parse_url(
     return app_name, app_user, app_module_name, app_path
 
 
-def write_url_sh(
-    repo_url,
-    *,
-    verbose: bool = False,
-):
+def write_url_sh(repo_url):
     url_template = generate_url_template(url=repo_url)
     with open("url.sh", "x", encoding="utf8") as fh:
         fh.write(url_template)
     sh.chmod("+x", "url.sh")
 
 
-def write_autogenerate_readme_sh(
-    *,
-    verbose: bool = False,
-):
+def write_autogenerate_readme_sh():
     autogenerate_readme_template = generate_autogenerate_readme()
     with open(".autogenerate_readme.sh", "x", encoding="utf8") as fh:
         fh.write(autogenerate_readme_template)
@@ -677,7 +677,6 @@ def get_overlay_url(
 ):
     url = get_url_for_overlay(
         overlay_name,
-        verbose=ctx.obj["verbose"],
     )
     print(url)
 
@@ -737,7 +736,6 @@ def template_pylint(
         "TEMP",
         language="python",
         append_files=(),
-        verbose=ctx.obj["verbose"],
     )
     for line in app_template.splitlines():
         if line.startswith("# flake8: "):
@@ -768,7 +766,6 @@ def template_python(
         package_name,
         language="python",
         append_files=(),
-        verbose=ctx.obj["verbose"],
     )
     output(
         app_template,
@@ -800,7 +797,6 @@ def template_bash(
         package_name,
         language="bash",
         append_files=(),
-        verbose=ctx.obj["verbose"],
     )
     print(app_template)
 
@@ -827,7 +823,6 @@ def template_zig(
         package_name,
         language="zig",
         append_files=(),
-        verbose=ctx.obj["verbose"],
     )
     print(app_template)
 
@@ -1313,11 +1308,7 @@ def write_edit_config(*, package_name: str, package_group: str, local):
 @click.option("--github-user", type=str, required=True)
 @click.option(
     "--license",
-    type=click.Choice(
-        license_list(
-            verbose=False,
-        )
-    ),
+    type=click.Choice(license_list()),
     default="ISC",
 )
 @click.option("--owner", type=str, required=True)
@@ -1412,19 +1403,7 @@ def new(
     if language == "sh":
         language = "bash"
 
-    if language == "python":
-        ext = ".py"
-    elif language == "bash":
-        ext = ".sh"
-    elif language == "zig":
-        ext = ".zig"
-        # assert group == "dev-zig"  # sys-fs/ncdu
-    elif language == "c":
-        ext = ".c"
-    elif language == "go":
-        ext = ".go"
-    else:
-        raise ValueError("unsupported language: " + language)
+    ext = get_extension(language)
 
     if template_repo_url:
         clone_repo(
@@ -1438,8 +1417,12 @@ def new(
             local=local,
         )
 
-    ic(app_path.exists(), use_existing_repo)
-    if (not app_path.exists()) or use_existing_repo:
+    icp(app_path.exists(), use_existing_repo)
+    if app_path.exists():
+        eprint(f"Not creating new app, {app_path} already exists.")
+    elif use_existing_repo:
+        eprint(f"Adding existing repo to {app_path}")
+    else:
         if not use_existing_repo:
             create_repo(
                 hg=hg,
@@ -1490,7 +1473,6 @@ def new(
                     package_name=app_module_name,
                     language=language,
                     append_files=templates,
-                    verbose=ctx.obj["verbose"],
                 )
                 with open(app_module_name + ext, "x") as fh:
                     fh.write(app_template)
@@ -1510,14 +1492,6 @@ def new(
         with chdir(
             app_path,
         ):
-            # write_edit_config(package_name=app_name, package_group=group, local=local)
-            # with open(".edit_config", "x", encoding="utf8") as fh:
-            #    fh.write(
-            #        generate_edit_config(
-            #            package_name=app_name, package_group=group, local=local
-            #        )
-            #    )
-
             remote_add_origin(
                 hg=hg,
                 app_path=app_path,
@@ -1537,9 +1511,6 @@ def new(
             with open(".install.md", "x", encoding="utf8") as fh:
                 fh.write(_install_md)
             sh.git.add(".install.md")
-
-    else:
-        eprint(f"Not creating new app, {app_path} already exists.")
 
     with chdir(
         app_path,
