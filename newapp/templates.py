@@ -250,13 +250,14 @@ def thing(ctx,
             for _k, _v in _mpobject.items():
                 break   # assume single k:v dict
         else:
-            _v = Path(os.fsdecode(_mpobject)).resolve()
-        ic(index, _v)
+            _v = _mpobject
+        _p = Path(os.fsdecode(_v)).resolve()
+        ic(index, _p)
 
-        #with open(_v, 'rb') as fh:
+        #with open(_p, 'rb') as fh:
         #    path_bytes_data = fh.read()
 
-        output(_v, reason=_mpobject, dict_output=dict_output, tty=tty, verbose=gvd,)
+        output(_p, reason=_mpobject, dict_output=dict_output, tty=tty, verbose=gvd,)
 
 #        if ipython:
 #            import IPython; IPython.embed()
