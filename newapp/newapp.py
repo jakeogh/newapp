@@ -47,7 +47,7 @@ from getdents import files
 from getdents import files_pathlib
 from getdents import paths
 from globalverbose import gvd
-from licenseguesser import license_list
+from licenseguesser import build_license_list
 from mptool import output
 from pathtool import write_line_to_file
 from portagetool import portage_categories
@@ -1312,7 +1312,7 @@ def write_edit_config(*, package_name: str, package_group: str, local):
 @click.option("--github-user", type=str, required=True)
 @click.option(
     "--license",
-    type=click.Choice(license_list()),
+    type=click.Choice(build_license_list()),
     default="ISC",
 )
 @click.option("--owner", type=str, required=True)
