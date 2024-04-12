@@ -21,8 +21,6 @@
 # pylint: disable=no-member                       # [E1101] no member for base
 # pylint: disable=attribute-defined-outside-init  # [W0201]
 # pylint: disable=too-many-boolean-expressions    # [R0916] in if statement
-
-
 from __future__ import annotations
 
 import logging
