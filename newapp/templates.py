@@ -294,7 +294,7 @@ inherit git-r3
 
 DESCRIPTION="{description}"
 HOMEPAGE="{homepage}"
-EGIT_REPO_URI="{app_path} {homepage}.git"
+EGIT_REPO_URI="{homepage}.git"
 
 LICENSE="BSD"
 SLOT="0"
