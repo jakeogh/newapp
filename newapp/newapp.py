@@ -1594,7 +1594,7 @@ def new(
                 raise e
             os.system(f"sudo chown root:root /etc/portage/env/{group}")
 
-            os.system(f"sudo chown user:user /etc/portage/package.env")  # ugly
+            os.system(f"sudo chown user:user /etc/portage/package.env/{group}")  # ugly
             try:
                 write_line_to_file(
                     path=f"/etc/portage/package.env/{group}/{app_name}",
@@ -1605,7 +1605,7 @@ def new(
             except PermissionError as e:
                 icp(e)
                 raise e
-            os.system(f"sudo chown root:root /etc/portage/package.env")  # ugly
+            os.system(f"sudo chown root:root /etc/portage/package.env/{group}")  # ugly
 
             sh.git.diff("--exit-code")
             # need to commit any pending ebuild changes here, but that's the wront git message, and it fails if it's unhanged
