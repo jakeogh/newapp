@@ -1578,6 +1578,31 @@ def new(
                 icp(e)
                 raise e
             sh.ln("-s", ebuild_path / ebuild_name, app_path / ebuild_name)
+            os.system(f"sudo git config --system --add safe.directory {app_path}/.git")
+            os.system(f"sudo mkdir /etc/portage/env/{group}")
+
+            try:
+                write_line_to_file(
+                    path=f"/etc/portage/env/{group}/{app_name}-9999",
+                    line=f"EGIT_REPO_URI='{app_path}'",
+                    unique=True,
+                    make_new_if_necessary=True,
+                )
+            except PermissionError as e:
+                icp(e)
+                raise e
+
+            try:
+                write_line_to_file(
+                    path=f"/etc/portage/package.env/{group}/{app_name}",
+                    line=f"{group}/{app_name} {group}/{app_name}-9999",
+                    unique=True,
+                    make_new_if_necessary=True,
+                )
+            except PermissionError as e:
+                icp(e)
+                raise e
+
             sh.git.diff("--exit-code")
             # need to commit any pending ebuild changes here, but that's the wront git message, and it fails if it's unhanged
 
