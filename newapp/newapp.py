@@ -1365,7 +1365,8 @@ def list_all_ebuilds(
                     continue
                 github_url = _
                 icp(github_url)
-                assert "github.com" in github_url
+                if not "github.com" in github_url:
+                    assert "gitlab.com" in github_url
 
             # if not remote.startswith("git@github.com:"):
             #    if app_user == github_user:
