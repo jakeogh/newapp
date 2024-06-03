@@ -1368,6 +1368,8 @@ def list_all_ebuilds(
                 if not "github.com" in github_url:
                     assert "gitlab.com" in github_url
 
+            new_egit_repo_uri_line = f'EGIT_REPO_URI="{github_url}"'
+            icp(new_egit_repo_uri_line)
             # if not remote.startswith("git@github.com:"):
             #    if app_user == github_user:
             #        icp(
@@ -1381,7 +1383,7 @@ def list_all_ebuilds(
             #    icp(app_name, "is not", edit_config_path.parent.name)
             #    raise ValueError(edit_config_path, remote)
 
-        del app_name, app_user, app_module_name, app_path
+        del app_name, app_user, app_module_name, app_path, github_url, repo_line_items
 
         # output(
         #    os.fsencode(config.parent.as_posix()),
