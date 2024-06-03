@@ -1273,7 +1273,7 @@ def list_all_ebuilds(
                 path=Path(edit_config),
             )
             ebuild_path = (
-                Path("~/_myapps/jakeogh")
+                Path("/home/user/_myapps/jakeogh")
                 / Path(group)
                 / Path(app_name)
                 / Path(ebuild_name)
