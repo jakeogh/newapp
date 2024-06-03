@@ -1290,12 +1290,12 @@ def list_all_ebuilds(
             if "myapps" not in repo_line:
                 assert repo_line.startswith('EGIT_REPO_URI="https://github.com/')
                 assert repo_line.endswith('.git"')
-                assert Path(
-                    "/home/sysskel/etc/portage/env/{group}/{app_name}-9999"
-                ).exists()
-                assert Path(
-                    "/home/sysskel/etc/portage/package.env/{group}/{app_name}"
-                ).exists()
+                _path = Path("/home/sysskel/etc/portage/env/{group}/{app_name}-9999")
+                icp(_path)
+                assert Path(_path).exists()
+                _path = Path("/home/sysskel/etc/portage/env/{group}/{app_name}-9999")
+                icp(_path)
+                assert Path(_path).exists()
 
             # if not remote.startswith("git@github.com:"):
             #    if app_user == github_user:
