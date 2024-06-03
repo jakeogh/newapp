@@ -1314,7 +1314,15 @@ def list_all_ebuilds(
             )
             icp(ebuild_path)
             assert ebuild_path.exists()
-            assert Path(Path(app_path) / Path(ebuild_name)).exists()
+            _symlink_name = Path(Path(app_path) / Path(ebuild_name))
+            if not _symlink_name.exists():
+                sh.ln(
+                    "-s",
+                    ebuild_path.as_posix(),
+                    _symlink_name.as_posix(),
+                    _ok_code=[0, 1],
+                )
+                assert False
             with open(ebuild_path, "r") as fh:
                 ebuild_lines = fh.readlines()
 
