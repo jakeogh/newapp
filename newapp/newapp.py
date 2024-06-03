@@ -1248,7 +1248,7 @@ def list_all_ebuilds(
         apps_folder=apps_folder,
     )
     for edit_config_path in edit_configs:
-        ic(edit_config_path)
+        icp(edit_config_path)
         with chdir(
             edit_config_path.parent,
         ):
@@ -1257,6 +1257,7 @@ def list_all_ebuilds(
                 remote,
                 apps_folder=apps_folder,
             )
+            icp(app_name, app_user, app_module_name, app_path)
             # if not remote.startswith("git@github.com:"):
             #    if app_user == github_user:
             #        icp(
@@ -1270,7 +1271,6 @@ def list_all_ebuilds(
             #    icp(app_name, "is not", edit_config_path.parent.name)
             #    raise ValueError(edit_config_path, remote)
 
-        icp(app_name, app_user, app_module_name, app_path)
         del app_name, app_user, app_module_name, app_path
 
         # output(
