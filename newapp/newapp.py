@@ -1370,6 +1370,16 @@ def list_all_ebuilds(
 
                 new_egit_repo_uri_line = f'EGIT_REPO_URI="{github_url}"'
                 icp(new_egit_repo_uri_line)
+                replace_text_in_file(
+                    path=ebuild_path,
+                    match_bytes=repo_line.encode("utf8"),
+                    replacement_bytes=new_egit_repo_uri_line.encode("utf8"),
+                    output_fh=None,
+                    read_mode="rb",
+                    write_mode="wb",
+                    remove_match=False,
+                )
+                assert False
             # if not remote.startswith("git@github.com:"):
             #    if app_user == github_user:
             #        icp(
