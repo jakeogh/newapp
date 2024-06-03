@@ -89,6 +89,16 @@ CONTEXT_SETTINGS = dict(default_map=CFG)
 # ic(CFG)
 
 
+def write_edit_config(*, package_name: str, package_group: str, local):
+    ic(package_name, package_group, local)
+    with open(".edit_config", "x", encoding="utf8") as fh:
+        fh.write(
+            generate_edit_config(
+                package_name=package_name, package_group=package_group, local=local
+            )
+        )
+
+
 def accept_keywords_path(group: str, app_name: str):
     accept_keywords = (
         Path("/etc/portage/package.accept_keywords") / Path(group) / Path(app_name)
@@ -1200,6 +1210,80 @@ def list_all_paths(
         )
 
 
+@cli.command("list-ebuilds")
+@click.option(
+    "--apps-folder",
+    type=click.Path(
+        exists=True,
+        dir_okay=True,
+        file_okay=False,
+        allow_dash=False,
+        path_type=Path,
+    ),
+    required=True,
+)
+@click.option("--github-user", type=str, required=True)
+@click_add_options(click_global_options)
+@click.pass_context
+def list_all_ebuilds(
+    ctx,
+    apps_folder: Path,
+    github_user: str,
+    verbose_inf: bool,
+    dict_output: bool,
+    verbose: bool = False,
+):
+    tty, verbose = tvicgvd(
+        ctx=ctx,
+        verbose=verbose,
+        verbose_inf=verbose_inf,
+        ic=ic,
+        gvd=gvd,
+    )
+
+    apps_folder = Path(apps_folder)
+    ic(apps_folder)
+
+    edit_configs = find_edit_configs(
+        apps_folder=apps_folder,
+    )
+    for edit_config_path in edit_configs:
+        ic(edit_config_path)
+        with chdir(
+            edit_config_path.parent,
+        ):
+            remote = str(sh.git.remote("get-url", "origin")).strip()
+            app_name, app_user, app_module_name, app_path = parse_url(
+                remote,
+                apps_folder=apps_folder,
+            )
+            if not remote.startswith("git@github.com:"):
+                if app_user == github_user:
+                    ic(
+                        "remote is to",
+                        github_user,
+                        "but does not startwith git@github.com:",
+                        remote,
+                    )
+                    raise ValueError(edit_config_path, remote)
+            if not app_name == edit_config_path.parent.name:
+                ic(app_name, "is not", edit_config_path.parent.name)
+                raise ValueError(edit_config_path, remote)
+
+        icp(app_name, app_user, app_module_name, app_path)
+        del app_name, app_user, app_module_name, app_path
+
+        # output(
+        #    os.fsencode(config.parent.as_posix()),
+        #    reason=None,
+        #    dict_output=dict_output,
+        #    tty=tty,
+        # )
+
+    # ebuild_path = Path(gentoo_overlay_repo) / Path(group) / Path(app_name)
+    # ebuild_name = app_name + "-9999.ebuild"
+
+
 @cli.command()
 @click.option(
     "--apps-folder",
@@ -1266,16 +1350,6 @@ def check_all(
                 raise ValueError(edit_config_path, remote)
 
         del app_name, app_user, app_module_name, app_path
-
-
-def write_edit_config(*, package_name: str, package_group: str, local):
-    ic(package_name, package_group, local)
-    with open(".edit_config", "x", encoding="utf8") as fh:
-        fh.write(
-            generate_edit_config(
-                package_name=package_name, package_group=package_group, local=local
-            )
-        )
 
 
 @cli.command()
