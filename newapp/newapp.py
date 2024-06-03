@@ -1353,23 +1353,23 @@ def list_all_ebuilds(
                 )
                 icp(_path)
                 assert Path(_path).exists()
+            else:
+                repo_line_items = repo_line.split('EGIT_REPO_URI="')[1]
+                icp(repo_line_items)
+                repo_line_items = repo_line_items.split('"')[0]
+                icp(repo_line_items)
+                repo_line_items = repo_line_items.split(" ")
+                icp(repo_line_items)
+                for _ in repo_line_items:
+                    if "myapps" in _:
+                        continue
+                    github_url = _
+                    icp(github_url)
+                    if not "github.com" in github_url:
+                        assert "gitlab.com" in github_url
 
-            repo_line_items = repo_line.split('EGIT_REPO_URI="')[1]
-            icp(repo_line_items)
-            repo_line_items = repo_line_items.split('"')[0]
-            icp(repo_line_items)
-            repo_line_items = repo_line_items.split(" ")
-            icp(repo_line_items)
-            for _ in repo_line_items:
-                if "myapps" in _:
-                    continue
-                github_url = _
-                icp(github_url)
-                if not "github.com" in github_url:
-                    assert "gitlab.com" in github_url
-
-            new_egit_repo_uri_line = f'EGIT_REPO_URI="{github_url}"'
-            icp(new_egit_repo_uri_line)
+                new_egit_repo_uri_line = f'EGIT_REPO_URI="{github_url}"'
+                icp(new_egit_repo_uri_line)
             # if not remote.startswith("git@github.com:"):
             #    if app_user == github_user:
             #        icp(
