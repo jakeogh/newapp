@@ -1322,7 +1322,6 @@ def list_all_ebuilds(
                     _symlink_name.as_posix(),
                     _ok_code=[0, 1],
                 )
-                assert False
             with open(ebuild_path, "r") as fh:
                 ebuild_lines = fh.readlines()
 
