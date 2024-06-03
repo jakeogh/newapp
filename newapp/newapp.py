@@ -1287,7 +1287,7 @@ def list_all_ebuilds(
                     repo_line = line.strip()
                     break
             icp(repo_line)
-            assert "_myapps" in repo_line
+            assert "myapps" in repo_line
 
             # if not remote.startswith("git@github.com:"):
             #    if app_user == github_user:
