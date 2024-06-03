@@ -1257,7 +1257,7 @@ def list_all_ebuilds(
                 remote,
                 apps_folder=apps_folder,
             )
-            icp(app_name, app_user, app_module_name, app_path)
+            icp(app_name, app_user, app_module_name, app_path, remote)
             # if not remote.startswith("git@github.com:"):
             #    if app_user == github_user:
             #        icp(
