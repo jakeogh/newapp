@@ -1270,7 +1270,7 @@ def list_all_ebuilds(
                 install_command,
                 skip_test,
             ) = parse_edit_config(
-                path=edit_config,
+                path=Path(edit_config),
             )
             ebuild_path = (
                 Path("~/_myapps/jakeogh")
