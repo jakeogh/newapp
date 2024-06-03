@@ -1279,6 +1279,14 @@ def list_all_ebuilds(
                 / Path(ebuild_name)
             )
             icp(ebuild_path)
+            with open(ebuild_path, "r") as fh:
+                ebuild_lines = fh.readlines()
+
+            for line in ebuild_lines:
+                if line.startswith("EGIT_REPO_URI="):
+                    repo_line = line
+                    break
+            icp(repo_line)
 
             # if not remote.startswith("git@github.com:"):
             #    if app_user == github_user:
