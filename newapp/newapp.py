@@ -1332,7 +1332,8 @@ def list_all_ebuilds(
 
             icp(repo_line)
             if "myapps" not in repo_line:
-                assert repo_line.startswith('EGIT_REPO_URI="https://github.com/')
+                if not repo_line.startswith('EGIT_REPO_URI="https://github.com/'):
+                    assert repo_line.startswith('EGIT_REPO_URI="https://gitlab.com/')
                 assert repo_line.endswith('.git"')
                 _path = Path(f"/home/sysskel/etc/portage/env/{group}/{app_name}-9999")
                 icp(_path)
