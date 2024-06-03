@@ -1313,6 +1313,7 @@ def list_all_ebuilds(
                 / Path(ebuild_name)
             )
             icp(ebuild_path)
+            assert ebuild_path.exists()
             with open(ebuild_path, "r") as fh:
                 ebuild_lines = fh.readlines()
 
@@ -1320,6 +1321,7 @@ def list_all_ebuilds(
                 if line.startswith("EGIT_REPO_URI="):
                     repo_line = line.strip()
                     break
+
             icp(repo_line)
             if "myapps" not in repo_line:
                 assert repo_line.startswith('EGIT_REPO_URI="https://github.com/')
