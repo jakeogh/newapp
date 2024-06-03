@@ -92,6 +92,7 @@ CONTEXT_SETTINGS = dict(default_map=CFG)
 
 def create_package_env_records(*, group: str, app_name: str, app_path: Path):
     os.system(f"sudo mkdir /etc/portage/env/{group}")
+    os.system(f"sudo mkdir /etc/portage/package.env/{group}")
     os.system(f"sudo chown user:user /etc/portage/env/{group}")  # ugly
 
     try:
