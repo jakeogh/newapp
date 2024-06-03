@@ -1314,6 +1314,7 @@ def list_all_ebuilds(
             )
             icp(ebuild_path)
             assert ebuild_path.exists()
+            assert Path(Path(app_path) / Path(ebuild_name)).exists()
             with open(ebuild_path, "r") as fh:
                 ebuild_lines = fh.readlines()
 
