@@ -1288,7 +1288,7 @@ def list_all_ebuilds(
                     break
             icp(repo_line)
             if "myapps" not in repo_line:
-                assert repo_line.startswith("EGIT_REPO_URI=https://github.com/")
+                assert repo_line.startswith('EGIT_REPO_URI="https://github.com/')
                 assert repo_line.endswith(".git")
 
             # if not remote.startswith("git@github.com:"):
