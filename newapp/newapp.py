@@ -91,6 +91,7 @@ CONTEXT_SETTINGS = dict(default_map=CFG)
 
 
 def create_package_env_records(*, group: str, app_name: str, app_path: Path):
+    icp(group, app_name, app_path)
     os.system(f"sudo mkdir /etc/portage/env/{group}")
     os.system(f"sudo mkdir /etc/portage/package.env/{group}")
     os.system(f"sudo chown user:user /etc/portage/env/{group}")  # ugly
@@ -101,6 +102,7 @@ def create_package_env_records(*, group: str, app_name: str, app_path: Path):
             line=f"EGIT_REPO_URI='{app_path}'\n",
             unique=True,
             make_new_if_necessary=True,
+            verbose=True,
         )
     except PermissionError as e:
         icp(e)
@@ -114,6 +116,7 @@ def create_package_env_records(*, group: str, app_name: str, app_path: Path):
             line=f"{group}/{app_name} {group}/{app_name}-9999\n",
             unique=True,
             make_new_if_necessary=True,
+            verbose=True,
         )
     except PermissionError as e:
         icp(e)
@@ -1324,6 +1327,7 @@ def list_all_ebuilds(
                 _path = Path(f"/home/sysskel/etc/portage/env/{group}/{app_name}-9999")
                 icp(_path)
                 if not Path(_path).exists():
+                    icp(f"missing: {_path.as_posix()}")
                     create_package_env_records(
                         group=group,
                         app_name=app_name,
