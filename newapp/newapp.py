@@ -1266,9 +1266,9 @@ def list_all_ebuilds(
             #            remote,
             #        )
             #        raise ValueError(edit_config_path, remote)
-            if not app_name == edit_config_path.parent.name:
-                icp(app_name, "is not", edit_config_path.parent.name)
-                raise ValueError(edit_config_path, remote)
+            # if not app_name == edit_config_path.parent.name:
+            #    icp(app_name, "is not", edit_config_path.parent.name)
+            #    raise ValueError(edit_config_path, remote)
 
         icp(app_name, app_user, app_module_name, app_path)
         del app_name, app_user, app_module_name, app_path
