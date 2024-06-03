@@ -1360,6 +1360,12 @@ def list_all_ebuilds(
             icp(repo_line_items)
             repo_line_items = repo_line_items.split(" ")
             icp(repo_line_items)
+            for _ in repo_line_items:
+                if "myapps" in _:
+                    continue
+                github_url = _
+                icp(github_url)
+                assert "github.com" in github_url
 
             # if not remote.startswith("git@github.com:"):
             #    if app_user == github_user:
