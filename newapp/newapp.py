@@ -1293,6 +1293,8 @@ def list_all_ebuilds(
                 apps_folder=apps_folder,
             )
             icp(app_name, app_user, app_module_name, app_path, remote)
+            if app_name == "gevent":
+                continue  # bug
             ebuild_name = app_name + "-9999.ebuild"
             (
                 _edit_config,
