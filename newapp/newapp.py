@@ -1354,8 +1354,10 @@ def list_all_ebuilds(
                 icp(_path)
                 assert Path(_path).exists()
 
-            repo_line_items = repo_line.split('EGIT_REPO_URI="'[1])
-            repo_line_items = repo_line_items.split('"'[0])
+            repo_line_items = repo_line.split('EGIT_REPO_URI="')[1]
+            icp(repo_line_items)
+            repo_line_items = repo_line_items.split('"')[0]
+            icp(repo_line_items)
             repo_line_items = repo_line_items.split(" ")
             icp(repo_line_items)
 
