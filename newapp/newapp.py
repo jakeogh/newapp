@@ -40,6 +40,7 @@ from clicktool import click_add_options
 from clicktool import click_global_options
 from clicktool import tvicgvd
 from configtool import click_read_config
+from edittool import parse_edit_config
 from eprint import eprint
 from getdents import files
 from getdents import files_pathlib
@@ -1258,6 +1259,27 @@ def list_all_ebuilds(
                 apps_folder=apps_folder,
             )
             icp(app_name, app_user, app_module_name, app_path, remote)
+            ebuild_name = app_name + "-9999.ebuild"
+            (
+                _edit_config,
+                short_package,
+                group,
+                remote,
+                test_command_arg,
+                dont_reformat,
+                install_command,
+                skip_test,
+            ) = parse_edit_config(
+                path=edit_config,
+            )
+            ebuild_path = (
+                Path("~/_myapps/jakeogh")
+                / Path(group)
+                / Path(app_name)
+                / Path(ebuild_name)
+            )
+            icp(ebuild_path)
+
             # if not remote.startswith("git@github.com:"):
             #    if app_user == github_user:
             #        icp(
@@ -1279,9 +1301,6 @@ def list_all_ebuilds(
         #    dict_output=dict_output,
         #    tty=tty,
         # )
-
-    # ebuild_path = Path(gentoo_overlay_repo) / Path(group) / Path(app_name)
-    # ebuild_name = app_name + "-9999.ebuild"
 
 
 @cli.command()
