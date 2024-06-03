@@ -1383,7 +1383,11 @@ def list_all_ebuilds(
             #    icp(app_name, "is not", edit_config_path.parent.name)
             #    raise ValueError(edit_config_path, remote)
 
-        del app_name, app_user, app_module_name, app_path, github_url, repo_line_items
+        del app_name, app_user, app_module_name, app_path
+        try:
+            del github_url, repo_line_items
+        except UnboundLocalError:
+            pass
 
         # output(
         #    os.fsencode(config.parent.as_posix()),
