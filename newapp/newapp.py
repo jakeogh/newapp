@@ -1379,7 +1379,7 @@ def list_all_ebuilds(
                     write_mode="wb",
                     remove_match=False,
                 )
-                assert False
+                # assert False
             # if not remote.startswith("git@github.com:"):
             #    if app_user == github_user:
             #        icp(
