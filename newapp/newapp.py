@@ -1284,9 +1284,10 @@ def list_all_ebuilds(
 
             for line in ebuild_lines:
                 if line.startswith("EGIT_REPO_URI="):
-                    repo_line = line
+                    repo_line = line.strip()
                     break
             icp(repo_line)
+            assert "_myapps" in repo_line
 
             # if not remote.startswith("git@github.com:"):
             #    if app_user == github_user:
