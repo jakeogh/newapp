@@ -1257,17 +1257,17 @@ def list_all_ebuilds(
                 remote,
                 apps_folder=apps_folder,
             )
-            if not remote.startswith("git@github.com:"):
-                if app_user == github_user:
-                    ic(
-                        "remote is to",
-                        github_user,
-                        "but does not startwith git@github.com:",
-                        remote,
-                    )
-                    raise ValueError(edit_config_path, remote)
+            # if not remote.startswith("git@github.com:"):
+            #    if app_user == github_user:
+            #        icp(
+            #            "remote is to",
+            #            github_user,
+            #            "but does not startwith git@github.com:",
+            #            remote,
+            #        )
+            #        raise ValueError(edit_config_path, remote)
             if not app_name == edit_config_path.parent.name:
-                ic(app_name, "is not", edit_config_path.parent.name)
+                icp(app_name, "is not", edit_config_path.parent.name)
                 raise ValueError(edit_config_path, remote)
 
         icp(app_name, app_user, app_module_name, app_path)
