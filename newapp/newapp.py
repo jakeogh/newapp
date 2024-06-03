@@ -90,6 +90,36 @@ CONTEXT_SETTINGS = dict(default_map=CFG)
 # ic(CFG)
 
 
+def create_package_env_records(*, group: str, app_name: str, app_path: Path):
+    os.system(f"sudo mkdir /etc/portage/env/{group}")
+    os.system(f"sudo chown user:user /etc/portage/env/{group}")  # ugly
+
+    try:
+        write_line_to_file(
+            path=f"/etc/portage/env/{group}/{app_name}-9999",
+            line=f"EGIT_REPO_URI='{app_path}'\n",
+            unique=True,
+            make_new_if_necessary=True,
+        )
+    except PermissionError as e:
+        icp(e)
+        raise e
+    os.system(f"sudo chown root:root /etc/portage/env/{group}")
+
+    os.system(f"sudo chown user:user /etc/portage/package.env/{group}")  # ugly
+    try:
+        write_line_to_file(
+            path=f"/etc/portage/package.env/{group}/{app_name}",
+            line=f"{group}/{app_name} {group}/{app_name}-9999\n",
+            unique=True,
+            make_new_if_necessary=True,
+        )
+    except PermissionError as e:
+        icp(e)
+        raise e
+    os.system(f"sudo chown root:root /etc/portage/package.env/{group}")  # ugly
+
+
 def write_edit_config(*, package_name: str, package_group: str, local):
     ic(package_name, package_group, local)
     with open(".edit_config", "x", encoding="utf8") as fh:
@@ -1292,7 +1322,17 @@ def list_all_ebuilds(
                 assert repo_line.endswith('.git"')
                 _path = Path(f"/home/sysskel/etc/portage/env/{group}/{app_name}-9999")
                 icp(_path)
+                if not Path(_path).exists():
+                    create_package_env_records(
+                        group=group,
+                        app_name=app_name,
+                        app_path=app_path,
+                    )
+
+                _path = Path(f"/home/sysskel/etc/portage/env/{group}/{app_name}-9999")
+                icp(_path)
                 assert Path(_path).exists()
+
                 _path = Path(
                     f"/home/sysskel/etc/portage/package.env/{group}/{app_name}"
                 )
@@ -1691,33 +1731,12 @@ def new(
                 raise e
             sh.ln("-s", ebuild_path / ebuild_name, app_path / ebuild_name)
             os.system(f"sudo git config --system --add safe.directory {app_path}/.git")
-            os.system(f"sudo mkdir /etc/portage/env/{group}")
-            os.system(f"sudo chown user:user /etc/portage/env/{group}")  # ugly
 
-            try:
-                write_line_to_file(
-                    path=f"/etc/portage/env/{group}/{app_name}-9999",
-                    line=f"EGIT_REPO_URI='{app_path}'\n",
-                    unique=True,
-                    make_new_if_necessary=True,
-                )
-            except PermissionError as e:
-                icp(e)
-                raise e
-            os.system(f"sudo chown root:root /etc/portage/env/{group}")
-
-            os.system(f"sudo chown user:user /etc/portage/package.env/{group}")  # ugly
-            try:
-                write_line_to_file(
-                    path=f"/etc/portage/package.env/{group}/{app_name}",
-                    line=f"{group}/{app_name} {group}/{app_name}-9999\n",
-                    unique=True,
-                    make_new_if_necessary=True,
-                )
-            except PermissionError as e:
-                icp(e)
-                raise e
-            os.system(f"sudo chown root:root /etc/portage/package.env/{group}")  # ugly
+            create_package_env_records(
+                group=group,
+                app_name=app_name,
+                app_path=app_path,
+            )
 
             sh.git.diff("--exit-code")
             # need to commit any pending ebuild changes here, but that's the wront git message, and it fails if it's unhanged
