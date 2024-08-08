@@ -102,7 +102,6 @@ def create_package_env_records(*, group: str, app_name: str, app_path: Path):
             line=f"EGIT_REPO_URI='{app_path}'\n",
             unique=True,
             make_new_if_necessary=True,
-            verbose=True,
         )
     except PermissionError as e:
         icp(e)
@@ -116,7 +115,6 @@ def create_package_env_records(*, group: str, app_name: str, app_path: Path):
             line=f"{group}/{app_name} {group}/{app_name}-9999\n",
             unique=True,
             make_new_if_necessary=True,
-            verbose=True,
         )
     except PermissionError as e:
         icp(e)
