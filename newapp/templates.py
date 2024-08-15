@@ -261,6 +261,8 @@ def thing(ctx,
 
 #        if ipython:
 #            import IPython; IPython.embed()
+            # import pdb; pdb.set_trace()
+            # from pudb import set_trace; set_trace(paused=False)
 
 if __name__ == '__main__':
     # pylint: disable=E1120
