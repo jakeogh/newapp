@@ -131,7 +131,7 @@ from asserttool import validate_slice
 from eprint import eprint
 from asserttool import ic
 from asserttool import icp
-from asserttool import gvd
+from globalverbose import gvd
 from retry_on_exception import retry_on_exception
 from timestamptool import get_timestamp
 from rich import print as pprint
