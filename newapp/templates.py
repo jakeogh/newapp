@@ -19,7 +19,13 @@ install_md = """### Installation:
 
 autogenerate_readme = "#!/bin/sh"
 
-init = """#from .{package_name} import {package_name}"""
+init = """
+'''
+isort:skip_file
+'''
+
+#from .{package_name} import {package_name}
+"""
 
 
 echo_url = '''#!/bin/sh
