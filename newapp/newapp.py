@@ -1862,6 +1862,9 @@ def delete(
     assert "_" not in app_path.name
     assert app_path.is_dir()
 
+    with chdir("/home/sysskel/myapps/jakeogh"):
+        sh.git("pull")
+
     ebuild_path = Path(gentoo_overlay_repo) / Path(group) / Path(app_name)
     ic(ebuild_path)
     recycle_bin = Path("/delme") / Path("deleted_apps") / Path(get_timestamp())
