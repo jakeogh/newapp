@@ -1604,6 +1604,8 @@ def new(
         language = "bash"
 
     ext = get_extension(language)
+    with chdir("/home/sysskel/myapps/jakeogh"):
+        sh.git("pull")
 
     if template_repo_url:
         clone_repo(
