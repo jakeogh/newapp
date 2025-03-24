@@ -182,6 +182,7 @@ sh.mv = None  # use sh.busybox('mv'), coreutils ignores stdin read errors
 #this should be earlier in the imports, but isort stops working
 signal(SIGPIPE, SIG_DFL)
 
+APP_NAME = "{package_name}"
 
 # @with_plugins(iter_entry_points('click_command_tree'))
 @click.group(context_settings=CONTEXT_SETTINGS, no_args_is_help=True, cls=AHGroup)
@@ -200,6 +201,12 @@ def cli(ctx,
         ic=ic,
         gvd=gvd,
     )
+
+    global APP_NAME                                                
+    config_directory = get_config_directory(click_instance=click, app_name=APP_NAME)
+    config_directory.mkdir(exist_ok=True)
+    ctx.obj["config_directory"] = config_directory
+
 
 #@click.argument("slice_syntax", type=validate_slice, nargs=1)
 @cli.command()
