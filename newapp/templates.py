@@ -203,7 +203,7 @@ def cli(ctx,
         gvd=gvd,
     )
 
-    global APP_NAME                                                
+    global APP_NAME
     config_directory = get_config_directory(click_instance=click, app_name=APP_NAME)
     config_directory.mkdir(exist_ok=True)
     ctx.obj["config_directory"] = config_directory
@@ -300,7 +300,7 @@ ebuild = """# Copyright 1999-{year} Gentoo Authors
 
 EAPI=8
 DISTUTILS_USE_PEP517=setuptools
-PYTHON_COMPAT=( python3_{{10..12}} )
+PYTHON_COMPAT=( python3_{{12..14}} )
 
 inherit git-r3
 {inherit_python}
