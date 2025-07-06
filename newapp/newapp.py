@@ -42,13 +42,13 @@ from clicktool import tvicgvd
 from configtool import click_read_config
 from edittool import parse_edit_config
 from eprint import eprint
+from filetool import ensure_line_in_config_file
 from getdents import files
 from getdents import files_pathlib
 from getdents import paths
 from globalverbose import gvd
 from licenseguesser import build_license_list
 from mptool import output
-from pathtool import write_line_to_file
 from portagetool import portage_categories
 from portagetool import resolve_package_name
 from replace_text import replace_text_in_file
@@ -97,11 +97,9 @@ def create_package_env_records(*, group: str, app_name: str, app_path: Path):
     os.system(f"sudo chown user:user /etc/portage/env/{group}")  # ugly
 
     try:
-        write_line_to_file(
+        ensure_line_in_config_file(
             path=f"/etc/portage/env/{group}/{app_name}-9999",
             line=f"EGIT_REPO_URI='{app_path}'\n",
-            unique=True,
-            make_new_if_necessary=True,
         )
     except PermissionError as e:
         icp(e)
@@ -110,11 +108,9 @@ def create_package_env_records(*, group: str, app_name: str, app_path: Path):
 
     os.system(f"sudo chown user:user /etc/portage/package.env/{group}")  # ugly
     try:
-        write_line_to_file(
+        ensure_line_in_config_file(
             path=f"/etc/portage/package.env/{group}/{app_name}",
             line=f"{group}/{app_name} {group}/{app_name}-9999\n",
-            unique=True,
-            make_new_if_necessary=True,
         )
     except PermissionError as e:
         icp(e)
@@ -1768,11 +1764,10 @@ def new(
             accept_keywords = accept_keywords_path(group=group, app_name=app_name)
             # needs sudo
             try:
-                write_line_to_file(
+                ensure_line_in_config_file(
                     path=accept_keywords,
                     line=accept_keyword,
-                    unique=True,
-                    make_new_if_necessary=True,
+                    ,,
                 )
             except PermissionError as e:
                 icp(e)
