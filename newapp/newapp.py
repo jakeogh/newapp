@@ -100,6 +100,8 @@ def create_package_env_records(*, group: str, app_name: str, app_path: Path):
         ensure_line_in_config_file(
             path=f"/etc/portage/env/{group}/{app_name}-9999",
             line=f"EGIT_REPO_URI='{app_path}'\n",
+            comment_marker="#",
+            ignore_leading_whitespace=False,
         )
     except PermissionError as e:
         icp(e)
@@ -111,6 +113,8 @@ def create_package_env_records(*, group: str, app_name: str, app_path: Path):
         ensure_line_in_config_file(
             path=f"/etc/portage/package.env/{group}/{app_name}",
             line=f"{group}/{app_name} {group}/{app_name}-9999\n",
+            comment_marker="#",
+            ignore_leading_whitespace=False,
         )
     except PermissionError as e:
         icp(e)
@@ -1765,8 +1769,11 @@ def new(
             # needs sudo
             try:
                 ensure_line_in_config_file(
-                    path=accept_keywords
-                    line=accept_keyword
+                    path=accept_keywords,
+                    line=accept_keyword,
+                    comment_marker="#",
+                    ignore_leading_whitespace=False,
+
                 )
             except PermissionError as e:
                 icp(e)
