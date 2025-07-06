@@ -23,6 +23,7 @@
 # pylint: disable=too-many-boolean-expressions    # [R0916] in if statement
 from __future__ import annotations
 
+import errno
 import logging
 import os
 import shutil
@@ -42,7 +43,7 @@ from clicktool import tvicgvd
 from configtool import click_read_config
 from edittool import parse_edit_config
 from eprint import eprint
-from filetool import ensure_line_in_config_file
+from filetool import ensure_line_in_config_file as _ensure_line_in_config_file
 from getdents import files
 from getdents import files_pathlib
 from getdents import paths
@@ -52,6 +53,7 @@ from mptool import output
 from portagetool import portage_categories
 from portagetool import resolve_package_name
 from replace_text import replace_text_in_file
+from retry_on_exception import retry_on_exception
 from timestamptool import get_timestamp
 from with_chdir import chdir
 
@@ -90,6 +92,23 @@ CONTEXT_SETTINGS = dict(default_map=CFG)
 # ic(CFG)
 
 
+@retry_on_exception(
+    exception=PermissionError,
+    # errno=errno.EPERM,
+)
+@retry_on_exception(
+    exception=OSError,
+    errno=errno.ENOSPC,
+)
+def ensure_line_in_config_file(path: Path, line: str):
+    _ensure_line_in_config_file(
+        path=path,
+        line=line,
+        comment_marker="#",
+        ignore_leading_whitespace=False,
+    )
+
+
 def create_package_env_records(*, group: str, app_name: str, app_path: Path):
     icp(group, app_name, app_path)
     os.system(f"sudo mkdir /etc/portage/env/{group}")
@@ -98,10 +117,8 @@ def create_package_env_records(*, group: str, app_name: str, app_path: Path):
 
     try:
         ensure_line_in_config_file(
-            path=f"/etc/portage/env/{group}/{app_name}-9999",
+            path=Path(f"/etc/portage/env/{group}/{app_name}-9999"),
             line=f"EGIT_REPO_URI='{app_path}'\n",
-            comment_marker="#",
-            ignore_leading_whitespace=False,
         )
     except PermissionError as e:
         icp(e)
@@ -111,10 +128,8 @@ def create_package_env_records(*, group: str, app_name: str, app_path: Path):
     os.system(f"sudo chown user:user /etc/portage/package.env/{group}")  # ugly
     try:
         ensure_line_in_config_file(
-            path=f"/etc/portage/package.env/{group}/{app_name}",
+            path=Path(f"/etc/portage/package.env/{group}/{app_name}"),
             line=f"{group}/{app_name} {group}/{app_name}-9999\n",
-            comment_marker="#",
-            ignore_leading_whitespace=False,
         )
     except PermissionError as e:
         icp(e)
@@ -132,7 +147,7 @@ def write_edit_config(*, package_name: str, package_group: str, local):
         )
 
 
-def accept_keywords_path(group: str, app_name: str):
+def accept_keywords_path(group: str, app_name: str) -> Path:
     accept_keywords = (
         Path("/etc/portage/package.accept_keywords") / Path(group) / Path(app_name)
     )
@@ -1771,9 +1786,6 @@ def new(
                 ensure_line_in_config_file(
                     path=accept_keywords,
                     line=accept_keyword,
-                    comment_marker="#",
-                    ignore_leading_whitespace=False,
-
                 )
             except PermissionError as e:
                 icp(e)
