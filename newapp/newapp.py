@@ -1765,9 +1765,8 @@ def new(
             # needs sudo
             try:
                 ensure_line_in_config_file(
-                    path=accept_keywords,
-                    line=accept_keyword,
-                    ,,
+                    path=accept_keywords
+                    line=accept_keyword
                 )
             except PermissionError as e:
                 icp(e)
