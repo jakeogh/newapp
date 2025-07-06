@@ -1779,17 +1779,17 @@ def new(
             os.system(f"git commit -m 'newapp {app_name}'")
             os.system("git push")
             os.system("sudo emaint sync -A")
-            accept_keyword = f"={group}/{app_name}-9999 **\n"
-            accept_keywords = accept_keywords_path(group=group, app_name=app_name)
-            # needs sudo
-            try:
-                ensure_line_in_config_file(
-                    path=accept_keywords,
-                    line=accept_keyword,
-                )
-            except PermissionError as e:
-                icp(e)
-                raise e
+            # accept_keyword = f"={group}/{app_name}-9999 **\n"
+            # accept_keywords = accept_keywords_path(group=group, app_name=app_name)
+            ## needs sudo
+            # try:
+            #    ensure_line_in_config_file(
+            #        path=accept_keywords,
+            #        line=accept_keyword,
+            #    )
+            # except PermissionError as e:
+            #    icp(e)
+            #    raise e
             sh.ln("-s", ebuild_path / ebuild_name, app_path / ebuild_name)
             os.system(f"sudo git config --system --add safe.directory {app_path}/.git")
 
