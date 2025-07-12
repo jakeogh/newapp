@@ -165,7 +165,6 @@ from unmp import unmp
 logging.basicConfig(level=logging.INFO)
 sh.mv = None  # use sh.busybox('mv'), coreutils ignores stdin read errors
 
-
 # click-command-tree
 #from click_plugins import with_plugins
 #from pkg_resources import iter_entry_points
@@ -189,7 +188,7 @@ APP_NAME = "{package_name}"
 @click.group(context_settings=CONTEXT_SETTINGS, no_args_is_help=True, cls=AHGroup)
 @click_add_options(click_global_options)
 @click.pass_context
-def cli(ctx,
+def cli(ctx: click.Context,
         verbose_inf: bool,
         dict_output: bool,
         verbose: bool = False,
@@ -223,7 +222,7 @@ def cli(ctx,
 @click.option('--ipython', is_flag=True)
 @click_add_options(click_global_options)
 @click.pass_context
-def thing(ctx,
+def thing(ctx: click.Context,
         keys: tuple[str, ...],
         sysskel: Path,
         ipython: bool,
