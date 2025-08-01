@@ -760,7 +760,7 @@ def nineify(
         ic=ic,
         gvd=gvd,
     )
-    not_root()
+    # not_root()
     assert "/" in app
     group, name = app.split("/")
     ic(group)
@@ -913,7 +913,7 @@ def rename(
     hg: bool,
     verbose: bool = False,
 ):
-    not_root()
+    # not_root()
     tty, verbose = tvicgvd(
         ctx=ctx,
         verbose=verbose,
@@ -1559,7 +1559,7 @@ def new(
     hg: bool,
     verbose: bool = False,
 ):
-    not_root()
+    # not_root()
     tty, verbose = tvicgvd(
         ctx=ctx,
         verbose=verbose,
@@ -1855,7 +1855,7 @@ def delete(
     dict_output: bool,
     verbose: bool = False,
 ):
-    not_root()
+    # not_root()
     tty, verbose = tvicgvd(
         ctx=ctx,
         verbose=verbose,
