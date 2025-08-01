@@ -111,6 +111,7 @@ def ensure_line_in_config_file(path: Path, line: str):
 
 def create_package_env_records(*, group: str, app_name: str, app_path: Path):
     icp(group, app_name, app_path)
+    assert os.geteuid() == 0
     os.system(f"sudo mkdir /etc/portage/env/{group}")
     os.system(f"sudo mkdir /etc/portage/package.env/{group}")
     os.system(f"sudo chown user:user /etc/portage/env/{group}")  # ugly
