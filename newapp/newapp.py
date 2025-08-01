@@ -147,12 +147,12 @@ def write_edit_config(*, package_name: str, package_group: str, local):
         )
 
 
-def accept_keywords_path(group: str, app_name: str) -> Path:
-    accept_keywords = (
-        Path("/etc/portage/package.accept_keywords") / Path(group) / Path(app_name)
-    )
-    accept_keywords.parent.mkdir(exist_ok=True)
-    return accept_keywords
+# def accept_keywords_path(group: str, app_name: str) -> Path:
+#    accept_keywords = (
+#        Path("/etc/portage/package.accept_keywords") / Path(group) / Path(app_name)
+#    )
+#    accept_keywords.parent.mkdir(exist_ok=True)
+#    return accept_keywords
 
 
 def get_extension(language: str) -> str:
@@ -1126,24 +1126,24 @@ def rename(
             _err=sys.stderr,
         )
 
-    old_accept_keywords = accept_keywords_path(group=group, app_name=old_app_name)
-    new_accept_keywords = accept_keywords_path(group=group, app_name=new_app_name)
-    sh.busybox(
-        "mv",
-        "-v",
-        "-i",
-        old_accept_keywords.as_posix(),
-        new_accept_keywords.as_posix(),
-        _out=sys.stdout,
-        _err=sys.stderr,
-        # _close_stderr=True,
-    )
+    # old_accept_keywords = accept_keywords_path(group=group, app_name=old_app_name)
+    # new_accept_keywords = accept_keywords_path(group=group, app_name=new_app_name)
+    # sh.busybox(
+    #    "mv",
+    #    "-v",
+    #    "-i",
+    #    old_accept_keywords.as_posix(),
+    #    new_accept_keywords.as_posix(),
+    #    _out=sys.stdout,
+    #    _err=sys.stderr,
+    #    # _close_stderr=True,
+    # )
 
-    replace_text(
-        path=new_accept_keywords,
-        str_to_match="/" + old_app_module_name + "-",
-        replacement="/" + new_app_module_name + "-",
-    )
+    # replace_text(
+    #    path=new_accept_keywords,
+    #    str_to_match="/" + old_app_module_name + "-",
+    #    replacement="/" + new_app_module_name + "-",
+    # )
 
 
 @cli.command("list")
