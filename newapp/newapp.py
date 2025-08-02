@@ -34,6 +34,7 @@ from urllib.parse import urlparse
 
 import click
 import sh
+from asserttool import am_root
 from asserttool import ic
 from asserttool import icp
 from asserttool import not_root
@@ -913,7 +914,7 @@ def rename(
     hg: bool,
     verbose: bool = False,
 ):
-    # not_root()
+    am_root()
     tty, verbose = tvicgvd(
         ctx=ctx,
         verbose=verbose,
@@ -1559,7 +1560,7 @@ def new(
     hg: bool,
     verbose: bool = False,
 ):
-    # not_root()
+    am_root()
     tty, verbose = tvicgvd(
         ctx=ctx,
         verbose=verbose,
