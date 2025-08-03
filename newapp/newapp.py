@@ -57,6 +57,7 @@ from replace_text import replace_text_in_file
 from retry_on_exception import retry_on_exception
 from timestamptool import get_timestamp
 from with_chdir import chdir
+from with_user import User
 
 from .templates import autogenerate_readme
 from .templates import bash_app
@@ -113,9 +114,9 @@ def ensure_line_in_config_file(path: Path, line: str):
 def create_package_env_records(*, group: str, app_name: str, app_path: Path):
     icp(group, app_name, app_path)
     assert os.geteuid() == 0
-    os.system(f"sudo mkdir /etc/portage/env/{group}")
-    os.system(f"sudo mkdir /etc/portage/package.env/{group}")
-    os.system(f"sudo chown user:user /etc/portage/env/{group}")  # ugly
+    os.system(f"mkdir /etc/portage/env/{group}")
+    os.system(f"mkdir /etc/portage/package.env/{group}")
+    # os.system(f"chown user:user /etc/portage/env/{group}")  # ugly
 
     try:
         ensure_line_in_config_file(
@@ -124,10 +125,10 @@ def create_package_env_records(*, group: str, app_name: str, app_path: Path):
         )
     except PermissionError as e:
         icp(e)
-        raise e
-    os.system(f"sudo chown root:root /etc/portage/env/{group}")
+        raise
+    # os.system(f"sudo chown root:root /etc/portage/env/{group}")
 
-    os.system(f"sudo chown user:user /etc/portage/package.env/{group}")  # ugly
+    # os.system(f"sudo chown user:user /etc/portage/package.env/{group}")  # ugly
     try:
         ensure_line_in_config_file(
             path=Path(f"/etc/portage/package.env/{group}/{app_name}"),
@@ -135,8 +136,8 @@ def create_package_env_records(*, group: str, app_name: str, app_path: Path):
         )
     except PermissionError as e:
         icp(e)
-        raise e
-    os.system(f"sudo chown root:root /etc/portage/package.env/{group}")  # ugly
+        raise
+    # os.system(f"sudo chown root:root /etc/portage/package.env/{group}")  # ugly
 
 
 def write_edit_config(*, package_name: str, package_group: str, local):
@@ -889,7 +890,7 @@ def template_zig(
     print(app_template)
 
 
-@cli.command()
+@cli.command("rename")
 @click.argument("old_repo_url", type=str, nargs=1)
 @click.argument("new_repo_url", type=str, nargs=1)
 @click.argument("group", type=str, nargs=1)
@@ -900,7 +901,7 @@ def template_zig(
 @click.option("--hg", is_flag=True)
 @click_add_options(click_global_options)
 @click.pass_context
-def rename(
+def _rename(
     ctx,
     old_repo_url,
     new_repo_url,
@@ -1621,8 +1622,13 @@ def new(
         language = "bash"
 
     ext = get_extension(language)
-    with chdir("/home/sysskel/myapps/jakeogh"):
-        sh.git("pull")
+
+    @User("user")
+    def pull_overlay():
+        with chdir("/home/sysskel/myapps/jakeogh"):
+            sh.git("pull")
+
+    pull_overlay()
 
     if template_repo_url:
         clone_repo(
@@ -1756,7 +1762,7 @@ def new(
         with chdir(
             ebuild_path,
         ):
-            with open(ebuild_name, "w") as fh:
+            with open(ebuild_name, "w", encoding="utf8") as fh:
                 fh.write(
                     generate_ebuild_template(
                         app_name=app_name,
@@ -1771,7 +1777,7 @@ def new(
                 )
             # do this first, so we have the current remote HEAD ref before trying to push
             # still a race conditon obviously
-            os.system("sudo emaint sync -A")
+            os.system("emaint sync -A")
             sh.git.add(ebuild_name)
             sh.ebuild(ebuild_name, "manifest")
             sh.git.add("*")
@@ -1780,7 +1786,7 @@ def new(
             )  # add any unstaged changes (like some other ebuild was deleted)
             os.system(f"git commit -m 'newapp {app_name}'")
             os.system("git push")
-            os.system("sudo emaint sync -A")
+            os.system("emaint sync -A")
             # accept_keyword = f"={group}/{app_name}-9999 **\n"
             # accept_keywords = accept_keywords_path(group=group, app_name=app_name)
             ## needs sudo
