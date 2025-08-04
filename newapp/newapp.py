@@ -1854,10 +1854,15 @@ def new(
 
     main_py_path = app_path / Path(app_module_name) / Path(app_module_name + ext)
     ic(main_py_path)
-    os.system(
-        "edittool edit --skip-isort --skip-black --skip-pylint --skip-text-replace "
-        + main_py_path.as_posix()
-    )
+
+    @User("user")
+    def run_edittool(path: Path):
+        os.system(
+            "edittool edit --skip-isort --skip-black --skip-pylint --skip-text-replace "
+            + main_py_path.as_posix()
+        )
+
+    run_edittool(main_py_path)
 
 
 @cli.command()
