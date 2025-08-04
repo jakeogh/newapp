@@ -94,6 +94,11 @@ CONTEXT_SETTINGS = dict(default_map=CFG)
 # ic(CFG)
 
 
+@User("user")
+def mkdir_user(path):
+    os.makedirs(path, exist_ok=True)
+
+
 @retry_on_exception(
     exception=PermissionError,
     # errno=errno.EPERM,
@@ -140,6 +145,7 @@ def create_package_env_records(*, group: str, app_name: str, app_path: Path):
     # os.system(f"sudo chown root:root /etc/portage/package.env/{group}")  # ugly
 
 
+@User("user")
 def write_edit_config(*, package_name: str, package_group: str, local):
     ic(package_name, package_group, local)
     with open(".edit_config", "x", encoding="utf8") as fh:
@@ -507,6 +513,7 @@ def rename_repo_at_app_path(
         sh.git.commit("-m rename")
 
 
+@User("user")
 def clone_repo(
     *,
     branch: str,
@@ -570,6 +577,7 @@ def clone_repo(
         )
 
 
+@User("user")
 def create_repo(
     *,
     app_path: Path,
@@ -658,6 +666,7 @@ def parse_url(
     return app_name, app_user, app_module_name, app_path
 
 
+@User("user")
 def write_url_sh(repo_url):
     url_template = generate_url_template(url=repo_url)
     with open("url.sh", "x", encoding="utf8") as fh:
@@ -665,6 +674,7 @@ def write_url_sh(repo_url):
     sh.chmod("+x", "url.sh")
 
 
+@User("user")
 def write_autogenerate_readme_sh():
     autogenerate_readme_template = generate_autogenerate_readme()
     with open(".autogenerate_readme.sh", "x", encoding="utf8") as fh:
@@ -673,6 +683,7 @@ def write_autogenerate_readme_sh():
     # sh.chmod("+x", ".autogenerate_readme.sh")
 
 
+@User("user")
 def write_setup_py(
     *,
     use_existing_repo: bool,
@@ -704,6 +715,7 @@ def write_setup_py(
         )
 
 
+@User("user")
 def write_pyproject_toml():
     with open("pyproject.toml", "x", encoding="utf8") as fh:
         fh.write(pyproject_toml)
@@ -1634,7 +1646,6 @@ def new(
     except sh.ErrorReturnCode_1 as e:
         icp(e)
 
-
     if template_repo_url:
         clone_repo(
             repo_url=repo_url,
@@ -1665,7 +1676,8 @@ def new(
             with chdir(
                 app_path,
             ):
-                os.makedirs(app_module_name, exist_ok=True)
+                mkdir_user(app_module_name)
+                # os.makedirs(app_module_name, exist_ok=True)
 
         ic(template_repo_url)
         if not template_repo_url:
