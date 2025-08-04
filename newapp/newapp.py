@@ -146,8 +146,14 @@ def create_package_env_records(*, group: str, app_name: str, app_path: Path):
 
 
 @User("user")
-def write_edit_config(*, package_name: str, package_group: str, local):
+def write_edit_config(
+    *,
+    package_name: str,
+    package_group: str,
+    local,
+):
     ic(package_name, package_group, local)
+    os.system("ls -alh")
     with open(".edit_config", "x", encoding="utf8") as fh:
         fh.write(
             generate_edit_config(
