@@ -298,7 +298,7 @@ def generate_edit_config(
     )
 
 
-@User("user")
+# @User("user")
 def generate_setup_py(
     *,
     url: str,
@@ -331,17 +331,17 @@ def generate_setup_py(
     )
 
 
-@User("user")
+# @User("user")
 def generate_src_install_dobin_template(app_name):
     return src_install_dobin.format(app_name=app_name)
 
 
-@User("user")
+# @User("user")
 def generate_autogenerate_readme():
     return autogenerate_readme
 
 
-@User("user")
+# @User("user")
 def generate_ebuild_template(
     *,
     description: str,
