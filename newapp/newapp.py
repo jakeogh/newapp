@@ -148,18 +148,22 @@ def create_package_env_records(*, group: str, app_name: str, app_path: Path):
 @User("user")
 def write_edit_config(
     *,
+    app_path: Path,
     package_name: str,
     package_group: str,
-    local,
+    local: bool,
 ):
     ic(package_name, package_group, local)
-    os.system("ls -alh")
-    with open(".edit_config", "x", encoding="utf8") as fh:
-        fh.write(
-            generate_edit_config(
-                package_name=package_name, package_group=package_group, local=local
+    with chdir(app_path):
+        os.system("ls -alh")
+        with open(".edit_config", "x", encoding="utf8") as fh:
+            fh.write(
+                generate_edit_config(
+                    package_name=package_name,
+                    package_group=package_group,
+                    local=local,
+                )
             )
-        )
 
 
 # def accept_keywords_path(group: str, app_name: str) -> Path:
@@ -1780,10 +1784,9 @@ def new(
                 fh.write(_install_md)
             sh.git.add(".install.md")
 
-    with chdir(
-        app_path,
-    ):
-        write_edit_config(package_name=app_name, package_group=group, local=local)
+    write_edit_config(
+        app_path=app_path, package_name=app_name, package_group=group, local=local
+    )
 
     ebuild_path = Path(gentoo_overlay_repo) / Path(group) / Path(app_name)
     ebuild_name = app_name + "-9999.ebuild"
