@@ -1628,7 +1628,12 @@ def new(
         with chdir("/home/sysskel/myapps/jakeogh"):
             sh.git("pull")
 
-    pull_overlay()
+    try:
+        pull_overlay()
+    # fixme with_user should pass this exception through
+    except sh.ErrorReturnCode_1 as e:
+        icp(e)
+
 
     if template_repo_url:
         clone_repo(
