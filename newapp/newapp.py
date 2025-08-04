@@ -216,6 +216,7 @@ def replace_match_pairs_in_file(
         )
 
 
+@User("user")
 def get_url_for_overlay(
     overlay: str,
 ) -> str:
@@ -238,6 +239,7 @@ def get_url_for_overlay(
     raise ValueError(f"unknown repo {overlay}")
 
 
+@User("user")
 def valid_branch(ctx, param, value):
     ic(value)
     branch_check_cmd = "git check-ref-format --branch " + value
@@ -262,6 +264,7 @@ def find_edit_configs(
     return edit_configs
 
 
+@User("user")
 def generate_edit_config(
     *,
     package_name: str,
@@ -285,6 +288,7 @@ def generate_edit_config(
     )
 
 
+@User("user")
 def generate_setup_py(
     *,
     url: str,
@@ -317,14 +321,17 @@ def generate_setup_py(
     )
 
 
+@User("user")
 def generate_src_install_dobin_template(app_name):
     return src_install_dobin.format(app_name=app_name)
 
 
+@User("user")
 def generate_autogenerate_readme():
     return autogenerate_readme
 
 
+@User("user")
 def generate_ebuild_template(
     *,
     description: str,
