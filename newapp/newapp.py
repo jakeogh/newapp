@@ -602,6 +602,7 @@ def create_repo(
     app_module_name: str,
     hg: bool,
 ):
+    icp(app_path, app_module_name, hg)
     if hg:
         raise NotImplementedError("hg")
     os.makedirs(app_path, exist_ok=False)
@@ -1664,6 +1665,7 @@ def new(
     except sh.ErrorReturnCode_1 as e:
         icp(e)
 
+    icp(template_repo_url)
     if template_repo_url:
         clone_repo(
             repo_url=repo_url,
