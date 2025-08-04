@@ -274,7 +274,7 @@ def find_edit_configs(
     return edit_configs
 
 
-@User("user")
+# @User("user")
 def generate_edit_config(
     *,
     package_name: str,
@@ -1785,7 +1785,10 @@ def new(
             sh.git.add(".install.md")
 
     write_edit_config(
-        app_path=app_path, package_name=app_name, package_group=group, local=local
+        app_path=app_path,
+        package_name=app_name,
+        package_group=group,
+        local=local,
     )
 
     ebuild_path = Path(gentoo_overlay_repo) / Path(group) / Path(app_name)
