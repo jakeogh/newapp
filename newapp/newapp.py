@@ -1829,30 +1829,39 @@ def new(
         if Path(app_path / Path("setup.cfg")).exists():
             enable_python = True
 
-        os.makedirs(ebuild_path, exist_ok=False)
-
         enable_dobin = False
         if language in {"bash", "go"}:
             enable_dobin = True
+
+        @User("user", env_vars={"HOME": "/home/user"})
+        def write_ebuild_template():
+            os.makedirs(ebuild_path, exist_ok=False)
+            with chdir(
+                ebuild_path,
+            ):
+                with open(ebuild_name, "w", encoding="utf8") as fh:
+                    fh.write(
+                        generate_ebuild_template(
+                            app_name=app_name,
+                            description=description,
+                            enable_python=enable_python,
+                            enable_go=enable_go,
+                            enable_dobin=enable_dobin,
+                            homepage=original_repo_url,
+                            dependencies=dependencies,
+                            app_path=app_path,
+                        )
+                    )
+                # do this first, so we have the current remote HEAD ref before trying to push
+                # still a race conditon obviously
+
+        write_ebuild_template()
+
+        os.system("emaint sync -A")
+
         with chdir(
             ebuild_path,
         ):
-            with open(ebuild_name, "w", encoding="utf8") as fh:
-                fh.write(
-                    generate_ebuild_template(
-                        app_name=app_name,
-                        description=description,
-                        enable_python=enable_python,
-                        enable_go=enable_go,
-                        enable_dobin=enable_dobin,
-                        homepage=original_repo_url,
-                        dependencies=dependencies,
-                        app_path=app_path,
-                    )
-                )
-            # do this first, so we have the current remote HEAD ref before trying to push
-            # still a race conditon obviously
-            os.system("emaint sync -A")
 
             @User("user", env_vars={"HOME": "/home/user"})
             def git_ops():
