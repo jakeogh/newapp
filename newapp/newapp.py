@@ -1538,7 +1538,7 @@ def check_all(
         del app_name, app_user, app_module_name, app_path
 
 
-@User("user")
+@User("user", env_vars={"HOME": "/home/user"})
 def commit_changes():
     os.system("whoami")
     print(sh.whoami())
