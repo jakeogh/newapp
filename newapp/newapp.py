@@ -1853,28 +1853,22 @@ def new(
             # do this first, so we have the current remote HEAD ref before trying to push
             # still a race conditon obviously
             os.system("emaint sync -A")
-            sh.git.add(ebuild_name)
-            sh.ebuild(ebuild_name, "manifest")
-            sh.git.add("*")
-            sh.git.add(
-                "-u"
-            )  # add any unstaged changes (like some other ebuild was deleted)
-            os.system(f"git commit -m 'newapp {app_name}'")
-            os.system("git push")
+
+            @User("user", env_vars={"HOME": "/home/user"})
+            def git_ops():
+                sh.git.add(ebuild_name)
+                sh.ebuild(ebuild_name, "manifest")
+                sh.git.add("*")
+                sh.git.add(
+                    "-u"
+                )  # add any unstaged changes (like some other ebuild was deleted)
+                os.system(f"git commit -m 'newapp {app_name}'")
+                os.system("git push")
+                sh.ln("-s", ebuild_path / ebuild_name, app_path / ebuild_name)
+
+            git_ops()
             os.system("emaint sync -A")
-            # accept_keyword = f"={group}/{app_name}-9999 **\n"
-            # accept_keywords = accept_keywords_path(group=group, app_name=app_name)
-            ## needs sudo
-            # try:
-            #    ensure_line_in_config_file(
-            #        path=accept_keywords,
-            #        line=accept_keyword,
-            #    )
-            # except PermissionError as e:
-            #    icp(e)
-            #    raise e
-            sh.ln("-s", ebuild_path / ebuild_name, app_path / ebuild_name)
-            os.system(f"sudo git config --system --add safe.directory {app_path}/.git")
+            os.system(f"git config --system --add safe.directory {app_path}/.git")
 
             create_package_env_records(
                 group=group,
@@ -1882,28 +1876,39 @@ def new(
                 app_path=app_path,
             )
 
-            sh.git.diff("--exit-code")
+            @User("user", env_vars={"HOME": "/home/user"})
+            def git_diff():
+                sh.git.diff("--exit-code")
+
+            git_diff()
             # need to commit any pending ebuild changes here, but that's the wront git message, and it fails if it's unhanged
 
         with chdir(
             app_path,
         ):
-            gitignore_template = generate_gitignore_template(ebuild_name=ebuild_name)
-            if use_existing_repo:
-                with open(".gitignore", "a", encoding="utf8") as fh:
-                    fh.write(gitignore_template)
-            else:  # could be a cloned repo, not a new one...
-                try:
-                    with open(".gitignore", "x", encoding="utf8") as fh:
-                        fh.write(gitignore_template)
-                except FileExistsError as e:
-                    ic(e)
+
+            @User("user", env_vars={"HOME": "/home/user"})
+            def write_gitignore_template():
+                gitignore_template = generate_gitignore_template(
+                    ebuild_name=ebuild_name
+                )
+                if use_existing_repo:
                     with open(".gitignore", "a", encoding="utf8") as fh:
                         fh.write(gitignore_template)
+                else:  # could be a cloned repo, not a new one...
+                    try:
+                        with open(".gitignore", "x", encoding="utf8") as fh:
+                            fh.write(gitignore_template)
+                    except FileExistsError as e:
+                        ic(e)
+                        with open(".gitignore", "a", encoding="utf8") as fh:
+                            fh.write(gitignore_template)
 
-            # sh.git.add(".gitignore")
+                # sh.git.add(".gitignore")
 
-            sh.git.commit("-m", "initial commit", _ok_code=[0, 1])
+                sh.git.commit("-m", "initial commit", _ok_code=[0, 1])
+
+            write_gitignore_template()
     else:
         eprint(f"Not creating new ebuild, {ebuild_path} already exists.")
 
