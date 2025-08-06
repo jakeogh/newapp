@@ -142,6 +142,7 @@ from retry_on_exception import retry_on_exception
 from timestamptool import get_timestamp
 from rich import print as pprint
 from configtool import get_config_directory
+from decimal import Decimal
 
 from unmp import unmp
 ##from typing import Tuple
