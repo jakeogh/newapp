@@ -725,6 +725,9 @@ def write_setup_py(
     license: str,
     repo_url: str,
 ):
+
+    os.system("pwd")
+    os.system("ls -al")
     if use_existing_repo:
         if Path("setup.py").exists():
             return
