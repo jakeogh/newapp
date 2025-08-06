@@ -1541,6 +1541,7 @@ def check_all(
 @User("user")
 def commit_changes():
     os.system("whoami")
+    print(sh.whoami())
     sh.git.add("--all")
     sh.git.commit("-m", "initial auto-commit")
 
