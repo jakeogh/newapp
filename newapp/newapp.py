@@ -1538,6 +1538,29 @@ def check_all(
         del app_name, app_user, app_module_name, app_path
 
 
+@User("user")
+def commit_changes():
+    sh.git.add("--all")
+    sh.git.commit("-m", "initial auto-commit")
+
+
+@User("user")
+def write_app_template(*, app_module_name: str, language: str, ext: str, templates):
+    app_template = generate_app_template(
+        package_name=app_module_name,
+        language=language,
+        append_files=templates,
+    )
+    with open(app_module_name + ext, "x") as fh:
+        fh.write(app_template)
+
+    if language == "python":
+        init_template = generate_init_template(package_name=app_module_name)
+        with open("__init__.py", "x", encoding="utf8") as fh:
+            fh.write(init_template)
+        sh.touch("py.typed")
+
+
 @cli.command()
 @click.argument(
     "language", type=click.Choice(["python", "bash", "sh", "zig", "c", "go"]), nargs=1
@@ -1745,34 +1768,16 @@ def new(
                 app_path / app_module_name,
             ):
 
-                @User("user")
-                def write_app_template():
-                    app_template = generate_app_template(
-                        package_name=app_module_name,
-                        language=language,
-                        append_files=templates,
-                    )
-                    with open(app_module_name + ext, "x") as fh:
-                        fh.write(app_template)
-
-                    if language == "python":
-                        init_template = generate_init_template(
-                            package_name=app_module_name
-                        )
-                        with open("__init__.py", "x", encoding="utf8") as fh:
-                            fh.write(init_template)
-                        sh.touch("py.typed")
-
-                write_app_template()
+                write_app_template(
+                    app_module_name=app_module_name,
+                    language=language,
+                    templates=templates,
+                    ext=ext,
+                )
 
             with chdir(
                 app_path,
             ):
-
-                @User("user")
-                def commit_changes():
-                    sh.git.add("--all")
-                    sh.git.commit("-m", "initial auto-commit")
 
                 commit_changes()
 
