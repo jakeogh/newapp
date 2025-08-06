@@ -1744,25 +1744,37 @@ def new(
             with chdir(
                 app_path / app_module_name,
             ):
-                app_template = generate_app_template(
-                    package_name=app_module_name,
-                    language=language,
-                    append_files=templates,
-                )
-                with open(app_module_name + ext, "x") as fh:
-                    fh.write(app_template)
 
-                if language == "python":
-                    init_template = generate_init_template(package_name=app_module_name)
-                    with open("__init__.py", "x", encoding="utf8") as fh:
-                        fh.write(init_template)
-                    sh.touch("py.typed")
+                @User("user")
+                def write_app_template():
+                    app_template = generate_app_template(
+                        package_name=app_module_name,
+                        language=language,
+                        append_files=templates,
+                    )
+                    with open(app_module_name + ext, "x") as fh:
+                        fh.write(app_template)
+
+                    if language == "python":
+                        init_template = generate_init_template(
+                            package_name=app_module_name
+                        )
+                        with open("__init__.py", "x", encoding="utf8") as fh:
+                            fh.write(init_template)
+                        sh.touch("py.typed")
+
+                write_app_template()
 
             with chdir(
                 app_path,
             ):
-                sh.git.add("--all")
-                sh.git.commit("-m", "initial auto-commit")
+
+                @User("user")
+                def commit_changes():
+                    sh.git.add("--all")
+                    sh.git.commit("-m", "initial auto-commit")
+
+                commit_changes()
 
         with chdir(
             app_path,
@@ -1775,17 +1787,21 @@ def new(
                 app_user=app_user,
             )
 
-            _description_md = generate_description_md_template(
-                package_name=app_name, repo_url=repo_url
-            )
-            with open(".description.md", "x", encoding="utf8") as fh:
-                fh.write(_description_md)
-            sh.git.add(".description.md")
+            @User("user")
+            def write_description_and_install():
+                _description_md = generate_description_md_template(
+                    package_name=app_name, repo_url=repo_url
+                )
+                with open(".description.md", "x", encoding="utf8") as fh:
+                    fh.write(_description_md)
+                sh.git.add(".description.md")
 
-            _install_md = generate_install_md_template(package_name=app_name)
-            with open(".install.md", "x", encoding="utf8") as fh:
-                fh.write(_install_md)
-            sh.git.add(".install.md")
+                _install_md = generate_install_md_template(package_name=app_name)
+                with open(".install.md", "x", encoding="utf8") as fh:
+                    fh.write(_install_md)
+                sh.git.add(".install.md")
+
+            write_description_and_install()
 
     write_edit_config(
         app_path=app_path,
