@@ -27,6 +27,7 @@ import errno
 import logging
 import os
 import shutil
+import subprocess
 import sys
 from datetime import date
 from pathlib import Path
@@ -116,7 +117,12 @@ def ensure_line_in_config_file(path: Path, line: str):
     )
 
 
-def create_package_env_records(*, group: str, app_name: str, app_path: Path):
+def create_package_env_records(
+    *,
+    group: str,
+    app_name: str,
+    app_path: Path,
+):
     icp(group, app_name, app_path)
     assert os.geteuid() == 0
     os.system(f"mkdir /etc/portage/env/{group}")
@@ -250,7 +256,11 @@ def get_url_for_overlay(
 
 
 @User("user")
-def valid_branch(ctx, param, value):
+def valid_branch(
+    ctx,
+    param,
+    value,
+):
     ic(value)
     branch_check_cmd = "git check-ref-format --branch " + value
     if os.system(branch_check_cmd):
@@ -570,7 +580,11 @@ def clone_repo(
 
     if hg:
         sh.hg(
-            "clone", repo_to_clone_url, str(app_path), _out=sys.stdout, _err=sys.stderr
+            "clone",
+            repo_to_clone_url,
+            str(app_path),
+            _out=sys.stdout,
+            _err=sys.stderr,
         )
     else:
         sh.git.clone(
@@ -636,7 +650,10 @@ def remote_add_origin(
 
     repo_config_command = sh.Command("git")
     repo_config_command = repo_config_command.bake(
-        "remote", "add", "origin", f"git@github.com:jakeogh/{app_name}.git"
+        "remote",
+        "add",
+        "origin",
+        f"git@github.com:jakeogh/{app_name}.git",
     )
 
     # repo_config_command = f"git remote add origin git@github.com:jakeogh/{app_name}.git"
@@ -934,6 +951,36 @@ def template_zig(
     print(app_template)
 
 
+def find_and_move(
+    *,
+    dir: Path,
+    match: str,
+    replacement: str,
+    git: bool = False,
+) -> None:
+    if not isinstance(dir, Path):
+        raise TypeError("dir must be a pathlib.Path")
+    if not isinstance(match, str) or not isinstance(replacement, str):
+        raise TypeError("match and replacement must be str")
+    if not isinstance(git, bool):
+        raise TypeError("git must be a bool")
+
+    for root, _, files in os.walk(dir):
+        for fname in files:
+            if match in fname:
+                old_path = Path(root) / fname
+                new_name = fname.replace(match, replacement, 1)
+                new_path = Path(root) / new_name
+
+                if git:
+                    subprocess.run(
+                        ["git", "mv", str(old_path), str(new_path)],
+                        check=True,
+                    )
+                else:
+                    old_path.rename(new_path)
+
+
 @cli.command("rename")
 @click.argument("old_repo_url", type=str, nargs=1)
 @click.argument("new_repo_url", type=str, nargs=1)
@@ -982,111 +1029,52 @@ def _rename(
     )
     assert old_app_user == new_app_user
 
-    ic(old_app_name, new_app_name)
-    ic(old_app_path, new_app_path)
+    icp(old_app_name, new_app_name)
+    icp(old_app_path, new_app_path)
 
     assert group in portage_categories()
 
+    # first rename files and replace text within them
+    # then rename parent dir
     with chdir(
         old_app_path,
     ):
-        old_setup_py = old_app_path / Path("setup.py")
-        replace_match_pairs_in_file(
-            path=old_setup_py,
-            match_pairs=(
-                (old_app_name, new_app_name),
-                (old_app_module_name, new_app_module_name),
-            ),
-        )
-        sh.git.add(old_setup_py)
-        del old_setup_py
 
-        old_readme_md = old_app_path / Path("README.md")
-        try:
+        old_py_files = []
+        old_py_files.append(old_app_path / Path("setup.py"))
+        old_py_files.append(old_app_path / Path("url.sh"))
+        old_py_files.append(old_app_path / Path("README.md"))
+        old_py_files.append(
+            old_app_path / old_app_module_name / Path(old_app_module_name + ".py")
+        )
+        old_py_files.append(old_app_path / old_app_module_name / Path("__init__.py"))
+        old_py_files.append(old_app_path / old_app_module_name / Path("cli.py"))
+        old_py_files.append(old_app_path / Path("enable_github.sh"))
+        old_py_files.append(old_app_path / Path(".edit_config"))
+        for _ in old_py_files:
+            if not _.exists():
+                continue
             replace_match_pairs_in_file(
-                path=old_readme_md,
+                path=_,
                 match_pairs=(
                     (old_app_name, new_app_name),
                     (old_app_module_name, new_app_module_name),
                 ),
             )
-        except FileNotFoundError as e:
-            ic(e)
-            sh.touch("README.md")
-        sh.git.add(old_readme_md)
-        del old_readme_md
-
-        old_url_sh = old_app_path / Path("url.sh")
-        try:
             replace_text(
-                path=old_url_sh,
-                str_to_match=old_app_name,
-                replacement=new_app_name,
+                path=_,
+                str_to_match=old_app_module_name,
+                replacement=new_app_module_name,
             )
-        except Exception as e:
-            write_url_sh(
-                new_repo_url,
-            )
-        sh.git.add(old_url_sh)
-        del old_url_sh
+            sh.git.add(_)
 
-        old_edit_config = old_app_path / Path(".edit_config")
-        replace_text(
-            path=old_edit_config,
-            str_to_match=old_app_name,
-            replacement=new_app_name,
-        )
-        # sh.git.add(old_edit_config)
-        del old_edit_config
-
-        enable_github_sh = old_app_path / Path("enable_github.sh")
-        if enable_github_sh.exists():
-            replace_text(
-                path=enable_github_sh,
-                str_to_match=old_app_name,
-                replacement=new_app_name,
-            )
-            # sh.git.add(enable_github_sh)
-        del enable_github_sh
-
-        old_app_py = (
-            old_app_path / old_app_module_name / Path(old_app_module_name + ".py")
-        )
-        replace_match_pairs_in_file(
-            path=old_app_py,
-            match_pairs=(
-                (old_app_name, new_app_name),
-                (old_app_module_name, new_app_module_name),
-            ),
-        )
-        sh.git.add(old_app_py)
-        # del old_app_py
-
-        old_app_init_py = old_app_path / old_app_module_name / Path("__init__.py")
-        replace_text(
-            path=old_app_init_py,
-            str_to_match=old_app_module_name,
+        find_and_move(
+            dir=old_app_path,
+            match=old_app_module_name,
             replacement=new_app_module_name,
+            git=True,
         )
-        sh.git.add(old_app_init_py)
-        del old_app_init_py
 
-        # in old_app_path
-        new_app_py = (
-            old_app_path / old_app_module_name / Path(new_app_module_name + ".py")
-        )
-        if new_app_py.as_posix() != old_app_py.as_posix():
-            sh.git.mv(old_app_py, new_app_py)
-        del old_app_py
-        del new_app_py
-
-        if new_app_module_name != old_app_module_name:
-            sh.git.mv(old_app_module_name, new_app_module_name)
-
-        # print(sh.ls())
-        sh.git.add(Path(new_app_module_name) / Path("__init__.py"))
-        sh.git.add(Path(new_app_module_name) / Path("py.typed"))
-        sh.git.add(Path(new_app_module_name) / Path(new_app_module_name + ".py"))
         old_ebuild_symlink = old_app_path / Path(old_app_name + "-9999.ebuild")
         if not old_ebuild_symlink.exists():
             old_ebuild_folder = (
@@ -1099,6 +1087,10 @@ def _rename(
                 _ok_code=[0, 1],
             )
             del old_ebuild_folder
+
+        sh.git.add(Path(new_app_module_name) / Path("__init__.py"))
+        sh.git.add(Path(new_app_module_name) / Path("py.typed"))
+        sh.git.add(Path(new_app_module_name) / Path(new_app_module_name + ".py"))
 
     old_ebuild_dir = old_ebuild_symlink.resolve().parent
     if old_ebuild_symlink.exists():
@@ -1352,7 +1344,13 @@ def list_all_ebuilds(
                 remote,
                 apps_folder=apps_folder,
             )
-            icp(app_name, app_user, app_module_name, app_path, remote)
+            icp(
+                app_name,
+                app_user,
+                app_module_name,
+                app_path,
+                remote,
+            )
             if app_name == "gevent":
                 continue  # bug
             ebuild_name = app_name + "-9999.ebuild"
@@ -1547,7 +1545,13 @@ def commit_changes():
 
 
 @User("user")
-def write_app_template(*, app_module_name: str, language: str, ext: str, templates):
+def write_app_template(
+    *,
+    app_module_name: str,
+    language: str,
+    ext: str,
+    templates,
+):
     app_template = generate_app_template(
         package_name=app_module_name,
         language=language,
@@ -1569,7 +1573,12 @@ def write_app_template(*, app_module_name: str, language: str, ext: str, templat
 )
 @click.argument("repo_url", type=str, nargs=1)
 @click.argument("group", type=str, nargs=1)
-@click.option("--branch", type=str, callback=valid_branch, default="master")
+@click.option(
+    "--branch",
+    type=str,
+    callback=valid_branch,
+    default="master",
+)
 @click.option(
     "--template",
     "templates",
@@ -1978,7 +1987,12 @@ def delete(
         repo_url,
         apps_folder=apps_folder,
     )
-    ic(app_name, app_user, app_module_name, app_path)
+    ic(
+        app_name,
+        app_user,
+        app_module_name,
+        app_path,
+    )
     assert app_user == github_user
     assert "_" not in app_path.name
     assert app_path.is_dir()
