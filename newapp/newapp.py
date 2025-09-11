@@ -1034,126 +1034,6 @@ def _rename(
 
     assert group in portage_categories()
 
-    # first rename files and replace text within them
-    # then rename parent dir
-    with chdir(
-        old_app_path,
-    ):
-
-        old_py_files = []
-        old_py_files.append(old_app_path / Path("setup.py"))
-        old_py_files.append(old_app_path / Path("url.sh"))
-        old_py_files.append(old_app_path / Path("README.md"))
-        old_py_files.append(
-            old_app_path / old_app_module_name / Path(old_app_module_name + ".py")
-        )
-        old_py_files.append(old_app_path / old_app_module_name / Path("__init__.py"))
-        old_py_files.append(old_app_path / old_app_module_name / Path("cli.py"))
-        old_py_files.append(old_app_path / Path("enable_github.sh"))
-        old_py_files.append(old_app_path / Path(".edit_config"))
-        for _ in old_py_files:
-            if not _.exists():
-                continue
-            replace_match_pairs_in_file(
-                path=_,
-                match_pairs=(
-                    (old_app_name, new_app_name),
-                    (old_app_module_name, new_app_module_name),
-                ),
-            )
-            replace_text(
-                path=_,
-                str_to_match=old_app_module_name,
-                replacement=new_app_module_name,
-            )
-            sh.git.add(_)
-
-        find_and_move(
-            dir=old_app_path,
-            match=old_app_module_name,
-            replacement=new_app_module_name,
-            git=True,
-        )
-
-        old_ebuild_symlink = old_app_path / Path(old_app_name + "-9999.ebuild")
-        if not old_ebuild_symlink.exists():
-            old_ebuild_folder = (
-                Path(gentoo_overlay_repo) / Path(group) / Path(old_app_name)
-            )
-            sh.ln(
-                "-s",
-                old_ebuild_folder / old_ebuild_symlink.name,
-                old_ebuild_symlink.name,
-                _ok_code=[0, 1],
-            )
-            del old_ebuild_folder
-
-        sh.git.add(Path(new_app_module_name) / Path("__init__.py"))
-        sh.git.add(Path(new_app_module_name) / Path("py.typed"))
-        sh.git.add(Path(new_app_module_name) / Path(new_app_module_name + ".py"))
-
-    old_ebuild_dir = old_ebuild_symlink.resolve().parent
-    if old_ebuild_symlink.exists():
-        with chdir(
-            old_ebuild_dir,
-        ):
-            # in ebuild folder
-            old_ebuild_path = Path(old_app_name + "-9999.ebuild").resolve()
-            replace_text(
-                path=old_ebuild_path,
-                str_to_match=old_app_module_name,
-                replacement=new_app_module_name,
-            )
-            sh.git.add(old_ebuild_path)
-            new_ebuild_name = Path(new_app_name + "-9999.ebuild")
-            sh.git.mv(
-                "-v",
-                old_ebuild_path,
-                new_ebuild_name,
-                _out=sys.stdout,
-                _err=sys.stderr,
-            )
-            sh.git.add(new_ebuild_name)
-            sh.git.commit("-m", "rename")
-            del old_ebuild_path
-
-        with chdir(
-            old_ebuild_dir.parent,
-        ):
-            # in ebuild parent folder
-            sh.busybox.mv(
-                "-v",
-                old_app_name,
-                new_app_name,
-                _out=sys.stdout,
-                _err=sys.stderr,
-            )
-            new_ebuild_path = Path(new_app_name / new_ebuild_name).resolve()
-            sh.git.add("*")
-            sh.git.commit(
-                "-m",
-                "rename",
-                _ok_code=[0, 1],
-                _out=sys.stdout,
-                _err=sys.stderr,
-            )
-            sh.git.push()
-
-        with chdir(
-            old_app_path,
-        ):
-            print(sh.ls())
-            sh.rm(old_ebuild_symlink.name)
-            del old_ebuild_symlink
-
-            new_ebuild_symlink_name = new_ebuild_name
-            sh.ln("-s", new_ebuild_path, new_ebuild_symlink_name)
-            del new_ebuild_symlink_name
-            del new_ebuild_name
-            sh.git.commit("-m", "rename")
-            sh.git.remote.rm("origin", _ok_code=[0, 2])
-            sh.git.push(_ok_code=[0, 128])
-
     with chdir(
         apps_folder,
     ):
@@ -1164,6 +1044,142 @@ def _rename(
             _out=sys.stdout,
             _err=sys.stderr,
         )
+
+    with chdir(
+        new_app_path,
+    ):
+        sh.busybox.mv(
+            "-v",
+            old_app_module_name,
+            new_app_module_name,
+            _out=sys.stdout,
+            _err=sys.stderr,
+        )
+
+    # first rename files and replace text within them
+    # then rename parent dir
+    with chdir(
+        new_app_path,
+    ):
+
+        old_py_files = []
+        old_py_files.append(new_app_path / Path("setup.py"))
+        old_py_files.append(new_app_path / Path("url.sh"))
+        old_py_files.append(new_app_path / Path("README.md"))
+        old_py_files.append(
+            new_app_path / old_app_module_name / Path(new_app_module_name + ".py")
+        )
+        old_py_files.append(new_app_path / new_app_module_name / Path("__init__.py"))
+        old_py_files.append(new_app_path / new_app_module_name / Path("cli.py"))
+        old_py_files.append(new_app_path / Path("enable_github.sh"))
+        old_py_files.append(new_app_path / Path(".edit_config"))
+        for _ in old_py_files:
+            if not _.exists():
+                continue
+            replace_match_pairs_in_file(
+                path=_,
+                match_pairs=(
+                    (old_app_name, new_app_name),
+                    (old_app_module_name, new_app_module_name),
+                ),
+            )
+            sh.git.add(_)
+
+        find_and_move(
+            dir=old_app_path,
+            match=old_app_module_name,
+            replacement=new_app_module_name,
+            git=True,
+        )
+
+        old_ebuild_symlink = new_app_path / Path(new_app_name + "-9999.ebuild")
+        old_ebuild_symlink.unlink()
+
+    # rename ebuild folder
+    with chdir(Path(gentoo_overlay_repo) / Path(group)):
+        sh.busybox.mv(
+            "-v",
+            old_app_name,
+            new_app_name,
+            _out=sys.stdout,
+            _err=sys.stderr,
+        )
+
+    # recreate ebuild symlink
+    with chdir(new_app_path / new_app_module_name):
+        new_ebuild_folder = Path(gentoo_overlay_repo) / Path(group) / Path(new_app_name)
+        sh.ln(
+            "-s",
+            new_ebuild_folder / Path(new_app_name + ".ebuild"),
+            Path(new_app_name + ".ebuild"),
+            _ok_code=[0, 1],
+        )
+
+    # sh.git.add(Path(new_app_module_name) / Path("__init__.py"))
+    # sh.git.add(Path(new_app_module_name) / Path("py.typed"))
+    # sh.git.add(Path(new_app_module_name) / Path(new_app_module_name + ".py"))
+
+    # old_ebuild_dir = old_ebuild_symlink.resolve().parent
+    # if old_ebuild_symlink.exists():
+    #    with chdir(
+    #        old_ebuild_dir,
+    #    ):
+    #        # in ebuild folder
+    #        old_ebuild_path = Path(old_app_name + "-9999.ebuild").resolve()
+    #        replace_text(
+    #            path=old_ebuild_path,
+    #            str_to_match=old_app_module_name,
+    #            replacement=new_app_module_name,
+    #        )
+    #        sh.git.add(old_ebuild_path)
+    #        new_ebuild_name = Path(new_app_name + "-9999.ebuild")
+    #        sh.git.mv(
+    #            "-v",
+    #            old_ebuild_path,
+    #            new_ebuild_name,
+    #            _out=sys.stdout,
+    #            _err=sys.stderr,
+    #        )
+    #        sh.git.add(new_ebuild_name)
+    #        sh.git.commit("-m", "rename")
+    #        del old_ebuild_path
+
+    #    with chdir(
+    #        old_ebuild_dir.parent,
+    #    ):
+    #        # in ebuild parent folder
+    #        sh.busybox.mv(
+    #            "-v",
+    #            old_app_name,
+    #            new_app_name,
+    #            _out=sys.stdout,
+    #            _err=sys.stderr,
+    #        )
+    #        new_ebuild_path = Path(new_app_name / new_ebuild_name).resolve()
+    #        sh.git.add("*")
+    #        sh.git.commit(
+    #            "-m",
+    #            "rename",
+    #            _ok_code=[0, 1],
+    #            _out=sys.stdout,
+    #            _err=sys.stderr,
+    #        )
+    #        sh.git.push()
+
+    #    with chdir(
+    #        old_app_path,
+    #    ):
+    #        print(sh.ls())
+    #        sh.rm(old_ebuild_symlink.name)
+    #        del old_ebuild_symlink
+
+    #        new_ebuild_symlink_name = new_ebuild_name
+    #        sh.ln("-s", new_ebuild_path, new_ebuild_symlink_name)
+    #        del new_ebuild_symlink_name
+    #        del new_ebuild_name
+    #        sh.git.commit("-m", "rename")
+    #        sh.git.remote.rm("origin", _ok_code=[0, 2])
+    #        sh.git.push(_ok_code=[0, 128])
 
     # old_accept_keywords = accept_keywords_path(group=group, app_name=old_app_name)
     # new_accept_keywords = accept_keywords_path(group=group, app_name=new_app_name)
