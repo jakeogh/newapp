@@ -322,13 +322,6 @@ def generate_src_install_dobin_template(app_name):
     return src_install_dobin.format(app_name=app_name)
 
 
-# @User("user")
-def generate_autogenerate_readme():
-    from .templates import autogenerate_readme
-
-    return autogenerate_readme
-
-
 def generate_gitignore_template(*, ebuild_name):
     from .templates import gitignore
 
@@ -733,13 +726,14 @@ def write_url_sh(repo_url):
 def write_autogenerate_readme_sh():
     import sh
 
-    autogenerate_readme_template = generate_autogenerate_readme()
+    from .templates import autogenerate_readme
+
     with open(
         ".autogenerate_readme.sh",
         "x",
         encoding="utf8",
     ) as fh:
-        fh.write(autogenerate_readme_template)
+        fh.write(autogenerate_readme)
     sh.git.add(".autogenerate_readme.sh")
     # sh.chmod("+x", ".autogenerate_readme.sh")
 
