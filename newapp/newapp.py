@@ -1580,9 +1580,15 @@ def _write_app_template(
     app_template: str,
     app_module_name: str,
     ext: str,
+    app_path: Path,
 ):
-    with open(app_module_name + ext, "x") as fh:
-        fh.write(app_template)
+    from with_chdir import chdir
+
+    with chdir(
+        app_path / app_module_name,
+    ):
+        with open(app_module_name + ext, "x") as fh:
+            fh.write(app_template)
 
 
 @User("user")
@@ -1601,6 +1607,7 @@ def write_app_template(
     language: str,
     ext: str,
     templates,
+    app_path: Path,
 ):
     import sh
 
@@ -1656,7 +1663,10 @@ def write_app_template(
         append_files=templates,
     )
     _write_app_template(
-        app_module_name=app_module_name, ext=ext, app_template=app_template
+        app_module_name=app_module_name,
+        ext=ext,
+        app_template=app_template,
+        app_path=app_path,
     )
 
     if language == "python":
@@ -2029,6 +2039,7 @@ def new(
                     language=language,
                     templates=templates,
                     ext=ext,
+                    app_path=app_path,
                 )
 
             with chdir(
