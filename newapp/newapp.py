@@ -180,7 +180,7 @@ def write_edit_config(
     package_group: str,
     local: bool,
 ):
-    ic(package_name, package_group, local)
+    eprint(f"{package_name=}", f"{package_group}", f"{local}")
     with chdir(app_path):
         os.system("ls -alh")
         with open(".edit_config", "x", encoding="utf8") as fh:
