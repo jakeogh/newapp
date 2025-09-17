@@ -2220,46 +2220,12 @@ def new(
             app_path,
         ):
 
-            @User("user", env_vars={"HOME": "/home/user"})
-            def write_gitignore_template():
-                import sh
+            gitignore_template = generate_gitignore_template(ebuild_name=ebuild_name)
 
-                gitignore_template = generate_gitignore_template(
-                    ebuild_name=ebuild_name
-                )
-                if use_existing_repo:
-                    with open(
-                        ".gitignore",
-                        "a",
-                        encoding="utf8",
-                    ) as fh:
-                        fh.write(gitignore_template)
-                else:  # could be a cloned repo, not a new one...
-                    try:
-                        with open(
-                            ".gitignore",
-                            "x",
-                            encoding="utf8",
-                        ) as fh:
-                            fh.write(gitignore_template)
-                    except FileExistsError as e:
-                        # ic(e)
-                        with open(
-                            ".gitignore",
-                            "a",
-                            encoding="utf8",
-                        ) as fh:
-                            fh.write(gitignore_template)
-
-                # sh.git.add(".gitignore")
-
-                sh.git.commit(
-                    "-m",
-                    "initial commit",
-                    _ok_code=[0, 1],
-                )
-
-            write_gitignore_template()
+            write_gitignore_template(
+                use_existing_repo=use_existing_repo,
+                gitignore_template=gitignore_template,
+            )
     else:
         eprint(f"Not creating new ebuild, {ebuild_path} already exists.")
 
@@ -2270,6 +2236,51 @@ def new(
     icp(main_py_path)
 
     run_edittool(main_py_path)
+
+
+@User("user", env_vars={"HOME": "/home/user"})
+def write_gitignore_template(
+    *,
+    use_existing_repo,
+    gitignore_template: str,
+):
+    import subprocess
+
+    if use_existing_repo:
+        with open(
+            ".gitignore",
+            "a",
+            encoding="utf8",
+        ) as fh:
+            fh.write(gitignore_template)
+    else:  # could be a cloned repo, not a new one...
+        try:
+            with open(
+                ".gitignore",
+                "x",
+                encoding="utf8",
+            ) as fh:
+                fh.write(gitignore_template)
+        except FileExistsError as e:
+            # ic(e)
+            with open(
+                ".gitignore",
+                "a",
+                encoding="utf8",
+            ) as fh:
+                fh.write(gitignore_template)
+
+    # sh.git.add(".gitignore")
+
+    result = subprocess.run(
+        ["git", "commit", "-m", "initial commit"],
+        check=False,  # don't auto-raise, since we want to handle return codes
+    )
+    # sh.git.commit(
+    #    "-m",
+    #    "initial commit",
+    #    _ok_code=[0, 1],
+    # )
 
 
 @User(
