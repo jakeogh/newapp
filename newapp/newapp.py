@@ -100,6 +100,11 @@ def mkdir_user(path):
     os.makedirs(path, exist_ok=True)
 
 
+@User("user")
+def git_add(path):
+    sh.git.add(path.asp_posix())
+
+
 @retry_on_exception(
     exception=PermissionError,
     # errno=errno.EPERM,
@@ -952,6 +957,7 @@ def template_zig(
     print(app_template)
 
 
+@User("user")
 def find_and_move(
     *,
     dir: Path,
@@ -1094,7 +1100,7 @@ def _rename(
                 ),
             )
             try:
-                sh.git.add(_)
+                git_add(_)
             except sh.ErrorReturnCode_1 as e:
                 icp(e.args)
                 icp(e.args[0])
