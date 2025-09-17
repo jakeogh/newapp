@@ -46,11 +46,11 @@ def mkdir_user(path: Path):
 
 
 @User("user")
-def git_add(path: Path):
+def git_add(thing: str):
     import subprocess
 
     subprocess.run(
-        ["git", "add", path.as_posix()],
+        ["git", "add", thing],
         check=True,
     )
 
@@ -690,13 +690,16 @@ def _write_autogenerate_readme(autogenerate_readme: str):
 
 
 def write_autogenerate_readme_sh():
+    import subprocess
+
     import sh
 
     from .templates import autogenerate_readme
 
     _write_autogenerate_readme(autogenerate_readme)
 
-    sh.git.add(".autogenerate_readme.sh")
+    subprocess.run(["git", "add", ".autogenerate_readme.sh"], check=True)
+    # sh.git.add(".autogenerate_readme.sh")
     # sh.chmod("+x", ".autogenerate_readme.sh")
 
 
@@ -1782,6 +1785,36 @@ def write_ebuild_template(
     )
 
 
+@User("user")
+def git_ops(
+    ebuild_name: str,
+    app_name: str,
+    ebuild_path: Path,
+    app_path: Path,
+):
+    import os
+    import subprocess
+
+    import sh
+
+    git_add(ebuild_name)
+    subprocess.run(["ebuild", ebuild_name, "manifest"], check=True)
+    git_add("*")
+    # add any unstaged changes (like some other ebuild was deleted)
+    git_add("-u")
+    os.system(f"git commit -m 'newapp {app_name}'")
+    os.system("git push")
+    subprocess.run(
+        ["ln", "-s", str(ebuild_path / ebuild_name), str(app_path / ebuild_name)],
+        check=True,
+    )
+    # sh.ln(
+    #    "-s",
+    #    ebuild_path / ebuild_name,
+    #    app_path / ebuild_name,
+    # )
+
+
 @cli.command()
 @click.argument(
     "language",
@@ -2076,7 +2109,7 @@ def new(
                     encoding="utf8",
                 ) as fh:
                     fh.write(_description_md)
-                sh.git.add(".description.md")
+                git_add(".description.md")
 
                 _install_md = generate_install_md_template(package_name=app_name)
                 with open(
@@ -2085,7 +2118,7 @@ def new(
                     encoding="utf8",
                 ) as fh:
                     fh.write(_install_md)
-                sh.git.add(".install.md")
+                git_add(".install.md")
 
             write_description_and_install()
 
@@ -2140,27 +2173,12 @@ def new(
             ebuild_path,
         ):
 
-            @User("user", env_vars={"HOME": "/home/user"})
-            def git_ops():
-                import os
-
-                import sh
-
-                sh.git.add(ebuild_name)
-                sh.ebuild(ebuild_name, "manifest")
-                sh.git.add("*")
-                sh.git.add(
-                    "-u"
-                )  # add any unstaged changes (like some other ebuild was deleted)
-                os.system(f"git commit -m 'newapp {app_name}'")
-                os.system("git push")
-                sh.ln(
-                    "-s",
-                    ebuild_path / ebuild_name,
-                    app_path / ebuild_name,
-                )
-
-            git_ops()
+            git_ops(
+                ebuild_name=ebuild_name,
+                app_name=app_name,
+                ebuild_path=ebuild_path,
+                app_path=app_path,
+            )
             os.system("emaint sync -A")
             os.system(f"git config --system --add safe.directory {app_path}/.git")
 
