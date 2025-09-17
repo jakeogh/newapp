@@ -102,7 +102,7 @@ def mkdir_user(path):
 
 @User("user")
 def git_add(path):
-    sh.git.add(path.asp_posix())
+    sh.git.add(path.as_posix())
 
 
 @retry_on_exception(
