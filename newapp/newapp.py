@@ -172,42 +172,27 @@ def get_extension(language: str) -> str:
     return ext
 
 
-# @User("user")
-def replace_text(
-    path: Path,
-    str_to_match: str,
-    replacement: str,
-) -> None:
-    from replace_text import replace_text_in_file
-
-    # ic(str_to_match, replacement)
-
-    replace_text_in_file(
-        path=path,
-        match_bytes=str_to_match.encode("utf8"),
-        replacement_bytes=replacement.encode("utf8"),
-        output_fh=None,
-        read_mode="rb",
-        write_mode="wb",
-        remove_match=False,
-    )
-
-
 @User("user")
 def replace_match_pairs_in_file(
     *,
     path: Path,
     match_pairs: tuple,
 ) -> None:
+    from replace_text import replace_text_in_file
+
     assert isinstance(match_pairs, tuple)
     icp(path, match_pairs)
     for old_match, new_match in match_pairs:
         if old_match == new_match:
             continue
-        replace_text(
+        replace_text_in_file(
             path=path,
-            str_to_match=old_match,
-            replacement=new_match,
+            match_bytes=old_match.encode("utf8"),
+            replacement_bytes=new_match.encode("utf8"),
+            output_fh=None,
+            read_mode="rb",
+            write_mode="wb",
+            remove_match=False,
         )
 
 
