@@ -707,6 +707,15 @@ def parse_url(
 
 
 @User("user")
+def _write_url_sh(url_template_str: str):
+    with open(
+        "url.sh",
+        "x",
+        encoding="utf8",
+    ) as fh:
+        fh.write(url_template_str)
+
+
 def write_url_sh(repo_url):
     import sh
 
@@ -715,13 +724,8 @@ def write_url_sh(repo_url):
     def generate_url_template(url):
         return echo_url.format(url=url)
 
-    url_template = generate_url_template(url=repo_url)
-    with open(
-        "url.sh",
-        "x",
-        encoding="utf8",
-    ) as fh:
-        fh.write(url_template)
+    url_template_str = generate_url_template(url=repo_url)
+    _write_url_sh(url_template_str=url_template_str)
     sh.chmod("+x", "url.sh")
 
 
@@ -2057,7 +2061,9 @@ def new(
             write_description_and_install()
 
     edit_config_str = generate_edit_config(
-        package_name=app_path, package_group=group, local=local
+        package_name=app_path,
+        package_group=group,
+        local=local,
     )
     write_edit_config(
         app_path=app_path,
