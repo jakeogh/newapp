@@ -1096,6 +1096,8 @@ def _rename(
             try:
                 sh.git.add(_)
             except sh.ErrorReturnCode_1 as e:
+                icp(e.args)
+                icp(e.args[0])
                 if (
                     not "The following paths are ignored by one of your .gitignore files"
                     in e.args
