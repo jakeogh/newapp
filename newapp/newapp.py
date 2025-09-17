@@ -225,7 +225,26 @@ def replace_text(
     )
 
 
+@User("user")
 def replace_match_pairs_in_file(
+    *,
+    path: Path,
+    match_pairs: tuple,
+) -> None:
+    assert isinstance(match_pairs, tuple)
+    icp(path, match_pairs)
+    for old_match, new_match in match_pairs:
+        if old_match == new_match:
+            continue
+        ic(path, old_match, new_match)
+        replace_text(
+            path=path,
+            str_to_match=old_match,
+            replacement=new_match,
+        )
+
+
+def replace_match_pairs_in_file_root(
     *,
     path: Path,
     match_pairs: tuple,
