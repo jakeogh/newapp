@@ -328,53 +328,6 @@ def generate_gitignore_template(*, ebuild_name):
     return gitignore.format(ebuild_name=ebuild_name)
 
 
-def generate_app_template(
-    package_name: str,
-    *,
-    language: str,
-    append_files: tuple[Path, ...],
-) -> str:
-    from .templates import bash_app
-    from .templates import cee_app
-    from .templates import python_app
-    from .templates import zig_app
-
-    result = None
-    if language == "python":
-        result = python_app.format(
-            package_name=package_name,
-            newline="\\n",
-            null="\\x00",
-        )
-    if language == "bash":
-        result = bash_app.format(
-            package_name=package_name,
-            newline="\\n",
-            null="\\x00",
-        )
-    if language == "zig":
-        result = zig_app.format(
-            package_name=package_name,
-            newline="\\n",
-            null="\\x00",
-        )
-    if language == "c":
-        # result = cee_app.format(package_name=package_name, newline="\\n", null="\\x00")
-        result = cee_app
-
-    if result:
-        for file in append_files:
-            with open(
-                file,
-                "r",
-                encoding="utf8",
-            ) as fh:
-                result += fh.read()
-        return result
-
-    raise ValueError(language)
-
-
 def generate_init_template(package_name):
     from .templates import init
 
@@ -899,127 +852,127 @@ def nineify(
         pass
 
 
-@cli.command()
-@click_add_options(click_global_options)
-@click.pass_context
-def template_pylint(
-    ctx,
-    verbose_inf: bool,
-    dict_output: bool,
-    verbose: bool = False,
-):
-    tty, verbose = tvicgvd(
-        ctx=ctx,
-        verbose=verbose,
-        verbose_inf=verbose_inf,
-        ic=ic,
-        gvd=gvd,
-    )
-    app_template = generate_app_template(
-        "TEMP",
-        language="python",
-        append_files=(),
-    )
-    for line in app_template.splitlines():
-        if line.startswith("# flake8: "):
-            print(line)
-        if line.startswith("# pylint: "):
-            print(line)
+# @cli.command()
+# @click_add_options(click_global_options)
+# @click.pass_context
+# def template_pylint(
+#    ctx,
+#    verbose_inf: bool,
+#    dict_output: bool,
+#    verbose: bool = False,
+# ):
+#    tty, verbose = tvicgvd(
+#        ctx=ctx,
+#        verbose=verbose,
+#        verbose_inf=verbose_inf,
+#        ic=ic,
+#        gvd=gvd,
+#    )
+#    app_template = generate_app_template(
+#        "TEMP",
+#        language="python",
+#        append_files=(),
+#    )
+#    for line in app_template.splitlines():
+#        if line.startswith("# fl ake8: "):
+#            print(line)
+#        if line.startswith("# py lint: "):
+#            print(line)
 
 
-@cli.command()
-@click.argument(
-    "package-name",
-    type=str,
-    default="TESTPACKAGE",
-)
-@click_add_options(click_global_options)
-@click.pass_context
-def template_python(
-    ctx,
-    package_name: str,
-    verbose_inf: bool,
-    dict_output: bool,
-    verbose: bool = False,
-):
-    tty, verbose = tvicgvd(
-        ctx=ctx,
-        verbose=verbose,
-        verbose_inf=verbose_inf,
-        ic=ic,
-        gvd=gvd,
-    )
-    app_template = generate_app_template(
-        package_name,
-        language="python",
-        append_files=(),
-    )
-    output(
-        app_template,
-        reason=None,
-        dict_output=dict_output,
-        tty=tty,
-    )
-
-
-@cli.command()
-@click.argument(
-    "package-name",
-    type=str,
-    default="TESTPACKAGE",
-)
-@click_add_options(click_global_options)
-@click.pass_context
-def template_bash(
-    ctx,
-    package_name: str,
-    verbose_inf: bool,
-    dict_output: bool,
-    verbose: bool = False,
-):
-    tty, verbose = tvicgvd(
-        ctx=ctx,
-        verbose=verbose,
-        verbose_inf=verbose_inf,
-        ic=ic,
-        gvd=gvd,
-    )
-    app_template = generate_app_template(
-        package_name,
-        language="bash",
-        append_files=(),
-    )
-    print(app_template)
-
-
-@cli.command()
-@click.argument(
-    "package-name",
-    type=str,
-    default="TESTPACKAGE",
-)
-@click_add_options(click_global_options)
-@click.pass_context
-def template_zig(
-    ctx,
-    package_name: str,
-    verbose_inf: bool,
-    dict_output: bool,
-    verbose: bool = False,
-):
-    tty, verbose = tvicgvd(
-        ctx=ctx,
-        verbose=verbose,
-        verbose_inf=verbose_inf,
-        ic=ic,
-        gvd=gvd,
-    )
-    app_template = generate_app_template(
-        package_name,
-        language="zig",
-        append_files=(),
-    )
-    print(app_template)
+# @cli.command()
+# @click.argument(
+#    "package-name",
+#    type=str,
+#    default="TESTPACKAGE",
+# )
+# @click_add_options(click_global_options)
+# @click.pass_context
+# def template_python(
+#    ctx,
+#    package_name: str,
+#    verbose_inf: bool,
+#    dict_output: bool,
+#    verbose: bool = False,
+# ):
+#    tty, verbose = tvicgvd(
+#        ctx=ctx,
+#        verbose=verbose,
+#        verbose_inf=verbose_inf,
+#        ic=ic,
+#        gvd=gvd,
+#    )
+#    app_template = generate_app_template(
+#        package_name,
+#        language="python",
+#        append_files=(),
+#    )
+#    output(
+#        app_template,
+#        reason=None,
+#        dict_output=dict_output,
+#        tty=tty,
+#    )
+#
+#
+# @cli.command()
+# @click.argument(
+#    "package-name",
+#    type=str,
+#    default="TESTPACKAGE",
+# )
+# @click_add_options(click_global_options)
+# @click.pass_context
+# def template_bash(
+#    ctx,
+#    package_name: str,
+#    verbose_inf: bool,
+#    dict_output: bool,
+#    verbose: bool = False,
+# ):
+#    tty, verbose = tvicgvd(
+#        ctx=ctx,
+#        verbose=verbose,
+#        verbose_inf=verbose_inf,
+#        ic=ic,
+#        gvd=gvd,
+#    )
+#    app_template = generate_app_template(
+#        package_name,
+#        language="bash",
+#        append_files=(),
+#    )
+#    print(app_template)
+#
+#
+# @cli.command()
+# @click.argument(
+#    "package-name",
+#    type=str,
+#    default="TESTPACKAGE",
+# )
+# @click_add_options(click_global_options)
+# @click.pass_context
+# def template_zig(
+#    ctx,
+#    package_name: str,
+#    verbose_inf: bool,
+#    dict_output: bool,
+#    verbose: bool = False,
+# ):
+#    tty, verbose = tvicgvd(
+#        ctx=ctx,
+#        verbose=verbose,
+#        verbose_inf=verbose_inf,
+#        ic=ic,
+#        gvd=gvd,
+#    )
+#    app_template = generate_app_template(
+#        package_name,
+#        language="zig",
+#        append_files=(),
+#    )
+#    print(app_template)
 
 
 @User("user")
@@ -1631,6 +1584,52 @@ def write_app_template(
 ):
     import sh
 
+    def generate_app_template(
+        package_name: str,
+        *,
+        language: str,
+        append_files: tuple[Path, ...],
+    ) -> str:
+        from .templates import bash_app
+        from .templates import cee_app
+        from .templates import python_app
+        from .templates import zig_app
+
+        result = None
+        if language == "python":
+            result = python_app.format(
+                package_name=package_name,
+                newline="\\n",
+                null="\\x00",
+            )
+        if language == "bash":
+            result = bash_app.format(
+                package_name=package_name,
+                newline="\\n",
+                null="\\x00",
+            )
+        if language == "zig":
+            result = zig_app.format(
+                package_name=package_name,
+                newline="\\n",
+                null="\\x00",
+            )
+        if language == "c":
+            # result = cee_app.format(package_name=package_name, newline="\\n", null="\\x00")
+            result = cee_app
+
+        if result:
+            for file in append_files:
+                with open(
+                    file,
+                    "r",
+                    encoding="utf8",
+                ) as fh:
+                    result += fh.read()
+            return result
+
+        raise ValueError(language)
+
     app_template = generate_app_template(
         package_name=app_module_name,
         language=language,
@@ -1647,7 +1646,7 @@ def write_app_template(
             encoding="utf8",
         ) as fh:
             fh.write(init_template)
-        sh.touch("py.typed")
+        Path("py.typed").touch()
 
 
 @User("user", env_vars={"HOME": "/home/user"})
