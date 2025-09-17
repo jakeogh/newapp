@@ -38,14 +38,14 @@ CFG, CONFIG_MTIME = click_read_config(
 CONTEXT_SETTINGS = dict(default_map=CFG)
 
 
-@User("user")
+@User("user", env_vars={"HOME": "/home/user"})
 def mkdir_user(path: Path):
     import os
 
     os.makedirs(path, exist_ok=True)
 
 
-@User("user")
+@User("user", env_vars={"HOME": "/home/user"})
 def git_add(thing: str):
     import subprocess
 
@@ -1567,7 +1567,7 @@ def check_all(
         del app_name, app_user, app_module_name, app_path
 
 
-@User("user")
+@User("user", env_vars={"HOME": "/home/user"})
 def commit_changes():
     import subprocess
 
