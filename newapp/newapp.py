@@ -567,6 +567,15 @@ def create_repo(
         os.system("git init")
 
 
+def _write_enable_github(*, output_file: Path, enable_github: str):
+    with open(
+        output_file,
+        "x",
+        encoding="utf8",
+    ) as fh:
+        fh.write(enable_github)
+
+
 def remote_add_origin(
     *,
     app_path: Path,
@@ -609,14 +618,9 @@ def remote_add_origin(
         "touch .push",
         "\n",
     ]
-    enable_github = "\n".join(enable_github)
+    _enable_github = "\n".join(enable_github)
     output_file = app_path / Path("enable_github.sh")
-    with open(
-        output_file,
-        "x",
-        encoding="utf8",
-    ) as fh:
-        fh.write(enable_github)
+    _write_enable_github(output_file=output_file, enable_github=_enable_github)
 
 
 def parse_url(
@@ -1560,7 +1564,7 @@ def check_all(
         del app_name, app_user, app_module_name, app_path
 
 
-@User("user", env_vars={"HOME": "/home/user"})
+@User("user")
 def commit_changes():
     import subprocess
 
@@ -1569,7 +1573,7 @@ def commit_changes():
         check=True,
     )
     subprocess.run(
-        ["git", "commit", "-m", "nitial auto-commit"],
+        ["git", "commit", "-m", "initial auto-commit"],
         check=True,
     )
 
