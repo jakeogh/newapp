@@ -690,7 +690,7 @@ def write_autogenerate_readme_sh():
     # sh.chmod("+x", ".autogenerate_readme.sh")
 
 
-@User("user")
+@User("user", env_vars={"HOME": "/home/user"})
 def _write_setup_py(setup_py_str: str):
     with open(
         "setup.py",
@@ -757,7 +757,7 @@ def write_setup_py(
     _write_setup_py(setup_py_str)
 
 
-@User("user")
+@User("user", env_vars={"HOME": "/home/user"})
 def write_pyproject_toml():
     from .templates import pyproject_toml
 
@@ -969,7 +969,7 @@ def nineify(
 #    print(app_template)
 
 
-@User("user")
+@User("user", env_vars={"HOME": "/home/user"})
 def find_and_move(
     *,
     dir: Path,
@@ -986,12 +986,12 @@ def find_and_move(
         raise TypeError("match and replacement must be str")
     if not isinstance(git, bool):
         raise TypeError("git must be a bool")
-    icp(
-        dir,
-        match,
-        replacement,
-        git,
-    )
+    # icp(
+    #    dir,
+    #    match,
+    #    replacement,
+    #    git,
+    # )
 
     for root, _, files in os.walk(dir):
         for fname in files:
