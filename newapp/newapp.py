@@ -224,7 +224,7 @@ def replace_text(
     str_to_match: str,
     replacement: str,
 ) -> None:
-    ic(str_to_match, replacement)
+    # ic(str_to_match, replacement)
 
     replace_text_in_file(
         path=path,
@@ -248,7 +248,7 @@ def replace_match_pairs_in_file(
     for old_match, new_match in match_pairs:
         if old_match == new_match:
             continue
-        ic(path, old_match, new_match)
+        # ic(path, old_match, new_match)
         replace_text(
             path=path,
             str_to_match=old_match,
@@ -266,7 +266,7 @@ def replace_match_pairs_in_file_root(
     for old_match, new_match in match_pairs:
         if old_match == new_match:
             continue
-        ic(path, old_match, new_match)
+        # ic(path, old_match, new_match)
         replace_text(
             path=path,
             str_to_match=old_match,
@@ -280,10 +280,10 @@ def get_url_for_overlay(
 ) -> str:
     command = sh.eselect("repository", "list")
     command_output = command.stdout.split("\n")
-    ic(type(command_output), command_output)
+    # ic(type(command_output), command_output)
 
     for line in command_output[1:]:
-        ic(line)
+        # ic(line)
         try:
             index, repo_name, repo_url = [item for item in line.split() if item]
         except ValueError:
@@ -291,7 +291,7 @@ def get_url_for_overlay(
 
         repo_url = repo_url.split("(")[-1].split(")")[0]
         if repo_name == overlay:
-            ic(repo_url)
+            # ic(repo_url)
             return repo_url
 
     raise ValueError(f"unknown repo {overlay}")
@@ -303,7 +303,7 @@ def valid_branch(
     param,
     value,
 ):
-    ic(value)
+    # ic(value)
     branch_check_cmd = "git check-ref-format --branch " + value
     if os.system(branch_check_cmd):
         raise click.BadParameter(f'fatal: "{value}" is not a valid branch name')
@@ -362,15 +362,15 @@ def generate_setup_py(
     description: str,
     dependencies: tuple[str, ...],
 ) -> str:
-    ic(
-        url,
-        package_name,
-        command,
-        license,
-        owner,
-        owner_email,
-        description,
-    )
+    # ic(
+    #    url,
+    #    package_name,
+    #    command,
+    #    license,
+    #    owner,
+    #    owner_email,
+    #    description,
+    # )
 
     return setup_py.format(
         package_name=package_name,
@@ -405,7 +405,7 @@ def generate_ebuild_template(
     app_name: str,
     dependencies: tuple[str, ...],
 ) -> str:
-    ic(enable_python)
+    # ic(enable_python)
     inherit_python = ""
     rdepend_python = ""
     if enable_python:
@@ -492,7 +492,7 @@ def rename_repo_at_app_path(
     hg: bool,
     local: bool,
 ):
-    ic(old_name, new_name)
+    # ic(old_name, new_name)
     old_module_name = old_name.replace("-", "_")
     new_module_name = old_name.replace("-", "_")
 
@@ -540,18 +540,18 @@ def rename_repo_at_app_path(
             if old_name in path.name:
                 if path.name == new_name:
                     continue
-                ic(old_name, path.name)
+                # ic(old_name, path.name)
                 new_path_name = path.name.replace(old_name, new_name)
-                ic(new_path_name)
+                # ic(new_path_name)
                 new_path = path.parent / Path(new_path_name)
                 git_mv(old_path=path, new_path=new_path)
 
             if old_name.replace("-", "_") in path.name:
                 if path.name == new_name:
                     continue
-                ic(old_name.replace("-", "_"), path.name)
+                # ic(old_name.replace("-", "_"), path.name)
                 new_path_name = path.name.replace(old_name.replace("-", "_"), new_name)
-                ic(new_path_name)
+                # ic(new_path_name)
                 new_path = path.parent / Path(new_path_name)
                 git_mv(old_path=path, new_path=new_path)
 
@@ -562,7 +562,7 @@ def rename_repo_at_app_path(
         )
         exclude_path = app_path / Path(".git")
         for dent in all_files:
-            ic(dent)
+            # ic(dent)
             path = dent.pathlib
             if path.name.startswith("."):
                 continue
@@ -699,7 +699,7 @@ def remote_add_origin(
     )
 
     # repo_config_command = f"git remote add origin git@github.com:jakeogh/{app_name}.git"
-    ic(repo_config_command)
+    # ic(repo_config_command)
     if not local:
         with chdir(
             app_path,
@@ -707,7 +707,8 @@ def remote_add_origin(
             # os.system(repo_config_command)
             repo_config_command()
     else:
-        ic("local == True, skipping:", repo_config_command)
+        # ic("local == True, skipping:", repo_config_command)
+        pass
 
     enable_github = [
         "#!/bin/sh",
@@ -729,14 +730,14 @@ def parse_url(
     apps_folder: Path,
     keep_underscore: bool = False,  # for rename
 ):
-    ic(repo_url)
+    # ic(repo_url)
 
     if repo_url.startswith("git:github.com:"):
         app_name = repo_url.split(":")[-1].split(".git")[0]
         app_user = repo_url.split(":")[-1].split("/")[0]
     else:
         url_parsed = urlparse(repo_url)
-        ic(url_parsed)
+        # ic(url_parsed)
 
         repo_url_path = Path(url_parsed.path)
         app_name = repo_url_path.parts[-1]
@@ -748,9 +749,9 @@ def parse_url(
     app_name = app_name.split(".git")[0]
     app_module_name = app_name.replace("-", "_")
     app_module_name = app_module_name.split(".git")[0]
-    ic(app_module_name)
+    # ic(app_module_name)
     app_path = apps_folder / Path(app_name)
-    ic(app_path)
+    # ic(app_path)
     return app_name, app_user, app_module_name, app_path
 
 
@@ -868,18 +869,19 @@ def nineify(
     # not_root()
     assert "/" in app
     group, name = app.split("/")
-    ic(group)
-    ic(name)
+    # ic(group)
+    # ic(name)
     relative_destination = Path(group) / Path(name)
     template_path = Path("/var/db/repos/gentoo") / relative_destination
-    ic(template_path)
+    # ic(template_path)
     local_overlay = Path("/home/cfg/_myapps/jakeogh")
     destination = local_overlay / relative_destination
-    ic(template_path, destination)
+    # ic(template_path, destination)
     try:
         shutil.copytree(template_path, destination)
     except FileExistsError as e:
-        ic(e)
+        # ic(e)
+        pass
 
 
 @cli.command()
@@ -1065,7 +1067,7 @@ def _rename(
     )
 
     apps_folder = Path(apps_folder)
-    ic(apps_folder)
+    # ic(apps_folder)
 
     old_app_name, old_app_user, old_app_module_name, old_app_path = parse_url(
         old_repo_url,
@@ -1295,17 +1297,17 @@ def list_all(
     )
 
     apps_folder = Path(apps_folder)
-    ic(apps_folder)
+    # ic(apps_folder)
 
     edit_configs = find_edit_configs(
         apps_folder=apps_folder,
     )
     for config in edit_configs:
-        ic(config)
+        # ic(config)
         if ls_remote:
             project_dir = config.parent
             return_code = None
-            ic(project_dir)
+            # ic(project_dir)
             with chdir(
                 project_dir,
             ):
@@ -1360,13 +1362,13 @@ def list_all_paths(
     )
 
     apps_folder = Path(apps_folder)
-    ic(apps_folder)
+    # ic(apps_folder)
 
     edit_configs = find_edit_configs(
         apps_folder=apps_folder,
     )
     for config in edit_configs:
-        ic(config)
+        # ic(config)
         output(
             os.fsencode(config.parent.as_posix()),
             reason=None,
@@ -1407,7 +1409,7 @@ def list_all_ebuilds(
     )
 
     apps_folder = Path(apps_folder)
-    ic(apps_folder)
+    # ic(apps_folder)
 
     edit_configs = find_edit_configs(
         apps_folder=apps_folder,
@@ -1582,14 +1584,14 @@ def check_all(
         gvd=gvd,
     )
 
-    ic(apps_folder)
+    # ic(apps_folder)
 
     edit_configs = find_edit_configs(
         apps_folder=apps_folder,
     )
 
     for edit_config_path in edit_configs:
-        ic(edit_config_path)
+        # ic(edit_config_path)
         with chdir(
             edit_config_path.parent,
         ):
@@ -1600,15 +1602,15 @@ def check_all(
             )
             if not remote.startswith("git@github.com:"):
                 if app_user == github_user:
-                    ic(
-                        "remote is to",
-                        github_user,
-                        "but does not startwith git@github.com:",
-                        remote,
-                    )
+                    # ic(
+                    #    "remote is to",
+                    #    github_user,
+                    #    "but does not startwith git@github.com:",
+                    #    remote,
+                    # )
                     raise ValueError(edit_config_path, remote)
             if not app_name == edit_config_path.parent.name:
-                ic(app_name, "is not", edit_config_path.parent.name)
+                # ic(app_name, "is not", edit_config_path.parent.name)
                 raise ValueError(edit_config_path, remote)
 
         del app_name, app_user, app_module_name, app_path
@@ -1731,7 +1733,7 @@ def new(
     )
 
     apps_folder = Path(apps_folder)
-    ic(apps_folder)
+    # ic(apps_folder)
 
     if templates:
         templates = [t.resolve() for t in templates]
@@ -1773,8 +1775,8 @@ def new(
         repo_url,
         apps_folder=apps_folder,
     )
-    ic(app_name)
-    ic(app_user)
+    # ic(app_name)
+    # ic(app_user)
     assert app_user == github_user
     assert "_" not in app_path.name
 
@@ -1828,7 +1830,7 @@ def new(
                 mkdir_user(app_module_name)
                 # os.makedirs(app_module_name, exist_ok=True)
 
-        ic(template_repo_url)
+        # ic(template_repo_url)
         if not template_repo_url:
             with chdir(
                 app_path,
@@ -2000,7 +2002,7 @@ def new(
                         with open(".gitignore", "x", encoding="utf8") as fh:
                             fh.write(gitignore_template)
                     except FileExistsError as e:
-                        ic(e)
+                        # ic(e)
                         with open(".gitignore", "a", encoding="utf8") as fh:
                             fh.write(gitignore_template)
 
@@ -2012,11 +2014,11 @@ def new(
     else:
         eprint(f"Not creating new ebuild, {ebuild_path} already exists.")
 
-    ic(app_path)
-    ic(app_module_name)
+    # ic(app_path)
+    # ic(app_module_name)
 
     main_py_path = app_path / Path(app_module_name) / Path(app_module_name + ext)
-    ic(main_py_path)
+    # ic(main_py_path)
 
     @User(
         "user",
@@ -2063,18 +2065,18 @@ def delete(
     )
 
     apps_folder = Path(apps_folder)
-    ic(apps_folder)
+    # ic(apps_folder)
 
     app_name, app_user, app_module_name, app_path = parse_url(
         repo_url,
         apps_folder=apps_folder,
     )
-    ic(
-        app_name,
-        app_user,
-        app_module_name,
-        app_path,
-    )
+    # ic(
+    #    app_name,
+    #    app_user,
+    #    app_module_name,
+    #    app_path,
+    # )
     assert app_user == github_user
     assert "_" not in app_path.name
     assert app_path.is_dir()
@@ -2083,10 +2085,10 @@ def delete(
         sh.git("pull")
 
     ebuild_path = Path(gentoo_overlay_repo) / Path(group) / Path(app_name)
-    ic(ebuild_path)
+    # ic(ebuild_path)
     recycle_bin = Path("/delme") / Path("deleted_apps") / Path(get_timestamp())
     recycle_bin.mkdir(parents=True, exist_ok=False)
-    icp(recycle_bin)
+    # icp(recycle_bin)
     with chdir(
         recycle_bin,
     ):
