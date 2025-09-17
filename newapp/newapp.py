@@ -59,6 +59,7 @@ from retry_on_exception import retry_on_exception
 from timestamptool import get_timestamp
 from with_chdir import chdir
 from with_user import User
+from with_user import UserContextError
 
 from .templates import autogenerate_readme
 from .templates import bash_app
@@ -217,6 +218,7 @@ def get_extension(language: str) -> str:
     return ext
 
 
+# @User("user")
 def replace_text(
     path: Path,
     str_to_match: str,
@@ -1135,8 +1137,9 @@ def _rename(
             )
             try:
                 git_add(_)
-            except sh.ErrorReturnCode_1 as e:
-                icp(e.args)
+            except UserContextError as e:
+                icp(e)
+                # icp(e.args)
                 icp(e.args[0])
                 if (
                     not "The following paths are ignored by one of your .gitignore files"
