@@ -316,31 +316,6 @@ def generate_edit_config(
 
 
 # @User("user")
-def generate_setup_py(
-    *,
-    url: str,
-    package_name: str,
-    command: str,
-    license: str,
-    owner: str,
-    owner_email: str,
-    description: str,
-    dependencies: tuple[str, ...],
-) -> str:
-    from .templates import setup_py
-
-    return setup_py.format(
-        package_name=package_name,
-        command=command,
-        url=url,
-        license=license,
-        owner=owner,
-        owner_email=owner_email,
-        description=description,
-    )
-
-
-# @User("user")
 def generate_src_install_dobin_template(app_name):
     from .templates import src_install_dobin
 
@@ -780,6 +755,30 @@ def write_setup_py(
     repo_url: str,
 ):
     import os
+
+    from .templates import setup_py
+
+    def generate_setup_py(
+        *,
+        url: str,
+        package_name: str,
+        command: str,
+        license: str,
+        owner: str,
+        owner_email: str,
+        description: str,
+        dependencies: tuple[str, ...],
+    ) -> str:
+
+        return setup_py.format(
+            package_name=package_name,
+            command=command,
+            url=url,
+            license=license,
+            owner=owner,
+            owner_email=owner_email,
+            description=description,
+        )
 
     os.system("pwd")
     os.system("ls -al")
