@@ -2267,7 +2267,7 @@ def new(
     # ic(app_module_name)
 
     main_py_path = app_path / Path(app_module_name) / Path(app_module_name + ext)
-    # ic(main_py_path)
+    icp(main_py_path)
 
     run_edittool(main_py_path)
 
