@@ -2178,22 +2178,23 @@ def new(
     main_py_path = app_path / Path(app_module_name) / Path(app_module_name + ext)
     # ic(main_py_path)
 
-    @User(
-        "user",
-        env_vars={
-            "HOME": "/home/user",
-            "EDITOR": "/home/sysskel/etc/skel/bin/editor_lock",
-        },
-    )
-    def run_edittool(path: Path):
-        import os
-
-        os.system(
-            "edittool edit --skip-isort --skip-black --skip-pylint --skip-text-replace "
-            + main_py_path.as_posix()
-        )
-
     run_edittool(main_py_path)
+
+
+@User(
+    "user",
+    env_vars={
+        "HOME": "/home/user",
+        "EDITOR": "/home/sysskel/etc/skel/bin/editor_lock",
+    },
+)
+def run_edittool(path: Path):
+    import os
+
+    os.system(
+        "edittool edit --skip-isort --skip-black --skip-pylint --skip-text-replace "
+        + path.as_posix()
+    )
 
 
 @cli.command()
