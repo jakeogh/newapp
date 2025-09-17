@@ -297,17 +297,17 @@ def get_url_for_overlay(
     raise ValueError(f"unknown repo {overlay}")
 
 
-@User("user")
-def valid_branch(
-    ctx,
-    param,
-    value,
-):
-    # ic(value)
-    branch_check_cmd = "git check-ref-format --branch " + value
-    if os.system(branch_check_cmd):
-        raise click.BadParameter(f'fatal: "{value}" is not a valid branch name')
-    return value
+# @User("user")
+# def valid_branch(
+#    ctx,
+#    param,
+#    value,
+# ):
+#    # ic(value)
+#    branch_check_cmd = "git check-ref-format --branch " + value
+#    if os.system(branch_check_cmd):
+#        raise click.BadParameter(f'fatal: "{value}" is not a valid branch name')
+#    return value
 
 
 def find_edit_configs(
@@ -1657,12 +1657,12 @@ def write_app_template(
 )
 @click.argument("repo_url", type=str, nargs=1)
 @click.argument("group", type=str, nargs=1)
-@click.option(
-    "--branch",
-    type=str,
-    callback=valid_branch,
-    default="master",
-)
+# @click.option(
+#    "--branch",
+#    type=str,
+#    callback=valid_branch,
+#    default="master",
+# )
 @click.option(
     "--template",
     "templates",
@@ -1705,7 +1705,6 @@ def new(
     language: str,
     repo_url: str,
     group: str,
-    branch: str,
     rename: None | str,
     templates: tuple[Path, ...],
     dependencies: tuple[str, ...],
@@ -1723,6 +1722,7 @@ def new(
     hg: bool,
     verbose: bool = False,
 ):
+    branch = "master"
     am_root()
     tty, verbose = tvicgvd(
         ctx=ctx,
