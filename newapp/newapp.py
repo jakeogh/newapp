@@ -1077,6 +1077,7 @@ def _rename(
     hg: bool,
     verbose: bool = False,
 ):
+    import subprocess
     import sys
 
     import sh
@@ -1163,7 +1164,10 @@ def _rename(
                 ),
             )
             try:
-                git_add(_)
+                subprocess.run(
+                    ["git", "add", _],
+                    check=True,
+                )
             except UserContextError as e:
                 icp(e)
                 # icp(e.args)
@@ -1799,6 +1803,13 @@ def git_ops(
 
     import sh
 
+    def git_add(thing: str):
+
+        subprocess.run(
+            ["git", "add", thing],
+            check=True,
+        )
+
     git_add(ebuild_name)
     subprocess.run(["ebuild", ebuild_name, "manifest"], check=True)
     git_add("*")
@@ -1814,7 +1825,16 @@ def git_ops(
 
 @User("user", env_vars={"HOME": "/home/user"})
 def write_description_and_install(description_md: str, install_md: str):
+    import subprocess
+
     import sh
+
+    def git_add(thing: str):
+
+        subprocess.run(
+            ["git", "add", thing],
+            check=True,
+        )
 
     with open(
         ".description.md",
