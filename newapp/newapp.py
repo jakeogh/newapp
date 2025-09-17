@@ -98,6 +98,7 @@ def create_package_env_records(
     app_path: Path,
 ):
     import os
+    from pathlib import Path
 
     icp(
         group,
@@ -684,14 +685,15 @@ def create_repo(
     hg: bool,
 ):
     import os
+    from pathlib import Path
 
     from with_chdir import chdir
 
-    icp(
-        app_path,
-        app_module_name,
-        hg,
-    )
+    # icp(
+    #    app_path,
+    #    app_module_name,
+    #    hg,
+    # )
     if hg:
         raise NotImplementedError("hg")
     os.makedirs(app_path, exist_ok=False)
