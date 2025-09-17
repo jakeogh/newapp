@@ -742,6 +742,15 @@ def write_autogenerate_readme_sh():
 
 
 @User("user")
+def _write_setup_py(setup_py_str: str):
+    with open(
+        "setup.py",
+        "x",
+        encoding="utf8",
+    ) as fh:
+        fh.write(setup_py_str)
+
+
 def write_setup_py(
     *,
     use_existing_repo: bool,
@@ -786,23 +795,17 @@ def write_setup_py(
         if Path("setup.py").exists():
             return
 
-    with open(
-        "setup.py",
-        "x",
-        encoding="utf8",
-    ) as fh:
-        fh.write(
-            generate_setup_py(
-                package_name=app_module_name,
-                command=app_name,
-                owner=owner,
-                owner_email=owner_email,
-                description=description,
-                dependencies=dependencies,
-                license=license,
-                url=repo_url,
-            )
-        )
+    setup_py_str = generate_setup_py(
+        package_name=app_module_name,
+        command=app_name,
+        owner=owner,
+        owner_email=owner_email,
+        description=description,
+        dependencies=dependencies,
+        license=license,
+        url=repo_url,
+    )
+    _write_setup_py(setup_py_str)
 
 
 @User("user")
@@ -2056,9 +2059,11 @@ def new(
         enable_go = False
         if language == "go":
             enable_go = True
+
         enable_python = False
         if Path(app_path / Path("setup.py")).exists():
             enable_python = True
+
         if Path(app_path / Path("setup.cfg")).exists():
             enable_python = True
 
