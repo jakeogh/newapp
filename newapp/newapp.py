@@ -1084,7 +1084,14 @@ def _rename(
                     (old_app_module_name, new_app_module_name),
                 ),
             )
-            sh.git.add(_)
+            try:
+                sh.git.add(_)
+            except sh.ErrorReturnCode_1 as e:
+                if (
+                    not "The following paths are ignored by one of your .gitignore files"
+                    in e.args
+                ):
+                    raise
 
         find_and_move(
             dir=old_app_path,
