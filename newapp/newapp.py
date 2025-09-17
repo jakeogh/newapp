@@ -679,14 +679,17 @@ def write_url_sh(repo_url):
     sh.chmod("+x", "url.sh")
 
 
-@User("user")
+@User("user", env_vars={"HOME": "/home/user"})
 def _write_autogenerate_readme(autogenerate_readme: str):
+    import subprocess
+
     with open(
         ".autogenerate_readme.sh",
         "x",
         encoding="utf8",
     ) as fh:
         fh.write(autogenerate_readme)
+    subprocess.run(["git", "add", ".autogenerate_readme.sh"], check=True)
 
 
 def write_autogenerate_readme_sh():
@@ -698,7 +701,6 @@ def write_autogenerate_readme_sh():
 
     _write_autogenerate_readme(autogenerate_readme)
 
-    subprocess.run(["git", "add", ".autogenerate_readme.sh"], check=True)
     # sh.git.add(".autogenerate_readme.sh")
     # sh.chmod("+x", ".autogenerate_readme.sh")
 
