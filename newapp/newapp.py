@@ -1575,6 +1575,26 @@ def commit_changes():
 
 
 @User("user")
+def _write_app_template(
+    *,
+    app_template: str,
+    app_module_name: str,
+    ext: str,
+):
+    with open(app_module_name + ext, "x") as fh:
+        fh.write(app_template)
+
+
+@User("user")
+def _write_python_init(python_init: str):
+    with open(
+        "__init__.py",
+        "x",
+        encoding="utf8",
+    ) as fh:
+        fh.write(python_init)
+
+
 def write_app_template(
     *,
     app_module_name: str,
@@ -1635,17 +1655,13 @@ def write_app_template(
         language=language,
         append_files=templates,
     )
-    with open(app_module_name + ext, "x") as fh:
-        fh.write(app_template)
+    _write_app_template(
+        app_module_name=app_module_name, ext=ext, app_template=app_template
+    )
 
     if language == "python":
         init_template = generate_init_template(package_name=app_module_name)
-        with open(
-            "__init__.py",
-            "x",
-            encoding="utf8",
-        ) as fh:
-            fh.write(init_template)
+        _write_python_init(init_template)
         Path("py.typed").touch()
 
 
