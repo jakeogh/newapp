@@ -1157,11 +1157,11 @@ def _rename(
                 icp(e)
                 # icp(e.args)
                 icp(e.args[0])
-                if (
-                    not "The following paths are ignored by one of your .gitignore files"
-                    in e.args
-                ):
-                    raise
+                # if (
+                #    not "The following paths are ignored by one of your .gitignore files"
+                #    in e.args
+                # ):
+                #    raise
 
         find_and_move(
             dir=Path("."),
