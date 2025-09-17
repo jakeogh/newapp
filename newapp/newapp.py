@@ -723,17 +723,22 @@ def write_url_sh(repo_url):
 
 
 @User("user")
-def write_autogenerate_readme_sh():
-    import sh
-
-    from .templates import autogenerate_readme
-
+def _write_autogenerate_readme(autogenerate_readme: str):
     with open(
         ".autogenerate_readme.sh",
         "x",
         encoding="utf8",
     ) as fh:
         fh.write(autogenerate_readme)
+
+
+def write_autogenerate_readme_sh():
+    import sh
+
+    from .templates import autogenerate_readme
+
+    _write_autogenerate_readme(autogenerate_readme)
+
     sh.git.add(".autogenerate_readme.sh")
     # sh.chmod("+x", ".autogenerate_readme.sh")
 
