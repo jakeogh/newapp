@@ -221,6 +221,7 @@ def replace_match_pairs_in_file(
     match_pairs: tuple,
 ) -> None:
     assert isinstance(match_pairs, tuple)
+    icp(path, match_pairs)
     for old_match, new_match in match_pairs:
         if old_match == new_match:
             continue
@@ -964,6 +965,12 @@ def find_and_move(
         raise TypeError("match and replacement must be str")
     if not isinstance(git, bool):
         raise TypeError("git must be a bool")
+    icp(
+        dir,
+        match,
+        replacement,
+        git,
+    )
 
     for root, _, files in os.walk(dir):
         for fname in files:
@@ -1046,6 +1053,8 @@ def _rename(
             _err=sys.stderr,
         )
 
+    assert not Path(apps_folder / old_app_path).exists()
+
     with chdir(
         new_app_path,
     ):
@@ -1094,7 +1103,7 @@ def _rename(
                     raise
 
         find_and_move(
-            dir=old_app_path,
+            dir=Path("."),
             match=old_app_module_name,
             replacement=new_app_module_name,
             git=True,
@@ -1114,7 +1123,7 @@ def _rename(
         )
 
     # recreate ebuild symlink
-    with chdir(new_app_path / new_app_module_name):
+    with chdir(new_app_path):
         new_ebuild_folder = Path(gentoo_overlay_repo) / Path(group) / Path(new_app_name)
         sh.ln(
             "-s",
