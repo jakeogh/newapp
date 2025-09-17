@@ -181,7 +181,7 @@ def replace_match_pairs_in_file(
     from replace_text import replace_text_in_file
 
     assert isinstance(match_pairs, tuple)
-    icp(path, match_pairs)
+    # icp(path, match_pairs)
     for old_match, new_match in match_pairs:
         if old_match == new_match:
             continue
@@ -458,16 +458,16 @@ def clone_repo(
 
     import sh
 
-    icp(
-        repo_url,
-        branch,
-        apps_folder,
-        template_repo_url,
-        app_path,
-        app_group,
-        hg,
-        local,
-    )
+    # icp(
+    #    repo_url,
+    #    branch,
+    #    apps_folder,
+    #    template_repo_url,
+    #    app_path,
+    #    app_group,
+    #    hg,
+    #    local,
+    # )
     app_name, app_user, _, _ = parse_url(
         repo_url,
         apps_folder=apps_folder,
@@ -504,14 +504,14 @@ def clone_repo(
 
     if branch != "master":
         branch_cmd = "git checkout -b " + '"' + branch + '"'
-        icp(branch_cmd)
+        # icp(branch_cmd)
         os.system(branch_cmd)
 
     if (
         not rename_cloned_repo
     ):  # when renaming a template repo, dont want to fork if its one of my repos
         git_fork_cmd = "hub fork"
-        icp(git_fork_cmd)
+        # icp(git_fork_cmd)
         os.system(git_fork_cmd)
     else:
         rename_repo_at_app_path(
@@ -1153,7 +1153,7 @@ def _rename(
                     ["git", "add", _],
                     check=True,
                 )
-            except UserContextError as e:
+            except subprocess.CalledProcessError as e:
                 icp(e)
                 # icp(e.args)
                 icp(e.args[0])
