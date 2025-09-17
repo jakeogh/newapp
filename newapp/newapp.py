@@ -382,12 +382,6 @@ def generate_app_template(
     raise ValueError(language)
 
 
-def generate_url_template(url):
-    from .templates import echo_url
-
-    return echo_url.format(url=url)
-
-
 def generate_init_template(package_name):
     from .templates import init
 
@@ -715,6 +709,11 @@ def parse_url(
 @User("user")
 def write_url_sh(repo_url):
     import sh
+
+    from .templates import echo_url
+
+    def generate_url_template(url):
+        return echo_url.format(url=url)
 
     url_template = generate_url_template(url=repo_url)
     with open(
