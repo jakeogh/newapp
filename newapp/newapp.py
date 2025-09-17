@@ -1787,7 +1787,7 @@ def write_ebuild_template(
     )
 
 
-@User("user")
+@User("user", env_vars={"HOME": "/home/user"})
 def git_ops(
     ebuild_name: str,
     app_name: str,
@@ -1810,11 +1810,27 @@ def git_ops(
         ["ln", "-s", str(ebuild_path / ebuild_name), str(app_path / ebuild_name)],
         check=True,
     )
-    # sh.ln(
-    #    "-s",
-    #    ebuild_path / ebuild_name,
-    #    app_path / ebuild_name,
-    # )
+
+
+@User("user", env_vars={"HOME": "/home/user"})
+def write_description_and_install(description_md: str, install_md: str):
+    import sh
+
+    with open(
+        ".description.md",
+        "x",
+        encoding="utf8",
+    ) as fh:
+        fh.write(description_md)
+    git_add(".description.md")
+
+    with open(
+        ".install.md",
+        "x",
+        encoding="utf8",
+    ) as fh:
+        fh.write(install_md)
+    git_add(".install.md")
 
 
 @cli.command()
@@ -2040,7 +2056,6 @@ def new(
                 mkdir_user(app_module_name)
                 # os.makedirs(app_module_name, exist_ok=True)
 
-        # ic(template_repo_url)
         if not template_repo_url:
             with chdir(
                 app_path,
@@ -2097,32 +2112,14 @@ def new(
                 app_name=app_name,
                 app_user=app_user,
             )
+            description_md = generate_description_md_template(
+                package_name=app_name, repo_url=repo_url
+            )
+            install_md = generate_install_md_template(package_name=app_name)
 
-            @User("user")
-            def write_description_and_install():
-                import sh
-
-                _description_md = generate_description_md_template(
-                    package_name=app_name, repo_url=repo_url
-                )
-                with open(
-                    ".description.md",
-                    "x",
-                    encoding="utf8",
-                ) as fh:
-                    fh.write(_description_md)
-                git_add(".description.md")
-
-                _install_md = generate_install_md_template(package_name=app_name)
-                with open(
-                    ".install.md",
-                    "x",
-                    encoding="utf8",
-                ) as fh:
-                    fh.write(_install_md)
-                git_add(".install.md")
-
-            write_description_and_install()
+            write_description_and_install(
+                description_md=description_md, install_md=install_md
+            )
 
     edit_config_str = generate_edit_config(
         package_name=app_path,
