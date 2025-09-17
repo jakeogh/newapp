@@ -108,7 +108,6 @@ def create_package_env_records(
     assert os.geteuid() == 0
     os.system(f"mkdir /etc/portage/env/{group}")
     os.system(f"mkdir /etc/portage/package.env/{group}")
-    # os.system(f"chown user:user /etc/portage/env/{group}")  # ugly
 
     try:
         ensure_line_in_config_file(
@@ -135,6 +134,7 @@ def write_edit_config(
     package_name: str,
     package_group: str,
     local: bool,
+    edit_config_str: str,
 ):
     import os
 
@@ -152,13 +152,7 @@ def write_edit_config(
             "x",
             encoding="utf8",
         ) as fh:
-            fh.write(
-                generate_edit_config(
-                    package_name=package_name,
-                    package_group=package_group,
-                    local=local,
-                )
-            )
+            fh.write(edit_config_str)
 
 
 def get_extension(language: str) -> str:
@@ -2004,11 +1998,15 @@ def new(
 
             write_description_and_install()
 
+    edit_config_str = generate_edit_config(
+        package_name=app_path, package_group=group, local=local
+    )
     write_edit_config(
         app_path=app_path,
         package_name=app_name,
         package_group=group,
         local=local,
+        edit_config_str=edit_config_str,
     )
 
     ebuild_path = Path(gentoo_overlay_repo) / Path(group) / Path(app_name)
