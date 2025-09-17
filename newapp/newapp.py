@@ -103,7 +103,11 @@ def mkdir_user(path):
 @User("user")
 def git_add(path):
     # sh.git.add(path.as_posix())
-    os.system(f"git add {path.as_posix()}")
+    # os.system(f"git add {path.as_posix()}")
+    subprocess.run(
+        ["git", "add", path.as_posix()],
+        check=True,
+    )
 
 
 @retry_on_exception(
