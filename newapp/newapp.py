@@ -1697,6 +1697,8 @@ def _write_ebuild_template(
 ):
     from with_chdir import chdir
 
+    os.makedirs(ebuild_path, exist_ok=False)
+
     with chdir(
         ebuild_path,
     ):
@@ -1783,7 +1785,6 @@ def write_ebuild_template(
         app_path=app_path,
     )
 
-    os.makedirs(ebuild_path, exist_ok=False)
     _write_ebuild_template(
         ebuild_name=ebuild_name,
         ebuild_path=ebuild_path,
