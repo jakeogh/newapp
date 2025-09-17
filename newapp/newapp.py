@@ -1486,7 +1486,7 @@ def list_all_ebuilds(
                 / Path(app_name)
                 / Path(ebuild_name)
             )
-            icp(ebuild_path)
+            # icp(ebuild_path)
             assert ebuild_path.exists()
             _symlink_name = Path(Path(app_path) / Path(ebuild_name))
             if not _symlink_name.exists():
@@ -1689,6 +1689,51 @@ def write_app_template(
         ) as fh:
             fh.write(init_template)
         sh.touch("py.typed")
+
+
+@User("user", env_vars={"HOME": "/home/user"})
+def write_ebuild_template(
+    *,
+    ebuild_path: Path,
+    ebuild_name: str,
+    app_name: str,
+    description: str,
+    enable_python: bool,
+    enable_go: bool,
+    enable_dobin: bool,
+    homepage: str,
+    dependencies: tuple[str, ...],
+    app_path: Path,
+    original_repo_url: str,
+):
+    import os
+
+    import sh
+    from with_chdir import chdir
+
+    os.makedirs(ebuild_path, exist_ok=False)
+    with chdir(
+        ebuild_path,
+    ):
+        with open(
+            ebuild_name,
+            "w",
+            encoding="utf8",
+        ) as fh:
+            fh.write(
+                generate_ebuild_template(
+                    app_name=app_name,
+                    description=description,
+                    enable_python=enable_python,
+                    enable_go=enable_go,
+                    enable_dobin=enable_dobin,
+                    homepage=original_repo_url,
+                    dependencies=dependencies,
+                    app_path=app_path,
+                )
+            )
+        # do this first, so we have the current remote HEAD ref before trying to push
+        # still a race conditon obviously
 
 
 @cli.command()
@@ -2024,38 +2069,19 @@ def new(
         if language in {"bash", "go"}:
             enable_dobin = True
 
-        @User("user", env_vars={"HOME": "/home/user"})
-        def write_ebuild_template():
-            import os
-
-            import sh
-            from with_chdir import chdir
-
-            os.makedirs(ebuild_path, exist_ok=False)
-            with chdir(
-                ebuild_path,
-            ):
-                with open(
-                    ebuild_name,
-                    "w",
-                    encoding="utf8",
-                ) as fh:
-                    fh.write(
-                        generate_ebuild_template(
-                            app_name=app_name,
-                            description=description,
-                            enable_python=enable_python,
-                            enable_go=enable_go,
-                            enable_dobin=enable_dobin,
-                            homepage=original_repo_url,
-                            dependencies=dependencies,
-                            app_path=app_path,
-                        )
-                    )
-                # do this first, so we have the current remote HEAD ref before trying to push
-                # still a race conditon obviously
-
-        write_ebuild_template()
+        write_ebuild_template(
+            ebuild_path=ebuild_path,
+            ebuild_name=ebuild_name,
+            app_name=app_name,
+            description=description,
+            enable_python=enable_python,
+            enable_go=enable_go,
+            enable_dobin=enable_dobin,
+            homepage=original_repo_url,
+            dependencies=dependencies,
+            app_path=app_path,
+            original_repo_url=original_repo_url,
+        )
 
         os.system("emaint sync -A")
 
