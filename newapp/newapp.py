@@ -2140,9 +2140,9 @@ def new(
             write_description_and_install(
                 description_md=description_md, install_md=install_md
             )
-
+    icp(app_path)
     edit_config_str = generate_edit_config(
-        package_name=app_path,
+        package_name=app_name,
         package_group=group,
         local=local,
     )
