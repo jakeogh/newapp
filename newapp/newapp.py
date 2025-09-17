@@ -1033,6 +1033,7 @@ def _rename(
     icp(old_app_path, new_app_path)
 
     assert group in portage_categories()
+    sh.emerge(["--unmerge", f"{group}/{old_app_name}"])
 
     with chdir(
         apps_folder,
