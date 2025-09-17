@@ -1648,6 +1648,28 @@ def write_app_template(
 
 
 @User("user", env_vars={"HOME": "/home/user"})
+def _write_ebuild_template(
+    *,
+    ebuild_name: str,
+    ebuild_path: Path,
+    ebuild_template_str: str,
+):
+    from with_chdir import chdir
+
+    with chdir(
+        ebuild_path,
+    ):
+        with open(
+            ebuild_name,
+            "w",
+            encoding="utf8",
+        ) as fh:
+            fh.write(ebuild_template_str)
+
+        # do this first, so we have the current remote HEAD ref before trying to push
+        # still a race conditon obviously
+
+
 def write_ebuild_template(
     *,
     ebuild_path: Path,
@@ -1666,7 +1688,6 @@ def write_ebuild_template(
     from datetime import date
 
     import sh
-    from with_chdir import chdir
 
     from .templates import depend_python
     from .templates import ebuild
@@ -1710,29 +1731,23 @@ def write_ebuild_template(
             result += generate_src_install_dobin_template(app_name)
         return result
 
+    ebuild_template_str = generate_ebuild_template(
+        app_name=app_name,
+        description=description,
+        enable_python=enable_python,
+        enable_go=enable_go,
+        enable_dobin=enable_dobin,
+        homepage=original_repo_url,
+        dependencies=dependencies,
+        app_path=app_path,
+    )
+
     os.makedirs(ebuild_path, exist_ok=False)
-    with chdir(
-        ebuild_path,
-    ):
-        with open(
-            ebuild_name,
-            "w",
-            encoding="utf8",
-        ) as fh:
-            fh.write(
-                generate_ebuild_template(
-                    app_name=app_name,
-                    description=description,
-                    enable_python=enable_python,
-                    enable_go=enable_go,
-                    enable_dobin=enable_dobin,
-                    homepage=original_repo_url,
-                    dependencies=dependencies,
-                    app_path=app_path,
-                )
-            )
-        # do this first, so we have the current remote HEAD ref before trying to push
-        # still a race conditon obviously
+    _write_ebuild_template(
+        ebuild_name=ebuild_name,
+        ebuild_path=ebuild_path,
+        ebuild_template_str=ebuild_template_str,
+    )
 
 
 @cli.command()
