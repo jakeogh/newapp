@@ -96,16 +96,26 @@ CONTEXT_SETTINGS = dict(default_map=CFG)
 
 
 @User("user")
-def mkdir_user(path):
+def mkdir_user(path: Path):
     os.makedirs(path, exist_ok=True)
 
 
 @User("user")
-def git_add(path):
+def git_add(path: Path):
     # sh.git.add(path.as_posix())
     # os.system(f"git add {path.as_posix()}")
     subprocess.run(
         ["git", "add", path.as_posix()],
+        check=True,
+    )
+
+
+@User("user")
+def git_mv(*, old_path: Path, new_path: Path):
+    # sh.git.add(path.as_posix())
+    # os.system(f"git add {path.as_posix()}")
+    subprocess.run(
+        ["git", "mv", old_path.as_posix(), new_path.as_posix()],
         check=True,
     )
 
@@ -488,9 +498,9 @@ def rename_repo_at_app_path(
         app_path,
     ):
         if Path(old_name).exists():  # not all apps have a dir here
-            sh.git.mv(old_name, new_name)
+            git_mv(old_path=old_name, new_path=new_name)
         if Path(old_name.replace("-", "_")).exists():  # not all apps have a dir here
-            sh.git.mv(old_name.replace("-", "_"), new_name)
+            git_mv(old_path=old_name.replace("-", "_"), new_path=new_name)
 
         with open(".edit_config", "x", encoding="utf8") as fh:
             fh.write(
@@ -532,7 +542,7 @@ def rename_repo_at_app_path(
                 new_path_name = path.name.replace(old_name, new_name)
                 ic(new_path_name)
                 new_path = path.parent / Path(new_path_name)
-                sh.git.mv(path, new_path)
+                git_mv(old_path=path, new_path=new_path)
 
             if old_name.replace("-", "_") in path.name:
                 if path.name == new_name:
@@ -541,7 +551,7 @@ def rename_repo_at_app_path(
                 new_path_name = path.name.replace(old_name.replace("-", "_"), new_name)
                 ic(new_path_name)
                 new_path = path.parent / Path(new_path_name)
-                sh.git.mv(path, new_path)
+                git_mv(old_path=path, new_path=new_path)
 
         all_files = list(
             files(
@@ -1182,7 +1192,7 @@ def _rename(
     #        )
     #        sh.git.add(old_ebuild_path)
     #        new_ebuild_name = Path(new_app_name + "-9999.ebuild")
-    #        sh.git.mv(
+    #        git_mv(
     #            "-v",
     #            old_ebuild_path,
     #            new_ebuild_name,
@@ -1603,10 +1613,14 @@ def check_all(
 
 @User("user", env_vars={"HOME": "/home/user"})
 def commit_changes():
-    os.system("whoami")
-    print(sh.whoami())
-    sh.git.add("--all")
-    sh.git.commit("-m", "initial auto-commit")
+    subprocess.run(
+        ["git", "add", "--all"],
+        check=True,
+    )
+    subprocess.run(
+        ["git", "commit", "-m", "nitial auto-commit"],
+        check=True,
+    )
 
 
 @User("user")
