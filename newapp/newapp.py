@@ -354,51 +354,6 @@ def generate_autogenerate_readme():
     return autogenerate_readme
 
 
-# @User("user")
-def generate_ebuild_template(
-    *,
-    description: str,
-    enable_python: bool,
-    enable_go: bool,
-    enable_dobin: bool,
-    homepage: str,
-    app_path: Path,
-    app_name: str,
-    dependencies: tuple[str, ...],
-) -> str:
-    from datetime import date
-
-    from .templates import depend_python
-    from .templates import ebuild
-
-    # ic(enable_python)
-    inherit_python = ""
-    rdepend_python = ""
-    if enable_python:
-        inherit_python = "inherit distutils-r1"
-        rdepend_python = depend_python
-
-    inherit_go = ""
-    rdepend_go = ""
-    if enable_go:
-        inherit_go = "inherit go-module golang-vcs golang-build"
-        # rdepend_go = depend_go
-
-    result = ebuild.format(
-        description=description,
-        inherit_python=inherit_python,
-        inherit_go=inherit_go,
-        depend_python=rdepend_python,
-        homepage=homepage,
-        app_path=app_path,
-        year=str(date.today().year),
-    )
-
-    if enable_dobin:
-        result += generate_src_install_dobin_template(app_name)
-    return result
-
-
 def generate_gitignore_template(*, ebuild_name):
     from .templates import gitignore
 
@@ -1707,9 +1662,52 @@ def write_ebuild_template(
     original_repo_url: str,
 ):
     import os
+    from datetime import date
 
     import sh
     from with_chdir import chdir
+
+    from .templates import depend_python
+    from .templates import ebuild
+
+    def generate_ebuild_template(
+        *,
+        description: str,
+        enable_python: bool,
+        enable_go: bool,
+        enable_dobin: bool,
+        homepage: str,
+        app_path: Path,
+        app_name: str,
+        dependencies: tuple[str, ...],
+    ) -> str:
+
+        # ic(enable_python)
+        inherit_python = ""
+        rdepend_python = ""
+        if enable_python:
+            inherit_python = "inherit distutils-r1"
+            rdepend_python = depend_python
+
+        inherit_go = ""
+        rdepend_go = ""
+        if enable_go:
+            inherit_go = "inherit go-module golang-vcs golang-build"
+            # rdepend_go = depend_go
+
+        result = ebuild.format(
+            description=description,
+            inherit_python=inherit_python,
+            inherit_go=inherit_go,
+            depend_python=rdepend_python,
+            homepage=homepage,
+            app_path=app_path,
+            year=str(date.today().year),
+        )
+
+        if enable_dobin:
+            result += generate_src_install_dobin_template(app_name)
+        return result
 
     os.makedirs(ebuild_path, exist_ok=False)
     with chdir(
