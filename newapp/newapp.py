@@ -253,7 +253,6 @@ def get_url_for_overlay(
 
         repo_url = repo_url.split("(")[-1].split(")")[0]
         if repo_name == overlay:
-            # ic(repo_url)
             return repo_url
 
     raise ValueError(f"unknown repo {overlay}")
