@@ -2171,13 +2171,18 @@ def new(
         package_group=group,
         local=local,
     )
-    write_edit_config(
-        app_path=app_path,
-        package_name=app_name,
-        package_group=group,
-        local=local,
-        edit_config_str=edit_config_str,
-    )
+    main_py_path = app_path / Path(app_module_name) / Path(app_module_name + ext)
+    icp(main_py_path)
+    try:
+        write_edit_config(
+            app_path=app_path,
+            package_name=app_name,
+            package_group=group,
+            local=local,
+            edit_config_str=edit_config_str,
+        )
+    except FileExistsError:
+        run_edittool(main_py_path)
 
     ebuild_path = Path(gentoo_overlay_repo) / Path(group) / Path(app_name)
     ebuild_name = app_name + "-9999.ebuild"
@@ -2256,9 +2261,6 @@ def new(
 
     # ic(app_path)
     # ic(app_module_name)
-
-    main_py_path = app_path / Path(app_module_name) / Path(app_module_name + ext)
-    icp(main_py_path)
 
     run_edittool(main_py_path)
 
