@@ -1005,10 +1005,14 @@ def find_and_move(
                 new_path = Path(root) / new_name
 
                 if git:
-                    subprocess.run(
-                        ["git", "mv", str(old_path), str(new_path)],
-                        check=True,
-                    )
+                    try:
+                        subprocess.run(
+                            ["git", "mv", str(old_path), str(new_path)],
+                            check=True,
+                        )
+                    except Exception as e:
+                        # skip files not under git revision control
+                        icp(e)
                 else:
                     old_path.rename(new_path)
 
