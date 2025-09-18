@@ -1222,7 +1222,7 @@ def _rename(
         sh.busybox.mv(
             Path("env") / Path(group) / Path(new_app_name + "-9999"),
             _package_env,
-            _close_stderr=True,
+            # _close_stderr=True,
         )
         replace_match_pairs_in_file(
             path=_env,
