@@ -2183,6 +2183,7 @@ def new(
         )
     except Exception:  # fix
         run_edittool(main_py_path)
+        return
 
     ebuild_path = Path(gentoo_overlay_repo) / Path(group) / Path(app_name)
     ebuild_name = app_name + "-9999.ebuild"
