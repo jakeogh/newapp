@@ -1194,7 +1194,6 @@ def _rename(
             ),
         )
         run_edittool(_new_ebuild)
-        # edittool
 
     # recreate ebuild symlink
     with chdir(new_app_path):
@@ -1204,6 +1203,33 @@ def _rename(
             new_ebuild_folder / Path(new_app_name + ".ebuild"),
             Path(new_app_name + ".ebuild"),
             _ok_code=[0, 1],
+        )
+    with chdir(Path("/etc/portage")):
+        _package_env = Path("package.env") / Path(group) / Path(new_app_name)
+        sh.busybox.mv(
+            Path("package.env") / Path(group) / Path(old_app_name),
+            _package_env,
+            _close_stderr=True,
+        )
+        replace_match_pairs_in_file(
+            path=_package_env,
+            match_pairs=(
+                (old_app_name, new_app_name),
+                (old_app_module_name, new_app_module_name),
+            ),
+        )
+        _env = Path("env") / Path(group) / Path(new_app_name + "-9999")
+        sh.busybox.mv(
+            Path("env") / Path(group) / Path(new_app_name + "-9999"),
+            _package_env,
+            _close_stderr=True,
+        )
+        replace_match_pairs_in_file(
+            path=_env,
+            match_pairs=(
+                (old_app_name, new_app_name),
+                (old_app_module_name, new_app_module_name),
+            ),
         )
 
 
