@@ -1174,7 +1174,7 @@ def _rename(
             git=True,
         )
 
-        old_ebuild_symlink = new_app_path / Path(new_app_name + "-9999.ebuild")
+        old_ebuild_symlink = new_app_path / Path(old_app_name + "-9999.ebuild")
         old_ebuild_symlink.unlink()
 
     # rename ebuild folder
