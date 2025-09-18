@@ -1179,18 +1179,14 @@ def _rename(
 
     # rename ebuild folder
     with chdir(Path(gentoo_overlay_repo) / Path(group)):
-        # sh.busybox.mv(
-        #    "-v",
-        #    old_app_name,
-        #    new_app_name,
-        #    _out=sys.stdout,
-        #    _err=sys.stderr,
-        # )
         git_mv(
             old_app_name / Path(old_app_name + "-9999.ebuild"),
             old_app_name / Path(new_app_name + "-9999.ebuild"),
         )
         git_mv(Path(old_app_name), Path(new_app_name))
+        git_add("-u")
+        run_edittool(new_app_name / Path(new_app_name + "-9999.ebuild"))
+        # edittool
 
     # recreate ebuild symlink
     with chdir(new_app_path):
