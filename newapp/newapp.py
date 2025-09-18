@@ -355,9 +355,9 @@ def rename_repo_at_app_path(
         app_path,
     ):
         if Path(old_name).exists():  # not all apps have a dir here
-            git_mv(old_path=old_name, new_path=new_name)
+            git_mv(old_path=Path(old_name), new_path=Path(new_name))
         if Path(old_name.replace("-", "_")).exists():  # not all apps have a dir here
-            git_mv(old_path=old_name.replace("-", "_"), new_path=new_name)
+            git_mv(old_path=Path(old_name.replace("-", "_")), new_path=Path(new_name))
 
         with open(
             ".edit_config",
@@ -403,7 +403,7 @@ def rename_repo_at_app_path(
                 new_path_name = path.name.replace(old_name, new_name)
                 icp(new_path_name)
                 new_path = path.parent / Path(new_path_name)
-                git_mv(old_path=path, new_path=new_path)
+                git_mv(old_path=Path(path), new_path=Path(new_path))
 
             if old_name.replace("-", "_") in path.name:
                 if path.name == new_name:
@@ -412,7 +412,7 @@ def rename_repo_at_app_path(
                 new_path_name = path.name.replace(old_name.replace("-", "_"), new_name)
                 # ic(new_path_name)
                 new_path = path.parent / Path(new_path_name)
-                git_mv(old_path=path, new_path=new_path)
+                git_mv(old_path=Path(path), new_path=Path(new_path))
 
         all_files = list(
             files(
@@ -1190,7 +1190,7 @@ def _rename(
             old_app_name / Path(old_app_name + "-9999.ebuild"),
             old_app_name / Path(new_app_name + "-9999.ebuild"),
         )
-        git_mv(old_app_name, new_app_name)
+        git_mv(Path(old_app_name), Path(new_app_name))
 
     # recreate ebuild symlink
     with chdir(new_app_path):
