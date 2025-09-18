@@ -2181,7 +2181,7 @@ def new(
             local=local,
             edit_config_str=edit_config_str,
         )
-    except FileExistsError:
+    except Exception:  # fix
         run_edittool(main_py_path)
 
     ebuild_path = Path(gentoo_overlay_repo) / Path(group) / Path(app_name)
