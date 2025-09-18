@@ -1220,7 +1220,7 @@ def _rename(
         )
         _env = Path("env") / Path(group) / Path(new_app_name + "-9999")
         sh.busybox.mv(
-            Path("env") / Path(group) / Path(new_app_name + "-9999"),
+            Path("env") / Path(group) / Path(old_app_name + "-9999"),
             _package_env,
             # _close_stderr=True,
         )
