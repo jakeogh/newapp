@@ -55,7 +55,7 @@ def git_add(thing: str):
     )
 
 
-@User("user")
+@User("user", env_vars={"HOME": "/home/user"})
 def git_mv(*, old_path: Path, new_path: Path):
     import subprocess
 
@@ -399,9 +399,9 @@ def rename_repo_at_app_path(
             if old_name in path.name:
                 if path.name == new_name:
                     continue
-                # ic(old_name, path.name)
+                icp(old_name, path.name)
                 new_path_name = path.name.replace(old_name, new_name)
-                # ic(new_path_name)
+                icp(new_path_name)
                 new_path = path.parent / Path(new_path_name)
                 git_mv(old_path=path, new_path=new_path)
 
