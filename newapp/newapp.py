@@ -1211,7 +1211,7 @@ def _rename(
             _package_env,
             # _close_stderr=True,
         )
-        replace_match_pairs_in_file(
+        replace_match_pairs_in_file_root(
             path=_package_env,
             match_pairs=(
                 (old_app_name, new_app_name),
@@ -1224,7 +1224,7 @@ def _rename(
             _package_env,
             # _close_stderr=True,
         )
-        replace_match_pairs_in_file(
+        replace_match_pairs_in_file_root(
             path=_env,
             match_pairs=(
                 (old_app_name, new_app_name),
