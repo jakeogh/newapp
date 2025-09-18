@@ -1218,14 +1218,14 @@ def _rename(
                 (old_app_module_name, new_app_module_name),
             ),
         )
-        _env = Path("env") / Path(group) / Path(new_app_name + "-9999")
+        _new_env = Path("env") / Path(group) / Path(new_app_name + "-9999")
         sh.busybox.mv(
             Path("env") / Path(group) / Path(old_app_name + "-9999"),
-            _package_env,
+            _new_env,
             # _close_stderr=True,
         )
         replace_match_pairs_in_file_root(
-            path=_env,
+            path=_new_env,
             match_pairs=(
                 (old_app_name, new_app_name),
                 (old_app_module_name, new_app_module_name),
