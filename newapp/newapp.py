@@ -56,7 +56,7 @@ def git_add(thing: str):
 
 
 @User("user", env_vars={"HOME": "/home/user"})
-def git_mv(*, old_path: Path, new_path: Path):
+def git_mv(old_path: Path, new_path: Path):
     import subprocess
 
     subprocess.run(
@@ -1179,13 +1179,18 @@ def _rename(
 
     # rename ebuild folder
     with chdir(Path(gentoo_overlay_repo) / Path(group)):
-        sh.busybox.mv(
-            "-v",
-            old_app_name,
-            new_app_name,
-            _out=sys.stdout,
-            _err=sys.stderr,
+        # sh.busybox.mv(
+        #    "-v",
+        #    old_app_name,
+        #    new_app_name,
+        #    _out=sys.stdout,
+        #    _err=sys.stderr,
+        # )
+        git_mv(
+            old_app_name / Path(old_app_name + "-9999.ebuild"),
+            old_app_name / Path(new_app_name + "-9999.ebuild"),
         )
+        git_mv(old_app_name, new_app_name)
 
     # recreate ebuild symlink
     with chdir(new_app_path):
