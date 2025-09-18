@@ -2366,7 +2366,7 @@ def delete(
     import sh
     from with_chdir import chdir
 
-    # not_root()
+    am_root()
     tty, verbose = tvicgvd(
         ctx=ctx,
         verbose=verbose,
