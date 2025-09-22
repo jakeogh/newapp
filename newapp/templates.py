@@ -122,7 +122,7 @@ import sys
 import click
 import time
 import logging
-import sh
+import sh  # type: ignore
 from collections.abc import Sequence
 from clicktool import click_add_options
 from clicktool import click_global_options
@@ -279,7 +279,7 @@ def thing(ctx: click.Context,
             # from pudb import set_trace; set_trace(paused=False)
 
 if __name__ == '__main__':
-    # pylint: disable=E1120
+    # pylint: disable=disable=no-value-for-parameter  # E1120
     cli()
 
 """

@@ -1201,7 +1201,7 @@ def _rename(
         sh.ln(
             "-s",
             new_ebuild_folder / Path(new_app_name + ".ebuild"),
-            Path(new_app_name + ".ebuild"),
+            Path(new_app_name + "-9999.ebuild"),
             _ok_code=[0, 1],
         )
     with chdir(Path("/etc/portage")):
