@@ -133,7 +133,7 @@ from signal import signal, SIGPIPE, SIG_DFL
 from pathlib import Path
 from mptool import output
 from mptool import mpd_enumerate
-from asserttool import validate_slice
+from clicktool import validate_slice
 from eprint import eprint
 from asserttool import ic
 from asserttool import icp

@@ -502,7 +502,7 @@ def clone_repo(
             _err=sys.stderr,
         )
 
-    if branch != "master":
+    if branch not in {"main", "master"}:
         branch_cmd = "git checkout -b " + '"' + branch + '"'
         # icp(branch_cmd)
         os.system(branch_cmd)
@@ -599,7 +599,7 @@ def remote_add_origin(
         "#!/bin/sh",
         f"hub create {app_user}/{app_name}",
         str(repo_config_command),
-        "git push --set-upstream origin master",
+        "git push --set-upstream origin main",
         "touch .push",
         "\n",
     ]
@@ -1898,7 +1898,7 @@ def write_description_and_install(description_md: str, install_md: str):
 #    "--branch",
 #    type=str,
 #    callback=valid_branch,
-#    default="master",
+#    default="main",
 # )
 @click.option(
     "--template",
@@ -1990,7 +1990,7 @@ def new(
     import sh
     from with_chdir import chdir
 
-    branch = "master"
+    branch = "main"
     am_root()
     tty, verbose = tvicgvd(
         ctx=ctx,
