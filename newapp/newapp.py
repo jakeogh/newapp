@@ -1200,7 +1200,7 @@ def _rename(
         new_ebuild_folder = Path(gentoo_overlay_repo) / Path(group) / Path(new_app_name)
         sh.ln(
             "-s",
-            new_ebuild_folder / Path(new_app_name + ".ebuild"),
+            new_ebuild_folder / Path(new_app_name + "-9999.ebuild"),
             Path(new_app_name + "-9999.ebuild"),
             _ok_code=[0, 1],
         )
