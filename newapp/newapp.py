@@ -1640,6 +1640,53 @@ def _write_python_init(python_init: str):
         fh.write(python_init)
 
 
+def generate_app_template(
+    package_name: str,
+    *,
+    language: str,
+    append_files: tuple[Path, ...],
+) -> str:
+    from .templates import bash_app
+    from .templates import cee_app
+    from .templates import python_app
+    from .templates import zig_app
+
+    result = None
+    if language == "python":
+        result = python_app.format(
+            package_name=package_name,
+            newline="\\n",
+            null="\\x00",
+        )
+    if language == "bash":
+        result = bash_app.format(
+            package_name=package_name,
+            newline="\\n",
+            null="\\x00",
+        )
+    if language == "zig":
+        result = zig_app.format(
+            package_name=package_name,
+            newline="\\n",
+            null="\\x00",
+        )
+    if language == "c":
+        # result = cee_app.format(package_name=package_name, newline="\\n", null="\\x00")
+        result = cee_app
+
+    if result:
+        for file in append_files:
+            with open(
+                file,
+                "r",
+                encoding="utf8",
+            ) as fh:
+                result += fh.read()
+        return result
+
+    raise ValueError(language)
+
+
 def write_app_template(
     *,
     app_module_name: str,
@@ -1649,52 +1696,6 @@ def write_app_template(
     app_path: Path,
 ):
     import sh
-
-    def generate_app_template(
-        package_name: str,
-        *,
-        language: str,
-        append_files: tuple[Path, ...],
-    ) -> str:
-        from .templates import bash_app
-        from .templates import cee_app
-        from .templates import python_app
-        from .templates import zig_app
-
-        result = None
-        if language == "python":
-            result = python_app.format(
-                package_name=package_name,
-                newline="\\n",
-                null="\\x00",
-            )
-        if language == "bash":
-            result = bash_app.format(
-                package_name=package_name,
-                newline="\\n",
-                null="\\x00",
-            )
-        if language == "zig":
-            result = zig_app.format(
-                package_name=package_name,
-                newline="\\n",
-                null="\\x00",
-            )
-        if language == "c":
-            # result = cee_app.format(package_name=package_name, newline="\\n", null="\\x00")
-            result = cee_app
-
-        if result:
-            for file in append_files:
-                with open(
-                    file,
-                    "r",
-                    encoding="utf8",
-                ) as fh:
-                    result += fh.read()
-            return result
-
-        raise ValueError(language)
 
     app_template = generate_app_template(
         package_name=app_module_name,
