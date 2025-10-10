@@ -846,67 +846,69 @@ def nineify(
         pass
 
 
-# @cli.command()
-# @click_add_options(click_global_options)
-# @click.pass_context
-# def template_pylint(
-#    ctx,
-#    verbose_inf: bool,
-#    dict_output: bool,
-#    verbose: bool = False,
-# ):
-#    tty, verbose = tvicgvd(
-#        ctx=ctx,
-#        verbose=verbose,
-#        verbose_inf=verbose_inf,
-#        ic=ic,
-#        gvd=gvd,
-#    )
-#    app_template = generate_app_template(
-#        "TEMP",
-#        language="python",
-#        append_files=(),
-#    )
-#    for line in app_template.splitlines():
-#        if line.startswith("# fl ake8: "):
-#            print(line)
-#        if line.startswith("# py lint: "):
-#            print(line)
+@cli.command()
+@click_add_options(click_global_options)
+@click.pass_context
+def template_pylint(
+    ctx,
+    verbose_inf: bool,
+    dict_output: bool,
+    verbose: bool = False,
+):
+    tty, verbose = tvicgvd(
+        ctx=ctx,
+        verbose=verbose,
+        verbose_inf=verbose_inf,
+        ic=ic,
+        gvd=gvd,
+    )
+    app_template = generate_app_template(
+        "TEMP",
+        language="python",
+        append_files=(),
+    )
+    for line in app_template.splitlines():
+        if line.startswith("# fl ake8: "):
+            print(line)
+        if line.startswith("# py lint: "):
+            print(line)
 
 
-# @cli.command()
-# @click.argument(
-#    "package-name",
-#    type=str,
-#    default="TESTPACKAGE",
-# )
-# @click_add_options(click_global_options)
-# @click.pass_context
-# def template_python(
-#    ctx,
-#    package_name: str,
-#    verbose_inf: bool,
-#    dict_output: bool,
-#    verbose: bool = False,
-# ):
-#    tty, verbose = tvicgvd(
-#        ctx=ctx,
-#        verbose=verbose,
-#        verbose_inf=verbose_inf,
-#        ic=ic,
-#        gvd=gvd,
-#    )
-#    app_template = generate_app_template(
-#        package_name,
-#        language="python",
-#        append_files=(),
-#    )
-#    output(
-#        app_template,
-#        reason=None,
-#        dict_output=dict_output,
-#        tty=tty,
-#    )
+@cli.command()
+@click.argument(
+    "package-name",
+    type=str,
+    default="TESTPACKAGE",
+)
+@click_add_options(click_global_options)
+@click.pass_context
+def template_python(
+    ctx,
+    package_name: str,
+    verbose_inf: bool,
+    dict_output: bool,
+    verbose: bool = False,
+):
+    tty, verbose = tvicgvd(
+        ctx=ctx,
+        verbose=verbose,
+        verbose_inf=verbose_inf,
+        ic=ic,
+        gvd=gvd,
+    )
+    app_template = generate_app_template(
+        package_name,
+        language="python",
+        append_files=(),
+    )
+    output(
+        app_template,
+        reason=None,
+        dict_output=dict_output,
+        tty=tty,
+    )
+
+
 #
 #
 # @cli.command()
