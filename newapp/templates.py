@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-from asserttool import ic
 
 description_md = """**{package_name}**: {repo_url}
 """
@@ -336,6 +335,7 @@ gitignore = """.git
 .edit_config
 .push
 enable_github.sh
+update_delme.sh
 {ebuild_name}
 """
 
