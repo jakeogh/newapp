@@ -6,7 +6,7 @@ description_md = """**{package_name}**: {repo_url}
 
 install_md = """### Installation:
 
-#### Debian 11
+#### Debian 12
 
     1. sudo apt-get install python3-pip -y
 
@@ -70,52 +70,10 @@ python_app = """#!/usr/bin/env python3
 # -*- coding: utf8 -*-
 # tab-width:4
 
-# pylint: disable=useless-suppression             # [I0021]
-# pylint: disable=missing-docstring               # [C0111] docstrings are always outdated and wrong
-# pylint: disable=missing-param-doc               # [W9015]
-# pylint: disable=missing-module-docstring        # [C0114]
-# pylint: disable=fixme                           # [W0511] todo encouraged
-# pylint: disable=line-too-long                   # [C0301]
-# pylint: disable=too-many-instance-attributes    # [R0902]
-# pylint: disable=too-many-lines                  # [C0302] too many lines in module
-# pylint: disable=invalid-name                    # [C0103] single letter var names, name too descriptive(!)
-# pylint: disable=too-many-return-statements      # [R0911]
-# pylint: disable=too-many-branches               # [R0912]
-# pylint: disable=too-many-statements             # [R0915]
-# pylint: disable=too-many-arguments              # [R0913]
-# pylint: disable=too-many-nested-blocks          # [R1702]
-# pylint: disable=too-many-locals                 # [R0914]
-# pylint: disable=too-many-public-methods         # [R0904]
-# pylint: disable=too-few-public-methods          # [R0903]
-# pylint: disable=no-member                       # [E1101] no member for base
-# pylint: disable=attribute-defined-outside-init  # [W0201]
-# pylint: disable=too-many-boolean-expressions    # [R0916] in if statement
 
 from __future__ import annotations
 
-# code style:
-#   avoid guessing on spelling, just write the word out
-#   dont_makedirs -> no_makedirs
-#   no guessing on case: local vars, functions and methods are lower case. classes are ThisClass(). Globals are THIS.
-#   del vars explicitely ASAP, assumptions are buggy
-#   rely on the compiler, code verbosity and explicitness can only be overruled by benchamrks (are really compiler bugs)
-#   no tabs. code must display the same independent of viewer
-#   no recursion, recursion is undecidiable, randomly bounded, and hard to reason about
-#   each elementis the same, no special cases for the first or last elemetnt:
-#       [1, 2, 3,] not [1, 2, 3]
-#       def this(*.
-#                a: bool,
-#                b: bool,
-#               ):
-#
-#   expicit loop control is better than while (condition):
-#       while True:
-#           # continue/break explicit logic
-#   only computer generated commit messages _should_ start with a cap letter
 
-
-# TODO:
-#   https://github.com/kvesteri/validators
 import os
 import sys
 import click
@@ -250,7 +208,7 @@ def thing(ctx: click.Context,
 
     index = 0
     _k = None
-    for index, _mpobject, key_count in mpd_enumerate(iterator):
+    for index, _mpobject in enumerate(iterator):
         #if index == 0:
         #    first_type = type(_mpobject)
         #    if first_type == dict:
