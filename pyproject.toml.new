@@ -1,0 +1,49 @@
+[build-system]
+requires = ["setuptools>=61.0", "tomlkit"]
+build-backend = "pep508_url_version_backend"
+backend-path = ["."]
+
+[project]
+name = "newapp"
+description = "Create new programs from a template, manage repos"
+authors = [
+    { name = "jakeogh", email = "github.com@v6y.net" },
+]
+dependencies = []
+requires-python = ">=3.11"
+
+[project.license]
+text = "PUBLIC DOMAIN"
+
+[project.urls]
+Homepage = "https://github.com/jakeogh/newapp"
+
+[project.scripts]
+newapp = "newapp.newapp:cli"
+
+[tool.setuptools]
+include-package-data = true
+zip-safe = false
+
+[tool.pep508-url-version-backend]
+dependencies-indexed = []
+dependencies-git = [
+	"asserttool @ git+https://github.com/jakeogh/asserttool", 
+	"clicktool @ git+https://github.com/jakeogh/clicktool", 
+	"configtool @ git+https://github.com/jakeogh/configtool", 
+	"edittool @ git+https://github.com/jakeogh/edittool", 
+	"eprint @ git+https://github.com/jakeogh/eprint", 
+	"filetool @ git+https://github.com/jakeogh/filetool", 
+	"getdents @ git+https://github.com/jakeogh/getdents", 
+	"globalverbose @ git+https://github.com/jakeogh/globalverbose", 
+	"licenseguesser @ git+https://github.com/jakeogh/licenseguesser", 
+	"mptool @ git+https://github.com/jakeogh/mptool", 
+	"portagetool @ git+https://github.com/jakeogh/portagetool", 
+	"replace-text @ git+https://github.com/jakeogh/replace-text", 
+	"retry-on-exception @ git+https://github.com/jakeogh/retry-on-exception", 
+	"sh", 
+	"timestamptool @ git+https://github.com/jakeogh/timestamptool", 
+	"with-chdir @ git+https://github.com/jakeogh/with-chdir", 
+	"with-user @ git+https://github.com/jakeogh/with-user"
+]
+index-urls = ["jakeogh.github.io", "pip-index"]
