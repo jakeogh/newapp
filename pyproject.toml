@@ -18,7 +18,6 @@ dependencies = [
     "configtool @ git+https://github.com/jakeogh/configtool",
     "edittool @ git+https://github.com/jakeogh/edittool",
     "eprint @ git+https://github.com/jakeogh/eprint",
-    "errno",
     "filetool @ git+https://github.com/jakeogh/filetool",
     "getdents @ git+https://github.com/jakeogh/getdents",
     "globalverbose @ git+https://github.com/jakeogh/globalverbose",
@@ -35,7 +34,7 @@ dependencies = [
     "with-user @ git+https://github.com/jakeogh/with-user",
 ]
 requires-python = ">=3.11"
-version = "0.0.1761122026"
+version = "0.0.1761122055"
 
 [project.license]
 text = "PUBLIC DOMAIN"
