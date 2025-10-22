@@ -10,6 +10,7 @@ description = "Replace text in files(s) or stdin."
 authors = [
     { name = "jakeogh", email = "github.com@v6y.net" },
 ]
+
 dependencies = [
     "asserttool @ git+https://github.com/jakeogh/asserttool",
     "click",
