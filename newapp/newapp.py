@@ -2420,6 +2420,11 @@ def delete(
         import os
 
         sh.git.add("-u")
-        sh.git.commit("-m", "auto-commit")
+        sh.git.commit(
+            "-m",
+            "auto-commit",
+            _out=sys.stdout,
+            _err=sys.stderr,
+        )
         sh.git.push()
         os.system("sudo emaint sync -A")
