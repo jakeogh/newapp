@@ -67,8 +67,8 @@ def git_mv(old_path: Path, new_path: Path):
 def ensure_line_in_config_file(path: Path, line: str):
     import errno
 
-    from filetool import \
-        ensure_line_in_config_file as _ensure_line_in_config_file
+    from filetool import (
+        ensure_line_in_config_file as _ensure_line_in_config_file,)
     from retry_on_exception import retry_on_exception
 
     @retry_on_exception(
@@ -111,7 +111,7 @@ def create_package_env_records(
     try:
         ensure_line_in_config_file(
             path=Path(f"/etc/portage/env/{group}/{app_name}-9999"),
-            line=f"EGIT_REPO_URI='{app_path}'\n",
+            line=f"EGIT_REPO_URI='{app_path}'",
         )
     except PermissionError as e:
         icp(e)
@@ -119,7 +119,7 @@ def create_package_env_records(
     try:
         ensure_line_in_config_file(
             path=Path(f"/etc/portage/package.env/{group}/{app_name}"),
-            line=f"{group}/{app_name} {group}/{app_name}-9999\n",
+            line=f"{group}/{app_name} {group}/{app_name}-9999",
         )
     except PermissionError as e:
         icp(e)
@@ -222,9 +222,9 @@ def replace_match_pairs_in_file_root(
 def get_url_for_overlay(
     overlay: str,
 ) -> str:
-    import sh
+    import hs
 
-    command = sh.eselect("repository", "list")
+    command = hs.Command("eselect")("repository", "list")
     command_output = command.stdout.split("\n")
     # ic(type(command_output), command_output)
 
@@ -341,7 +341,7 @@ def rename_repo_at_app_path(
     hg: bool,
     local: bool,
 ):
-    import sh
+    import hs
     from getdents import files
     from getdents import paths
     from with_chdir import chdir
@@ -436,8 +436,8 @@ def rename_repo_at_app_path(
                     (old_module_name, new_module_name),
                 ),
             )
-        sh.git.add("-u")
-        sh.git.commit("-m rename")
+        hs.Command("git")("add", "-u")
+        hs.Command("git")("commit", "-m rename")
 
 
 @User("user")
@@ -455,18 +455,8 @@ def clone_repo(
     import os
     import sys
 
-    import sh
+    import hs
 
-    # icp(
-    #    repo_url,
-    #    branch,
-    #    apps_folder,
-    #    template_repo_url,
-    #    app_path,
-    #    app_group,
-    #    hg,
-    #    local,
-    # )
     app_name, app_user, _, _ = parse_url(
         repo_url,
         apps_folder=apps_folder,
@@ -484,7 +474,7 @@ def clone_repo(
         repo_to_clone_url = repo_url
 
     if hg:
-        sh.hg(
+        hs.Command("hg")(
             "clone",
             repo_to_clone_url,
             str(app_path),
@@ -492,7 +482,8 @@ def clone_repo(
             _err=sys.stderr,
         )
     else:
-        sh.git.clone(
+        hs.Command("git")(
+            "clone",
             repo_to_clone_url,
             "--recurse-submodules",
             "--recursive",
@@ -532,7 +523,6 @@ def create_repo(
     hg: bool,
 ):
     import os
-    from pathlib import Path
 
     from with_chdir import chdir
 
@@ -568,14 +558,14 @@ def remote_add_origin(
     app_user: str,
     hg: bool,
 ):
-    import sh
+    import hs
     from with_chdir import chdir
 
     if hg:
         raise NotImplementedError("hg")
 
-    repo_config_command = sh.Command("git")
-    repo_config_command = repo_config_command.bake(
+    repo_config_command = hs.Command("git")
+    repo_config_command.bake(
         "remote",
         "add",
         "origin",
@@ -651,7 +641,7 @@ def _write_url_sh(url_template_str: str):
 
 
 def write_url_sh(repo_url):
-    import sh
+    import hs
 
     from .templates import echo_url
 
@@ -660,7 +650,7 @@ def write_url_sh(repo_url):
 
     url_template_str = generate_url_template(url=repo_url)
     _write_url_sh(url_template_str=url_template_str)
-    sh.chmod("+x", "url.sh")
+    hs.Command("chmod")("+x", "url.sh")
 
 
 @User("user", env_vars={"HOME": "/home/user"})
@@ -677,16 +667,10 @@ def _write_autogenerate_readme(autogenerate_readme: str):
 
 
 def write_autogenerate_readme_sh():
-    import subprocess
-
-    import sh
 
     from .templates import autogenerate_readme
 
     _write_autogenerate_readme(autogenerate_readme)
-
-    # sh.git.add(".autogenerate_readme.sh")
-    # sh.chmod("+x", ".autogenerate_readme.sh")
 
 
 @User("user", env_vars={"HOME": "/home/user"})
@@ -1070,7 +1054,7 @@ def _rename(
     import subprocess
     import sys
 
-    import sh
+    import hs
     from with_chdir import chdir
 
     am_root()
@@ -1100,12 +1084,13 @@ def _rename(
     icp(old_app_path, new_app_path)
 
     assert group in portage_categories()
-    sh.emerge(["--unmerge", f"{group}/{old_app_name}"])
+    hs.Command("emerge")(["--unmerge", f"{group}/{old_app_name}"])
 
     with chdir(
         apps_folder,
     ):
-        sh.busybox.mv(
+        hs.Command("busybox")(
+            "mv",
             "-v",
             old_app_path,
             new_app_path,
@@ -1118,7 +1103,8 @@ def _rename(
     with chdir(
         new_app_path,
     ):
-        sh.busybox.mv(
+        hs.Command("busybox")(
+            "mv",
             "-v",
             old_app_module_name,
             new_app_module_name,
@@ -1199,7 +1185,7 @@ def _rename(
     # recreate ebuild symlink
     with chdir(new_app_path):
         new_ebuild_folder = Path(gentoo_overlay_repo) / Path(group) / Path(new_app_name)
-        sh.ln(
+        hs.Command("ln")(
             "-s",
             new_ebuild_folder / Path(new_app_name + "-9999.ebuild"),
             Path(new_app_name + "-9999.ebuild"),
@@ -1207,7 +1193,8 @@ def _rename(
         )
     with chdir(Path("/etc/portage")):
         _package_env = Path("package.env") / Path(group) / Path(new_app_name)
-        sh.busybox.mv(
+        hs.Command("busybox")(
+            "mv",
             Path("package.env") / Path(group) / Path(old_app_name),
             _package_env,
             # _close_stderr=True,
@@ -1220,7 +1207,8 @@ def _rename(
             ),
         )
         _new_env = Path("env") / Path(group) / Path(new_app_name + "-9999")
-        sh.busybox.mv(
+        hs.Command("busybox")(
+            "mv",
             Path("env") / Path(group) / Path(old_app_name + "-9999"),
             _new_env,
             # _close_stderr=True,
@@ -1257,7 +1245,7 @@ def list_all(
     dict_output: bool,
     verbose: bool = False,
 ):
-    import sh
+    import hs
     from with_chdir import chdir
 
     tty, verbose = tvicgvd(
@@ -1284,9 +1272,9 @@ def list_all(
                 project_dir,
             ):
                 try:
-                    sh.git("ls-remote")
+                    hs.Command("git")("ls-remote")
                     return_code = 0
-                except sh.ErrorReturnCode_128:
+                except hs.ErrorReturnCode_128:
                     return_code = 128
 
             output(
@@ -1378,7 +1366,7 @@ def list_all_ebuilds(
     dict_output: bool,
     verbose: bool = False,
 ):
-    import sh
+    import hs
     from replace_text import replace_text_in_file
     from with_chdir import chdir
 
@@ -1403,7 +1391,7 @@ def list_all_ebuilds(
         with chdir(
             edit_config_path.parent,
         ):
-            remote = str(sh.git.remote("get-url", "origin")).strip()
+            remote = str(hs.Command("git")("remote", "get-url", "origin")).strip()
             app_name, app_user, app_module_name, app_path = parse_url(
                 remote,
                 apps_folder=apps_folder,
@@ -1440,7 +1428,7 @@ def list_all_ebuilds(
             assert ebuild_path.exists()
             _symlink_name = Path(Path(app_path) / Path(ebuild_name))
             if not _symlink_name.exists():
-                sh.ln(
+                hs.Command("ln")(
                     "-s",
                     ebuild_path.as_posix(),
                     _symlink_name.as_posix(),
@@ -1554,7 +1542,7 @@ def check_all(
     local: bool,
     verbose: bool = False,
 ):
-    import sh
+    import hs
     from with_chdir import chdir
 
     not_root()
@@ -1577,7 +1565,7 @@ def check_all(
         with chdir(
             edit_config_path.parent,
         ):
-            remote = str(sh.git.remote("get-url", "origin")).strip()
+            remote = str(hs.Command("git")("remote", "get-url", "origin")).strip()
             app_name, app_user, app_module_name, app_path = parse_url(
                 remote,
                 apps_folder=apps_folder,
@@ -1694,7 +1682,6 @@ def write_app_template(
     templates,
     app_path: Path,
 ):
-    import sh
 
     app_template = generate_app_template(
         package_name=app_module_name,
@@ -1753,10 +1740,7 @@ def write_ebuild_template(
     app_path: Path,
     original_repo_url: str,
 ):
-    import os
     from datetime import date
-
-    import sh
 
     from .templates import depend_python
     from .templates import ebuild
@@ -1828,8 +1812,6 @@ def git_ops(
     import os
     import subprocess
 
-    import sh
-
     def git_add(thing: str):
 
         subprocess.run(
@@ -1853,8 +1835,6 @@ def git_ops(
 @User("user", env_vars={"HOME": "/home/user"})
 def write_description_and_install(description_md: str, install_md: str):
     import subprocess
-
-    import sh
 
     def git_add(thing: str):
 
@@ -1986,10 +1966,8 @@ def new(
     verbose: bool = False,
 ):
     import os
-    import sys
-    from datetime import date
 
-    import sh
+    import hs
     from with_chdir import chdir
 
     branch = "main"
@@ -2057,16 +2035,16 @@ def new(
 
     @User("user")
     def pull_overlay():
-        import sh
+        import hs
         from with_chdir import chdir
 
         with chdir("/home/sysskel/myapps/jakeogh"):
-            sh.git("pull")
+            hs.Command("git")("pull")
 
     try:
         pull_overlay()
     # fixme with_user should pass this exception through
-    except sh.ErrorReturnCode_1 as e:
+    except hs.ErrorReturnCode_1 as e:
         icp(e)
 
     icp(template_repo_url)
@@ -2242,9 +2220,9 @@ def new(
 
             @User("user", env_vars={"HOME": "/home/user"})
             def git_diff():
-                import sh
+                import hs
 
-                sh.git.diff("--exit-code")
+                hs.Command("git")("diff", "--exit-code")
 
             git_diff()
             # need to commit any pending ebuild changes here, but that's the wront git message, and it fails if it's unhanged
@@ -2300,17 +2278,10 @@ def write_gitignore_template(
             ) as fh:
                 fh.write(gitignore_template)
 
-    # sh.git.add(".gitignore")
-
-    result = subprocess.run(
+    _ = subprocess.run(
         ["git", "commit", "-m", "initial commit"],
         check=False,  # don't auto-raise, since we want to handle return codes
     )
-    # sh.git.commit(
-    #    "-m",
-    #    "initial commit",
-    #    _ok_code=[0, 1],
-    # )
 
 
 @User(
@@ -2368,7 +2339,9 @@ def delete(
     dict_output: bool,
     verbose: bool = False,
 ):
-    import sh
+    import sys
+
+    import hs
     from with_chdir import chdir
 
     am_root()
@@ -2398,7 +2371,7 @@ def delete(
     assert app_path.is_dir()
 
     with chdir("/home/sysskel/myapps/jakeogh"):
-        sh.git("pull")
+        hs.Command("git")("pull")
 
     ebuild_path = Path(gentoo_overlay_repo) / Path(group) / Path(app_name)
     # ic(ebuild_path)
@@ -2410,21 +2383,20 @@ def delete(
     ):
         group_path = Path(group)
         group_path.mkdir(exist_ok=False)
-        # sh.busybox.mv(ebuild_path, group_path, _close_stderr=True)
-        # sh.busybox.mv(app_path, ".", _close_stderr=True)
-        sh.busybox.mv(ebuild_path, group_path)
-        sh.busybox.mv(app_path, ".")
+        hs.Command("busybox")("mv", ebuild_path, group_path)
+        hs.Command("busybox")("mv", app_path, ".")
     with chdir(
         ebuild_path.parent,
     ):
         import os
 
-        sh.git.add("-u")
-        sh.git.commit(
+        hs.Command("git")("add", "-u")
+        hs.Command("git")(
+            "commit",
             "-m",
             "auto-commit",
             _out=sys.stdout,
             _err=sys.stderr,
         )
-        sh.git.push()
+        hs.Command("git")("push")()
         os.system("sudo emaint sync -A")

@@ -34,7 +34,7 @@ dependencies = [
     "with-user @ git+https://github.com/jakeogh/with-user",
 ]
 requires-python = ">=3.11"
-version = "0.0.1761212257"
+version = "1!0.0.1762742479"
 
 [project.license]
 text = "PUBLIC DOMAIN"
