@@ -10,7 +10,7 @@ install_md = """### Installation:
 
     1. sudo apt-get install python3-pip -y
 
-    2. pip install --force-reinstall git+https://git@github.com/jakeogh/{package_name}
+    2. pip install --force-reinstall git+https://github.com/jakeogh/{package_name}
 
     3. source ~/.profile
 
@@ -292,6 +292,7 @@ src_install() {{
 gitignore = """.git
 .edit_config
 .push
+.coverage
 enable_github.sh
 update_delme.sh
 {ebuild_name}
@@ -299,12 +300,36 @@ update_delme.sh
 
 
 pyproject_toml = """[build-system]
-requires = [
-    "setuptools >= 42",  # At least v42 of setuptools required for versioningit
-    "versioningit",
-    "wheel"
-]
+requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
+
+[project]
+name = "{package_name}"
+version = "0.0.1"
+description = "{description}"
+authors = [
+    {{ name = "{owner}", email = "{owner_email}" }},
+]
+license = "{license}"
+dependencies = [
+    "click",
+]
+requires-python = ">=3.12"
+
+[project.urls]
+Homepage = "{url}"
+
+[project.scripts]
+{command} = "{package_name}.{package_name}:cli"
+
+[tool.setuptools]
+include-package-data = true
+zip-safe = false
+
+[tool.setuptools.package-data]
+{package_name} = [
+    "py.typed",
+]
 """
 
 
