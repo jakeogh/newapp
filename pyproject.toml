@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "newapp"
-version = "1!0.0.1787195340"
+version = "1!0.0.1788144477"
 description = "Create a new python app from template"
 authors = [
     { name = "Justin Keogh", email = "github.com@v6y.net" },
@@ -12,20 +12,20 @@ authors = [
 dependencies = [
     "click",
     "asserttool @ git+https://github.com/jakeogh/asserttool@4bd23a06c2161e488415acde89c29537e6720cc1",
-    "clicktool @ git+https://github.com/jakeogh/clicktool@a9894f9d3a06701c5f73cd8b2794028042c9b420",
-    "configtool @ git+https://github.com/jakeogh/configtool@8a4ea7e2740ceb52b8b93684fe803c2461c9f0ed",
-    "edittool @ git+https://github.com/jakeogh/edittool@8b554ce823eb81ad5e8f62114be5672f7851a527",
+    "clicktool @ git+https://github.com/jakeogh/clicktool@4bc98af7590652693aef664af7485acde40688c2",
+    "configtool @ git+https://github.com/jakeogh/configtool@75b3119da7a070d1ddfe13402a6fa7f7224e7ae3",
+    "edittool @ git+https://github.com/jakeogh/edittool@ccf5a19e514f2606c6ae38fc86401e541dcc6de6",
     "eprint @ git+https://github.com/jakeogh/eprint@6ee1deca0c24b684eb5093247d6bd22e11f1b057",
     "filetool @ git+https://github.com/jakeogh/filetool@f972b0b7fe54b4055c2015dbbe26e53593b75359",
-    "getdents @ git+https://github.com/jakeogh/python-getdents@40e9624ce915b96e524242952fa1934651a0e43f",
-    "globalverbose @ git+https://github.com/jakeogh/globalverbose@59abc758c18c0b85e9e61c1e14e5a64a81bb220e",
+    "getdents @ git+https://github.com/jakeogh/python-getdents@c6e9db57f8001e7b9742df4cea05857d56478f7d",
+    "globalverbose @ git+https://github.com/jakeogh/globalverbose@ed36633a3208520a523e528e9371988fc33ffea3",
     "hs @ git+https://github.com/jakeogh/hs@b33c88f35cd24e773fea6ca4758193c9e815536d",
     "licenseguesser @ git+https://github.com/jakeogh/licenseguesser@f051caa74e3d5db489f02b592bb3bb2a621f0d8c",
     "mptool @ git+https://github.com/jakeogh/mptool@a8579325a458cc33c6a212685aa50e16a457ccf6",
-    "portagetool @ git+https://github.com/jakeogh/portagetool@d0b54ddb2218fce1301368e4affef8ca4b6d337e",
-    "replace-text @ git+https://github.com/jakeogh/replace-text@ea16405a94403dfe3f9cb6b6b631db5c388e14f8",
+    "portagetool @ git+https://github.com/jakeogh/portagetool@b9aa9ee04976463fa1d01ce5a92cbc70e1081ba3",
+    "replace-text @ git+https://github.com/jakeogh/replace-text@485330ba225ce8862a09fd598e3f402f94c347d9",
     "retry-on-exception @ git+https://github.com/jakeogh/retry-on-exception@872a0c9e578e207ac1340987fb551381d17030db",
-    "timestamptool @ git+https://github.com/jakeogh/timestamptool@06b7874d6f45c2aef1d9ebfc9c8179994411ddfc",
+    "timestamptool @ git+https://github.com/jakeogh/timestamptool@2d9868ec701af7666827ce3f6866198f80f14b2a",
     "with-chdir @ git+https://github.com/jakeogh/with-chdir@13d16ecbfb95828aaa3788a27d30da81a04242c2",
     "with-user @ git+https://github.com/jakeogh/with-user@a2926aad89168ea3d80998fead4015291ee78f42",
 ]
